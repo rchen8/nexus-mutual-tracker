@@ -59,6 +59,16 @@ def get_capital_pool_size():
     pool_size_over_time[transaction['timeStamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
   return pool_size_over_time
 
+def get_capital_pool_distribution():
+  nxm_address = '0xfd61352232157815cf7b71045557192bf0ce1884'
+  capital_pool_distribution = defaultdict(int)
+  for transaction in transactions:
+    if transaction['from_address'] != nxm_address:
+      capital_pool_distribution[transaction['from_address']] += transaction['amount']
+    elif transaction['to_address'] != nxm_address:
+      capital_pool_distribution[transaction['to_address']] -= transaction['amount']
+  return capital_pool_distribution
+
 def get_mcr_percentage():
   if not pool_size_over_time:
     get_capital_pool_size()
@@ -136,6 +146,8 @@ def parse_transactions(txns, address, crypto_price):
       if amount != 0:
         transactions.append({
           'timeStamp': datetime.fromtimestamp(int(txn['timeStamp'])),
+          'from_address': txn['from'],
+          'to_address': txn['to'],
           'amount': amount
         })
 

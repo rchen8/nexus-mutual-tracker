@@ -14,6 +14,10 @@ def active_cover_amount_per_contract():
 def capital_pool_size():
   return jsonify(script.get_capital_pool_size())
 
+@app.route('/capital_pool_distribution', methods=['GET'])
+def capital_pool_distribution():
+  return jsonify(script.get_capital_pool_distribution())
+
 @app.route('/mcr_percentage', methods=['GET'])
 def mcr_percentage():
   return jsonify(script.get_mcr_percentage())

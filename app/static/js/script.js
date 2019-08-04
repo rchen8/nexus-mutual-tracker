@@ -24,6 +24,16 @@ $.get('capital_pool_size', (response) => {
   }])
 })
 
+$.get('capital_pool_distribution', (response) => {
+  Plotly.newPlot('capitalPoolDistribution', [{
+    labels: Object.keys(response),
+    values: Object.values(response),
+    type: 'pie',
+    hoverinfo: 'label+percent',
+    textinfo: 'none'
+  }])
+})
+
 $.get('mcr_percentage', (response) => {
   const last_mcr_percentage = Object.values(response)[Object.values(response).length - 1]
   Plotly.newPlot('mcrPercentage', [{
