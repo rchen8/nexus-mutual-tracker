@@ -35,13 +35,14 @@ def address_to_contract_name(address):
     '3d9819210a31b4961b30ef54be2aed79b9c9cd3b': 'Compound',
     '4ddc2d193948926d02f9b1fe9e1daa0718270ed5': 'Compound',
     '1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e': 'dYdX',
+    '8573f2f5a3bd960eee3d998473e50c75cdbe6828': 'Livepeer',
     '448a5065aebb8e423f0896e6c5d525c040f59af3': 'MakerDAO',
     '9f8f72aa9304c8b593d555f12ef6589cc3a579a2': 'MakerDAO',
     '802275979b020f0ec871c5ec1db6e412b72ff20b': 'Nuo Network',
     'cd2053679de3bcf2b7e2c2efb6b499c57701222c': 'Totle',
     'c0a47dfe034b400b47bdad5fecda2621de6c4d95': 'Uniswap'
   }
-  return names[address] if address in names else 'Other'
+  return names[address.lower()] if address.lower() in names else 'Other'
 
 def get_active_cover_amount_per_contract():
   amount_per_contract = defaultdict(int)
@@ -129,7 +130,7 @@ def parse_transactions(txns, address, crypto_price):
   for txn in txns:
     if 'isError' not in txn or txn['isError'] == '0':
       amount = float(txn['value']) / 10**18 * crypto_price
-      if txn['from'].upper() == address.upper():
+      if txn['from'].lower() == address.lower():
         amount = -amount
 
       if amount != 0:
