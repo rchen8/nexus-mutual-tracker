@@ -6,10 +6,14 @@ import os
 import requests
 import textwrap
 
+MINIMUM_CAPITAL_REQUIREMENT = 7000
+
 covers = []
 transactions = []
+pool_size_over_time = {}
+mcr_percentage_over_time = {}
 
-def get_active_cover_amount_over_time():
+def get_active_cover_amount():
   times = []
   tree = IntervalTree()
   for cover in covers:
@@ -17,13 +21,13 @@ def get_active_cover_amount_over_time():
     times.append(cover['end_time'])
     tree[cover['start_time']:cover['end_time']] = cover['amount']
 
-  amount_per_time = {}
+  amount_over_time = {}
   for time in times:
     if datetime.now() > time:
       intervals = tree[time]
-      amount_per_time[time.strftime('%Y-%m-%d %H:%M:%S')] = \
+      amount_over_time[time.strftime('%Y-%m-%d %H:%M:%S')] = \
           sum([interval.data for interval in intervals])
-  return amount_per_time
+  return amount_over_time
 
 def address_to_contract_name(address):
   names = {
@@ -46,14 +50,36 @@ def get_active_cover_amount_per_contract():
       amount_per_contract[address_to_contract_name(cover['address'])] += cover['amount']
   return dict(amount_per_contract)
 
-def get_capital_pool_size_over_time():
+def get_capital_pool_size():
   transactions.sort(key=lambda x: x['timeStamp'])
   total = 0
-  funds_held = {}
   for transaction in transactions:
     total += transaction['amount']
-    funds_held[transaction['timeStamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
-  return funds_held
+    pool_size_over_time[transaction['timeStamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
+  return pool_size_over_time
+
+def get_mcr_percentage():
+  if not pool_size_over_time:
+    get_capital_pool_size()
+
+  for time in pool_size_over_time:
+    if pool_size_over_time[time] / ETH_PRICE > MINIMUM_CAPITAL_REQUIREMENT:
+      mcr_percentage_over_time[time] = (pool_size_over_time[time] / ETH_PRICE) / \
+          MINIMUM_CAPITAL_REQUIREMENT * 100
+  return mcr_percentage_over_time
+
+def get_nxm_token_price():
+  if not mcr_percentage_over_time:
+    get_mcr_percentage()
+
+  A = 1028 / 10**5
+  C = 5800000
+  nxm_price_over_time = {}
+  for time in mcr_percentage_over_time:
+    nxm_price_over_time[time] = \
+        (A + (MINIMUM_CAPITAL_REQUIREMENT / C) * (mcr_percentage_over_time[time] / 100)**4) * \
+        ETH_PRICE
+  return nxm_price_over_time
 
 ####################################################################################################
 
@@ -94,14 +120,15 @@ def get_event_logs():
   toBlock = 'latest'
   address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
   topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
-  url = 'https://api.etherscan.io/api?module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
-      % (module, action, fromBlock, toBlock, address, topic0, os.getenv('API_KEY'))
+  url = 'https://api.etherscan.io/api?' + \
+        'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
+        % (module, action, fromBlock, toBlock, address, topic0, os.getenv('API_KEY'))
   parse_event_logs(json.loads(requests.get(url).text)['result'])
 
 def parse_transactions(txns, address, crypto_price):
   for txn in txns:
     if 'isError' not in txn or txn['isError'] == '0':
-      amount = float(txn['value']) / 10 ** 18 * crypto_price
+      amount = float(txn['value']) / 10**18 * crypto_price
       if txn['from'].upper() == address.upper():
         amount = -amount
 
@@ -119,8 +146,9 @@ def get_eth_transactions():
   startblock = '1'
   endblock = 'latest'
   sort = 'asc'
-  url = 'https://api.etherscan.io/api?module=%s&action=%s&address=%s&startblock=%s&endblock=%s&sort=%s&apikey=%s' \
-      % (module, action, address, startblock, endblock, sort, os.getenv('API_KEY'))
+  url = 'https://api.etherscan.io/api?' + \
+        'module=%s&action=%s&address=%s&startblock=%s&endblock=%s&sort=%s&apikey=%s' \
+        % (module, action, address, startblock, endblock, sort, os.getenv('API_KEY'))
   parse_transactions(json.loads(requests.get(url).text)['result'], address, ETH_PRICE)
 
   # Internal transactions
@@ -133,8 +161,9 @@ def get_dai_transactions():
   contractaddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
   address = '0xfD61352232157815cF7B71045557192Bf0CE1884'
   sort = 'asc'
-  url = 'https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&sort=%s&apikey=%s' \
-      % (module, action, contractaddress, address, sort, os.getenv('API_KEY'))
+  url = 'https://api.etherscan.io/api?' + \
+        'module=%s&action=%s&contractaddress=%s&address=%s&sort=%s&apikey=%s' \
+        % (module, action, contractaddress, address, sort, os.getenv('API_KEY'))
   parse_transactions(json.loads(requests.get(url).text)['result'], address, DAI_PRICE)
 
 def get_crypto_price(currency):

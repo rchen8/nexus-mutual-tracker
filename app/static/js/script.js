@@ -1,5 +1,5 @@
-$.get('active_cover_amount_over_time', (response) => {
-  Plotly.newPlot('activeCoverAmountOverTime', [{
+$.get('active_cover_amount', (response) => {
+  Plotly.newPlot('activeCoverAmount', [{
     x: Object.keys(response),
     y: Object.values(response),
     fill: 'tozeroy',
@@ -15,11 +15,36 @@ $.get('active_cover_amount_per_contract', (response) => {
   }])
 })
 
-$.get('capital_pool_size_over_time', (response) => {
-  Plotly.newPlot('capitalPoolSizeOverTime', [{
+$.get('capital_pool_size', (response) => {
+  Plotly.newPlot('capitalPoolSize', [{
     x: Object.keys(response),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
   }])
+})
+
+$.get('mcr_percentage', (response) => {
+  const last_mcr_percentage = Object.values(response)[Object.values(response).length - 1]
+  Plotly.newPlot('mcrPercentage', [{
+    x: Object.keys(response),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {
+    yaxis: {range: [100, last_mcr_percentage + (last_mcr_percentage - 100) / 5]}
+  })
+})
+
+$.get('nxm_token_price', (response) => {
+  const first_nxm_price = Object.values(response)[0]
+  const last_nxm_price = Object.values(response)[Object.values(response).length - 1]
+  Plotly.newPlot('nxmTokenPrice', [{
+    x: Object.keys(response),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {
+    yaxis: {range: [first_nxm_price, last_nxm_price + (last_nxm_price - first_nxm_price) / 5]}
+  })
 })

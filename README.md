@@ -1,4 +1,4 @@
-# nexus-mutual-tracker
+# Nexus Mutual Tracker
 
 ## Installation
 Get an Etherscan [API key](https://etherscan.io/apis).
