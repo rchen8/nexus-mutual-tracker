@@ -133,7 +133,7 @@ def get_event_logs():
   topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
-        % (module, action, fromBlock, toBlock, address, topic0, os.getenv('API_KEY'))
+        % (module, action, fromBlock, toBlock, address, topic0, os.environ['API_KEY'])
   parse_event_logs(json.loads(requests.get(url).text)['result'])
 
 def parse_transactions(txns, address, crypto_price):
@@ -161,7 +161,7 @@ def get_eth_transactions():
   sort = 'asc'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&address=%s&startblock=%s&endblock=%s&sort=%s&apikey=%s' \
-        % (module, action, address, startblock, endblock, sort, os.getenv('API_KEY'))
+        % (module, action, address, startblock, endblock, sort, os.environ['API_KEY'])
   parse_transactions(json.loads(requests.get(url).text)['result'], address, ETH_PRICE)
 
   # Internal transactions
@@ -176,7 +176,7 @@ def get_dai_transactions():
   sort = 'asc'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&contractaddress=%s&address=%s&sort=%s&apikey=%s' \
-        % (module, action, contractaddress, address, sort, os.getenv('API_KEY'))
+        % (module, action, contractaddress, address, sort, os.environ['API_KEY'])
   parse_transactions(json.loads(requests.get(url).text)['result'], address, DAI_PRICE)
 
 def get_crypto_price(currency):
