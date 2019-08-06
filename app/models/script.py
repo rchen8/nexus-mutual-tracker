@@ -35,6 +35,7 @@ def address_to_contract_name(address):
     '3d9819210a31b4961b30ef54be2aed79b9c9cd3b': 'Compound',
     '4ddc2d193948926d02f9b1fe9e1daa0718270ed5': 'Compound',
     '1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e': 'dYdX',
+    '6e95c8e8557abc08b46f3c347ba06f8dc012763f': 'Gnosis',
     '8573f2f5a3bd960eee3d998473e50c75cdbe6828': 'Livepeer',
     '448a5065aebb8e423f0896e6c5d525c040f59af3': 'MakerDAO',
     '9f8f72aa9304c8b593d555f12ef6589cc3a579a2': 'MakerDAO',
