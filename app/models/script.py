@@ -89,8 +89,7 @@ def get_nxm_token_price():
   nxm_price_over_time = {}
   for time in mcr_percentage_over_time:
     nxm_price_over_time[time] = \
-        (A + (MINIMUM_CAPITAL_REQUIREMENT / C) * (mcr_percentage_over_time[time] / 100)**4) * \
-        ETH_PRICE
+        A + (MINIMUM_CAPITAL_REQUIREMENT / C) * (mcr_percentage_over_time[time] / 100)**4
   return nxm_price_over_time
 
 ####################################################################################################
