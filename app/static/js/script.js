@@ -46,6 +46,23 @@ $.get('mcr_percentage', (response) => {
   })
 })
 
+$.get('total_amount_staked', (response) => {
+  Plotly.newPlot('totalAmountStaked', [{
+    x: Object.keys(response),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }])
+})
+
+$.get('amount_staked_per_contract', (response) => {
+  Plotly.newPlot('amountStakedPerContract', [{
+    x: Object.keys(response),
+    y: Object.values(response),
+    type: 'bar'
+  }])
+})
+
 $.get('nxm_token_price', (response) => {
   const first_nxm_price = Object.values(response)[0]
   const last_nxm_price = Object.values(response)[Object.values(response).length - 1]

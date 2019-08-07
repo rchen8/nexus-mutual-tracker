@@ -1,4 +1,4 @@
-from ..models import script
+from ..models import parser, script
 from flask import jsonify, render_template, request
 from app import app
 
@@ -22,11 +22,19 @@ def capital_pool_distribution():
 def mcr_percentage():
   return jsonify(script.get_mcr_percentage())
 
+@app.route('/total_amount_staked', methods=['GET'])
+def total_amount_staked():
+  return jsonify(script.get_total_amount_staked())
+
+@app.route('/amount_staked_per_contract', methods=['GET'])
+def amount_staked_per_contract():
+  return jsonify(script.get_amount_staked_per_contract())
+
 @app.route('/nxm_token_price', methods=['GET'])
 def nxm_token_price():
   return jsonify(script.get_nxm_token_price())
 
 @app.route('/', methods=['GET'])
 def index():
-  script.get_etherscan_data()
+  parser.parse_etherscan_data()
   return render_template('index.html')
