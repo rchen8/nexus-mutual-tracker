@@ -84,7 +84,7 @@ def parse_eth_transactions():
 def parse_dai_transactions():
   module = 'account'
   action = 'tokentx'
-  contractaddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+  contractaddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359'
   address = '0xfD61352232157815cF7B71045557192Bf0CE1884'
   sort = 'asc'
   url = 'https://api.etherscan.io/api?' + \
@@ -110,6 +110,7 @@ def parse_staking_transactions():
 def parse_etherscan_data():
   covers.clear()
   transactions.clear()
+  staking_transactions.clear()
 
   set_crypto_prices()
   parse_event_logs()

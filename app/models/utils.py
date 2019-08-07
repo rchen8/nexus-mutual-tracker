@@ -12,7 +12,6 @@ def set_crypto_prices():
 def address_to_contract_name(address):
   names = {
     '080bf510fcbf18b91105470639e9561022937712': '0x',
-    'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': '0x',
     '12459c951127e0c374ff9105dda097662a027093': '0x',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
@@ -64,6 +63,7 @@ def address_to_contract_name(address):
     '2c4bd064b998838076fa341a83d007fc2fa50957': 'Uniswap',
     '09cabec1ead1c0ba254b09efb3ee13841712be14': 'Uniswap',
     '22d8432cc7aa4f8712a655fc4cdfb1baec29fca9': 'Uniswap',
-    'f173214c720f58e03e194085b1db28b50acdeead': 'Uniswap'
+    'f173214c720f58e03e194085b1db28b50acdeead': 'Uniswap',
+    'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'Wrapped ETH'
   }
   return names[address.lower()] if address.lower() in names else 'Other'

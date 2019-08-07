@@ -57,11 +57,10 @@ def get_capital_pool_distribution():
   return capital_pool_distribution
 
 def get_mcr_percentage():
-  if not pool_size_over_time:
-    get_capital_pool_size()
   if mcr_percentage_over_time:
     return mcr_percentage_over_time
 
+  get_capital_pool_size()
   for time in pool_size_over_time:
     if pool_size_over_time[time] / price['ETH'] > MINIMUM_CAPITAL_REQUIREMENT:
       mcr_percentage_over_time[time] = (pool_size_over_time[time] / price['ETH']) / \
@@ -69,13 +68,12 @@ def get_mcr_percentage():
   return mcr_percentage_over_time
 
 def get_nxm_token_price():
-  if not mcr_percentage_over_time:
-    get_mcr_percentage()
   if nxm_price_over_time:
     return nxm_price_over_time
 
   A = 1028 / 10**5
   C = 5800000
+  get_mcr_percentage()
   for time in mcr_percentage_over_time:
     nxm_price_over_time[time] = \
         (A + (MINIMUM_CAPITAL_REQUIREMENT / C) * (mcr_percentage_over_time[time] / 100)**4) * \
@@ -105,7 +103,7 @@ def get_total_amount_staked():
 def get_amount_staked_per_contract():
   if not nxm_price_over_time:
     get_nxm_token_price()
-    
+
   amount_per_contract = defaultdict(int)
   for txn in staking_transactions:
     if datetime.now() < txn['end_time']:
