@@ -42,7 +42,7 @@ $.get('mcr_percentage', (response) => {
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [100, last_mcr_percentage + (last_mcr_percentage - 100) / 5]}
+    yaxis: {range: [100, last_mcr_percentage]}
   })
 })
 
@@ -72,6 +72,6 @@ $.get('nxm_token_price', (response) => {
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [first_nxm_price, last_nxm_price + (last_nxm_price - first_nxm_price) / 5]}
+    yaxis: {range: [first_nxm_price, last_nxm_price]}
   })
 })
