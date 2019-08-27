@@ -1,15 +1,7 @@
 from ..models import parser, script
-from flask import jsonify, render_template, request
+from flask import jsonify, render_template, request, send_from_directory
 from app import app
-
-@app.route('/', methods=['GET'])
-def index():
-  parser.parse_etherscan_data()
-  return render_template('covers.html')
-
-@app.route('/covers', methods=['GET'])
-def covers():
-  return jsonify(script.get_covers())
+import os
 
 @app.route('/active_cover_amount', methods=['GET'])
 def active_cover_amount():
@@ -19,12 +11,9 @@ def active_cover_amount():
 def active_cover_amount_per_contract():
   return jsonify(script.get_active_cover_amount_per_contract())
 
-####################################################################################################
-
-@app.route('/capital_pool', methods=['GET'])
-def capital_pool():
-  parser.parse_etherscan_data()
-  return render_template('capital_pool.html')
+@app.route('/covers', methods=['GET'])
+def covers():
+  return jsonify(script.get_covers())
 
 @app.route('/capital_pool_size', methods=['GET'])
 def capital_pool_size():
@@ -38,13 +27,6 @@ def capital_pool_distribution():
 def mcr_percentage():
   return jsonify(script.get_mcr_percentage())
 
-####################################################################################################
-
-@app.route('/staked', methods=['GET'])
-def staked():
-  parser.parse_etherscan_data()
-  return render_template('staked.html')
-
 @app.route('/total_amount_staked', methods=['GET'])
 def total_amount_staked():
   return jsonify(script.get_total_amount_staked())
@@ -53,13 +35,23 @@ def total_amount_staked():
 def amount_staked_per_contract():
   return jsonify(script.get_amount_staked_per_contract())
 
-####################################################################################################
-
-@app.route('/token', methods=['GET'])
-def token():
-  parser.parse_etherscan_data()
-  return render_template('token.html')
-
 @app.route('/nxm_token_price', methods=['GET'])
 def nxm_token_price():
   return jsonify(script.get_nxm_token_price())
+
+####################################################################################################
+
+@app.route('/<template>', methods=['GET'])
+def render(template):
+  parser.parse_etherscan_data()
+  return render_template(template + '.html')
+
+@app.route('/', methods=['GET'])
+def index():
+  parser.parse_etherscan_data()
+  return render_template('covers.html')
+
+@app.route('/favicon.ico', methods=['GET'])
+def favicon():
+  return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.gif',
+      mimetype='image/vnd.microsoft.icon')
