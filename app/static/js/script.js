@@ -35,14 +35,13 @@ $.get('capital_pool_distribution', (response) => {
 })
 
 $.get('mcr_percentage', (response) => {
-  const last_mcr_percentage = Object.values(response)[Object.values(response).length - 1]
   Plotly.newPlot('mcrPercentage', [{
     x: Object.keys(response),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [100, last_mcr_percentage]}
+    yaxis: {range: [100, Math.max(...Object.values(response))]}
   })
 })
 
@@ -64,14 +63,12 @@ $.get('amount_staked_per_contract', (response) => {
 })
 
 $.get('nxm_token_price', (response) => {
-  const first_nxm_price = Object.values(response)[0]
-  const last_nxm_price = Object.values(response)[Object.values(response).length - 1]
   Plotly.newPlot('nxmTokenPrice', [{
     x: Object.keys(response),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [first_nxm_price, last_nxm_price]}
+    yaxis: {range: [Math.min(...Object.values(response)), Math.max(...Object.values(response))]}
   })
 })
