@@ -1,4 +1,4 @@
-from .utils import address_to_contract_name, price
+from .utils import price
 from collections import defaultdict
 from datetime import datetime, timedelta
 from intervaltree import IntervalTree
@@ -11,6 +11,18 @@ staking_transactions = []
 pool_size_over_time = {}
 mcr_percentage_over_time = {}
 nxm_price_over_time = {}
+
+def get_covers():
+  formatted_covers = []
+  for cover in covers:
+    formatted_covers.append({
+      'id': cover['id'],
+      'contract_name': cover['contract_name'],
+      'amount': f'{round(cover["amount"], 2):,}',
+      'start_time': cover['start_time'].strftime('%Y-%m-%d %H:%M:%S'),
+      'end_time': cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
+    })
+  return formatted_covers
 
 def get_active_cover_amount():
   times = []
@@ -32,7 +44,7 @@ def get_active_cover_amount_per_contract():
   amount_per_contract = defaultdict(int)
   for cover in covers:
     if datetime.now() < cover['end_time']:
-      amount_per_contract[address_to_contract_name(cover['address'])] += cover['amount']
+      amount_per_contract[cover['contract_name']] += cover['amount']
   return dict(amount_per_contract)
 
 def get_capital_pool_size():
@@ -107,5 +119,5 @@ def get_amount_staked_per_contract():
   amount_per_contract = defaultdict(int)
   for txn in staking_transactions:
     if datetime.now() < txn['end_time']:
-      amount_per_contract[address_to_contract_name(txn['address'])] += txn['amount'] * price['NXM']
+      amount_per_contract[txn['contract_name']] += txn['amount'] * price['NXM']
   return dict(amount_per_contract)

@@ -1,4 +1,4 @@
-from .utils import price, set_crypto_prices
+from .utils import address_to_contract_name, price, set_crypto_prices
 from .script import covers, staking_transactions, transactions
 from datetime import datetime, timedelta
 import json
@@ -43,7 +43,8 @@ def parse_event_logs():
       raise
 
     covers.append({
-      'address': data[0][-40:],
+      'id': int(event['topics'][1], 16),
+      'contract_name': address_to_contract_name(data[0][-40:]),
       'amount': amount,
       'start_time': datetime.fromtimestamp(int(event['timeStamp'], 16)),
       'end_time': datetime.fromtimestamp(int(data[2], 16))
@@ -103,7 +104,7 @@ def parse_staking_transactions():
         staking_transactions.append({
           'start_time': start_time,
           'end_time': start_time + timedelta(days=250),
-          'address': data[0][-40:],
+          'contract_name': address_to_contract_name(data[0][-40:]),
           'amount': float(int(data[1], 16)) / 10**18
         })
 

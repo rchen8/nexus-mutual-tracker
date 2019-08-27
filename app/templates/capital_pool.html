@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Nexus Mutual Tracker</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="css/lib/all.min.css" rel="stylesheet" type="text/css">
+
+  <!-- Page level plugin CSS-->
+  <link href="css/lib/dataTables.bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/lib/sb-admin.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+
+    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <a class="navbar-brand mr-1" href="index.html">Nexus Mutual Tracker</a>
+
+  </nav>
+
+  <div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="sidebar navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/">
+          <i class="fas fa-suitcase"></i>
+          <span>Covers</span>
+        </a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="capital_pool">
+          <i class="fas fa-globe"></i>
+          <span>Capital Pool</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="staked">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Staked</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="token">
+          <i class="fas fa-chart-line"></i>
+          <span>NXM Token</span>
+        </a>
+      </li>
+    </ul>
+
+    <div id="content-wrapper">
+
+      <div class="container-fluid">
+
+        <div class="card mb-3">
+          <div class="card-header">
+            Capital Pool Size (USD)
+          </div>
+          <div class="card-body">
+            <div id="capitalPoolSize"></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            Capital Pool Distribution
+          </div>
+          <div class="card-body">
+            <div id="capitalPoolDistribution"></div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-header">
+            MCR%
+          </div>
+          <div class="card-body">
+            <div id="mcrPercentage"></div>
+          </div>
+        </div>
+
+      </div>
+      <!-- /.container-fluid -->
+
+      <!-- Sticky Footer -->
+      <footer class="sticky-footer">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span><b>Note:</b> USD is based on current ETH and DAI prices, not historical prices.<p></span>
+          </div>
+          <div>
+            <span><center><a href="https://twitter.com/richardchen39" class="twitter-follow-button" data-show-count="false">Follow Richard Chen on Twitter</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></center></span>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+    <!-- /.content-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="js/lib/jquery.min.js"></script>
+  <script src="js/lib/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="js/lib/jquery.easing.min.js"></script>
+
+  <!-- Page level plugin JavaScript-->
+  <script src="js/lib/plotly.min.js"></script>
+  <script src="js/lib/jquery.dataTables.min.js"></script>
+  <script src="js/lib/dataTables.bootstrap.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin.js"></script>
+
+  <script src="js/capital_pool.js"></script>
+
+</body>
+
+</html>
