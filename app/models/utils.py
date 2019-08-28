@@ -4,10 +4,15 @@ import requests
 price = {}
 
 def set_crypto_prices():
-  price['ETH'] = float(json.loads(requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum') \
-      .text)[0]['price_usd'])
-  price['DAI'] = float(json.loads(requests.get('https://api.coinmarketcap.com/v1/ticker/dai') \
-      .text)[0]['price_usd'])
+  for i in range(100):
+    try:
+      price['ETH'] = float(json.loads(requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum') \
+          .text)[0]['price_usd'])
+      price['DAI'] = float(json.loads(requests.get('https://api.coinmarketcap.com/v1/ticker/dai') \
+          .text)[0]['price_usd'])
+    except:
+      continue
+    break
 
 def address_to_contract_name(address):
   names = {
