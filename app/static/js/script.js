@@ -1,40 +1,57 @@
-(function($) {
-  "use strict"; // Start of use strict
+(($) => {
+  "use strict"
 
   // Toggle the side navigation
-  $("#sidebarToggle").on('click', function(e) {
-    e.preventDefault();
-    $("body").toggleClass("sidebar-toggled");
-    $(".sidebar").toggleClass("toggled");
-  });
+  $("#sidebarToggle").on('click', (e) => {
+    e.preventDefault()
+    $("body").toggleClass("sidebar-toggled")
+    $(".sidebar").toggleClass("toggled")
+  })
 
   // Prevent the content wrapper from scrolling when the fixed side navigation hovered over
-  $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', function(e) {
+  $('body.fixed-nav .sidebar').on('mousewheel DOMMouseScroll wheel', (e) => {
     if ($(window).width() > 768) {
-      var e0 = e.originalEvent,
-        delta = e0.wheelDelta || -e0.detail;
-      this.scrollTop += (delta < 0 ? 1 : -1) * 30;
-      e.preventDefault();
+      const e0 = e.originalEvent
+      const delta = e0.wheelDelta || -e0.detail
+      this.scrollTop += (delta < 0 ? 1 : -1) * 30
+      e.preventDefault()
     }
-  });
+  })
 
   // Scroll to top button appear
-  $(document).on('scroll', function() {
-    var scrollDistance = $(this).scrollTop();
+  $(document).on('scroll', () => {
+    const scrollDistance = $(this).scrollTop()
     if (scrollDistance > 100) {
-      $('.scroll-to-top').fadeIn();
+      $('.scroll-to-top').fadeIn()
     } else {
-      $('.scroll-to-top').fadeOut();
+      $('.scroll-to-top').fadeOut()
     }
-  });
+  })
 
   // Smooth scrolling using jQuery easing
-  $(document).on('click', 'a.scroll-to-top', function(event) {
-    var $anchor = $(this);
+  $(document).on('click', 'a.scroll-to-top', (event) => {
+    const $anchor = $(this)
     $('html, body').stop().animate({
       scrollTop: ($($anchor.attr('href')).offset().top)
-    }, 1000, 'easeInOutExpo');
-    event.preventDefault();
-  });
+    }, 1000, 'easeInOutExpo')
+    event.preventDefault()
+  })
+})(jQuery)
 
-})(jQuery); // End of use strict
+const toLocalTimezone = (date) => {
+  date = new Date(Date.parse(date))
+  date.setHours(date.getHours() + new Date().getTimezoneOffset() / -60)
+  let date_string = date.getFullYear() + '-'
+  date_string += (date.getMonth() + 1) <= 9 ? '0' + (date.getMonth() - 1) + '-' :
+      (date.getMonth() - 1) + '-'
+  date_string += date.getDate() <= 9 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
+  date_string += date.toLocaleTimeString('en-US', {'hour12' : false})
+  return date_string
+}
+
+const getDateTimesInLocalTimezone = (dates) => {
+  for (let i = 0; i < dates.length; i++) {
+    dates[i] = toLocalTimezone(dates[i])
+  }
+  return dates
+}

@@ -1,6 +1,6 @@
 $.get('active_cover_amount', (response) => {
   Plotly.newPlot('activeCoverAmount', [{
-    x: Object.keys(response),
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
@@ -23,8 +23,8 @@ $.get('covers', (response) => {
     row += '<td>' + cover['id'] + '</td>'
     row += '<td>' + cover['contract_name'] + '</td>'
     row += '<td>' + cover['amount'] + '</td>'
-    row += '<td>' + cover['start_time'] + '</td>'
-    row += '<td>' + cover['end_time'] + '</td>'
+    row += '<td>' + toLocalTimezone(cover['start_time']) + '</td>'
+    row += '<td>' + toLocalTimezone(cover['end_time']) + '</td>'
     row += '</tr>'
     table.innerHTML += row
   }

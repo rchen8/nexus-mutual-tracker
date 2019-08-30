@@ -1,6 +1,6 @@
 $.get('capital_pool_size', (response) => {
   Plotly.newPlot('capitalPoolSize', [{
-    x: Object.keys(response),
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
@@ -19,7 +19,7 @@ $.get('capital_pool_distribution', (response) => {
 
 $.get('mcr_percentage', (response) => {
   Plotly.newPlot('mcrPercentage', [{
-    x: Object.keys(response),
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'

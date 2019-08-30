@@ -1,6 +1,6 @@
 $.get('total_amount_staked', (response) => {
   Plotly.newPlot('totalAmountStaked', [{
-    x: Object.keys(response),
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'

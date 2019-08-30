@@ -1,6 +1,6 @@
 $.get('nxm_token_price', (response) => {
   Plotly.newPlot('nxmTokenPrice', [{
-    x: Object.keys(response),
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
