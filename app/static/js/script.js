@@ -40,7 +40,7 @@
 
 const toLocalTimezone = (date) => {
   date = new Date(Date.parse(date))
-  date.setHours(date.getHours() + new Date().getTimezoneOffset() / -60)
+  date.setMinutes(date.getMinutes() - new Date().getTimezoneOffset())
   let date_string = date.getFullYear() + '-'
   date_string += (date.getMonth() + 1) <= 9 ? '0' + (date.getMonth() - 1) + '-' :
       (date.getMonth() - 1) + '-'

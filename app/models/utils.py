@@ -1,18 +1,21 @@
 import json
+import os
 import requests
 
 price = {}
 
 def set_crypto_prices():
-  for i in range(100):
-    try:
-      price['ETH'] = float(json.loads(requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum') \
-          .text)[0]['price_usd'])
-      price['DAI'] = float(json.loads(requests.get('https://api.coinmarketcap.com/v1/ticker/dai') \
-          .text)[0]['price_usd'])
-    except:
-      continue
-    break
+  url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+  session = requests.Session()
+  session.headers.update({
+    'Accepts': 'application/json',
+    'X-CMC_PRO_API_KEY': os.environ['CMC_API_KEY']
+  })
+
+  price['ETH'] = json.loads(session.get(url, params={'symbol': 'ETH'}).text) \
+      ['data']['ETH']['quote']['USD']['price']
+  price['DAI'] = json.loads(session.get(url, params={'symbol': 'DAI'}).text) \
+      ['data']['DAI']['quote']['USD']['price']
 
 def address_to_contract_name(address):
   names = {
