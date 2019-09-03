@@ -1,9 +1,9 @@
-from .utils import address_to_contract_name, price, set_crypto_prices
-from .script import covers, staking_transactions, transactions
+from .utils import address_to_contract_name, database, price, set_crypto_prices
 from datetime import datetime, timedelta
 import json
 import os
 import requests
+import sqlite3
 import textwrap
 
 def get_event_logs():
@@ -30,6 +30,9 @@ def parse_event_logs():
     bytes4 curr
   )
   """
+  conn = sqlite3.connect(database)
+  cursor = conn.cursor()
+
   event_logs = get_event_logs()
   for event in event_logs:
     data = textwrap.wrap(event['data'][2:], 64)
@@ -42,15 +45,23 @@ def parse_event_logs():
     else:
       raise
 
-    covers.append({
-      'id': int(event['topics'][1], 16),
-      'contract_name': address_to_contract_name(data[0][-40:]),
-      'amount': amount,
-      'start_time': datetime.fromtimestamp(int(event['timeStamp'], 16)),
-      'end_time': datetime.fromtimestamp(int(data[2], 16))
-    })
+    cover = (
+      int(event['topics'][1], 16),
+      address_to_contract_name(data[0][-40:]),
+      amount,
+      datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      datetime.fromtimestamp(int(data[2], 16))
+    )
+    cursor.execute('INSERT INTO Covers(id, contract_name, amount, start_time, end_time) ' + \
+        'VALUES(?,?,?,?,?)', cover)
+
+  conn.commit()
+  conn.close()
 
 def parse_transactions(txns, address, crypto_price):
+  conn = sqlite3.connect(database)
+  cursor = conn.cursor()
+
   for txn in txns:
     if 'isError' not in txn or txn['isError'] == '0':
       amount = float(txn['value']) / 10**18 * crypto_price
@@ -58,12 +69,17 @@ def parse_transactions(txns, address, crypto_price):
         amount = -amount
 
       if amount != 0:
-        transactions.append({
-          'timeStamp': datetime.fromtimestamp(int(txn['timeStamp'])),
-          'from_address': txn['from'],
-          'to_address': txn['to'],
-          'amount': amount
-        })
+        transaction = (
+          datetime.fromtimestamp(int(txn['timeStamp'])),
+          txn['from'],
+          txn['to'],
+          amount
+        )
+        cursor.execute('INSERT INTO Transactions(_timestamp, from_address, to_address, amount) ' + \
+            'VALUES(?,?,?,?)', transaction)
+
+  conn.commit()
+  conn.close()
 
 def build_transaction_url(address):
   module = 'account'
@@ -94,6 +110,9 @@ def parse_dai_transactions():
   parse_transactions(json.loads(requests.get(url).text)['result'], address, price['DAI'])
 
 def parse_staking_transactions():
+  conn = sqlite3.connect(database)
+  cursor = conn.cursor()
+
   url = build_transaction_url('0xDF50A17bF58dea5039B73683a51c4026F3c7224E')
   txns = json.loads(requests.get(url).text)['result']
   for txn in txns:
@@ -101,17 +120,28 @@ def parse_staking_transactions():
       data = textwrap.wrap(txn['input'][10:], 64)
       if len(data) == 2:
         start_time = datetime.fromtimestamp(int(txn['timeStamp']))
-        staking_transactions.append({
-          'start_time': start_time,
-          'end_time': start_time + timedelta(days=250),
-          'contract_name': address_to_contract_name(data[0][-40:]),
-          'amount': float(int(data[1], 16)) / 10**18
-        })
+
+        staking_txn = (
+          start_time,
+          start_time + timedelta(days=250),
+          address_to_contract_name(data[0][-40:]),
+          float(int(data[1], 16)) / 10**18
+        )
+        cursor.execute('INSERT INTO ' + \
+            'StakingTransactions(start_time, end_time, contract_name, amount) ' + \
+            'VALUES(?,?,?,?)', staking_txn)
+
+  conn.commit()
+  conn.close()
 
 def parse_etherscan_data():
-  covers.clear()
-  transactions.clear()
-  staking_transactions.clear()
+  conn = sqlite3.connect(database)
+  cursor = conn.cursor()
+  cursor.execute('DELETE FROM Covers')
+  cursor.execute('DELETE FROM Transactions')
+  cursor.execute('DELETE FROM StakingTransactions')
+  conn.commit()
+  conn.close()
 
   set_crypto_prices()
   parse_event_logs()

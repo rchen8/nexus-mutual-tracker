@@ -42,8 +42,8 @@ const toLocalTimezone = (date) => {
   date = new Date(Date.parse(date))
   date.setMinutes(date.getMinutes() - new Date().getTimezoneOffset())
   let date_string = date.getFullYear() + '-'
-  date_string += (date.getMonth() + 1) <= 9 ? '0' + (date.getMonth() - 1) + '-' :
-      (date.getMonth() - 1) + '-'
+  date_string += (date.getMonth() + 1) <= 9 ? '0' + (date.getMonth() + 1) + '-' :
+      (date.getMonth() + 1) + '-'
   date_string += date.getDate() <= 9 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
   date_string += date.toLocaleTimeString('en-US', {'hour12' : false})
   return date_string

@@ -1,8 +1,19 @@
 import json
 import os
 import requests
+import sqlite3
 
 price = {}
+database = 'app/models/database/nexus.db'
+
+def query_table(table_name):
+  conn = sqlite3.connect(database)
+  conn.row_factory = sqlite3.Row
+  cursor = conn.cursor()
+  cursor.execute('SELECT * FROM {tn}'.format(tn=table_name))
+  result = [dict(row) for row in cursor.fetchall()]
+  conn.close()
+  return result
 
 def set_crypto_prices():
   url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
@@ -55,6 +66,7 @@ def address_to_contract_name(address):
     '3457905deea11ddc085bc7bfaa8813aab26b2ded': 'Market Protocol',
     '0d580ae50b58fe08514deab4e38c0dfdb0d30adc': 'Melonport',
     'ec67005c4e498ec7f55e092bd1d35cbc47c91892': 'Melonport',
+    '58c5ad890fd9b25145f05f5afee11cb5b8f616de': 'MetaMoneyMarket',
     '1fd169a4f5c59acf79d0fd5d91d1201ef1bce9f1': 'MolochDAO',
     '08c3a887865684f30351a0ba6d683aa9b539829a': 'Nexus Mutual',
     '802275979b020f0ec871c5ec1db6e412b72ff20b': 'Nuo Network',

@@ -1,32 +1,18 @@
-from .utils import price
+from .utils import price, query_table
 from collections import defaultdict
 from datetime import datetime, timedelta
 from intervaltree import IntervalTree
 
 MINIMUM_CAPITAL_REQUIREMENT = 7000
 
-covers = []
-transactions = []
-staking_transactions = []
-pool_size_over_time = {}
+capital_pool_size_over_time = {}
 mcr_percentage_over_time = {}
 nxm_price_over_time = {}
-
-def get_covers():
-  formatted_covers = []
-  for cover in covers:
-    formatted_covers.append({
-      'id': cover['id'],
-      'contract_name': cover['contract_name'],
-      'amount': f'{round(cover["amount"], 2):,}',
-      'start_time': cover['start_time'].strftime('%Y-%m-%d %H:%M:%S'),
-      'end_time': cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
-    })
-  return formatted_covers
 
 def get_active_cover_amount():
   times = []
   tree = IntervalTree()
+  covers = query_table('Covers')
   for cover in covers:
     times.append(cover['start_time'])
     times.append(cover['end_time'])
@@ -34,33 +20,38 @@ def get_active_cover_amount():
 
   amount_over_time = {}
   for time in times:
-    if datetime.now() > time:
+    if datetime.now() > datetime.strptime(time, '%Y-%m-%d %H:%M:%S'):
       intervals = tree[time]
-      amount_over_time[time.strftime('%Y-%m-%d %H:%M:%S')] = \
-          sum([interval.data for interval in intervals])
+      amount_over_time[time] = sum([interval.data for interval in intervals])
   return amount_over_time
 
 def get_active_cover_amount_per_contract():
   amount_per_contract = defaultdict(int)
+  covers = query_table('Covers')
   for cover in covers:
-    if datetime.now() < cover['end_time']:
+    if datetime.now() < datetime.strptime(cover['end_time'], '%Y-%m-%d %H:%M:%S'):
       amount_per_contract[cover['contract_name']] += cover['amount']
   return dict(amount_per_contract)
 
-def get_capital_pool_size():
-  if pool_size_over_time:
-    return pool_size_over_time
+def get_covers():
+  return query_table('Covers')
 
-  transactions.sort(key=lambda x: x['timeStamp'])
+def get_capital_pool_size():
+  if capital_pool_size_over_time:
+    return capital_pool_size_over_time
+
+  transactions = query_table('Transactions')
+  transactions.sort(key=lambda x: x['_timestamp'])
   total = 0
   for txn in transactions:
     total += txn['amount']
-    pool_size_over_time[txn['timeStamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
-  return pool_size_over_time
+    capital_pool_size_over_time[txn['_timestamp']] = total
+  return capital_pool_size_over_time
 
 def get_capital_pool_distribution():
   nxm_address = '0xfd61352232157815cf7b71045557192bf0ce1884'
   capital_pool_distribution = defaultdict(int)
+  transactions = query_table('Transactions')
   for txn in transactions:
     if txn['from_address'] != nxm_address:
       capital_pool_distribution[txn['from_address']] += txn['amount']
@@ -73,9 +64,9 @@ def get_mcr_percentage():
     return mcr_percentage_over_time
 
   get_capital_pool_size()
-  for time in pool_size_over_time:
-    if pool_size_over_time[time] / price['ETH'] > MINIMUM_CAPITAL_REQUIREMENT:
-      mcr_percentage_over_time[time] = (pool_size_over_time[time] / price['ETH']) / \
+  for time in capital_pool_size_over_time:
+    if capital_pool_size_over_time[time] / price['ETH'] > MINIMUM_CAPITAL_REQUIREMENT:
+      mcr_percentage_over_time[time] = (capital_pool_size_over_time[time] / price['ETH']) / \
           MINIMUM_CAPITAL_REQUIREMENT * 100
   return mcr_percentage_over_time
 
@@ -99,6 +90,7 @@ def get_total_amount_staked():
 
   times = []
   tree = IntervalTree()
+  staking_transactions = query_table('StakingTransactions')
   for txn in staking_transactions:
     times.append(txn['start_time'])
     times.append(txn['end_time'])
@@ -106,10 +98,9 @@ def get_total_amount_staked():
 
   total_amount_staked = {}
   for time in times:
-    if datetime.now() > time:
+    if datetime.now() > datetime.strptime(time, '%Y-%m-%d %H:%M:%S'):
       intervals = tree[time]
-      total_amount_staked[time.strftime('%Y-%m-%d %H:%M:%S')] = \
-          sum([interval.data for interval in intervals]) * price['NXM']
+      total_amount_staked[time] = sum([interval.data for interval in intervals]) * price['NXM']
   return total_amount_staked
 
 def get_amount_staked_per_contract():
@@ -117,7 +108,8 @@ def get_amount_staked_per_contract():
     get_nxm_token_price()
 
   amount_per_contract = defaultdict(int)
+  staking_transactions = query_table('StakingTransactions')
   for txn in staking_transactions:
-    if datetime.now() < txn['end_time']:
+    if datetime.now() < datetime.strptime(txn['end_time'], '%Y-%m-%d %H:%M:%S'):
       amount_per_contract[txn['contract_name']] += txn['amount'] * price['NXM']
   return dict(amount_per_contract)
