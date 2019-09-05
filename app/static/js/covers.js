@@ -20,7 +20,7 @@ $.get('all_covers', (response) => {
   for (cover of response) {
     let row = ''
     row += '<tr>'
-    row += '<td>' + cover['id'] + '</td>'
+    row += '<td>' + cover['cover_id'] + '</td>'
     row += '<td>' + cover['contract_name'] + '</td>'
     row += '<td>' + cover['amount'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '</td>'
     row += '<td>' + toLocalTimezone(cover['start_time']) + '</td>'

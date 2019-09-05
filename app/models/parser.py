@@ -1,4 +1,4 @@
-from .utils import address_to_contract_name, database, price, set_crypto_prices
+from .utils import *
 from datetime import datetime, timedelta
 import json
 import os
@@ -9,7 +9,7 @@ import textwrap
 def get_event_logs():
   module = 'logs'
   action = 'getLogs'
-  fromBlock = '1'
+  fromBlock = get_latest_block_number('Covers') + 1
   toBlock = 'latest'
   address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
   topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
@@ -46,14 +46,16 @@ def parse_event_logs():
       raise
 
     cover = (
+      int(event['blockNumber'], 16),
       int(event['topics'][1], 16),
       address_to_contract_name(data[0][-40:]),
       amount,
       datetime.fromtimestamp(int(event['timeStamp'], 16)),
       datetime.fromtimestamp(int(data[2], 16))
     )
-    cursor.execute('INSERT INTO Covers(id, contract_name, amount, start_time, end_time) ' + \
-        'VALUES(?,?,?,?,?)', cover)
+    cursor.execute('INSERT INTO ' + \
+        'Covers(block_number, cover_id, contract_name, amount, start_time, end_time) ' + \
+        'VALUES(?,?,?,?,?,?)', cover)
 
   conn.commit()
   conn.close()
@@ -70,50 +72,54 @@ def parse_transactions(txns, address, crypto_price):
 
       if amount != 0:
         transaction = (
+          int(txn['blockNumber'], 16),
           datetime.fromtimestamp(int(txn['timeStamp'])),
           txn['from'],
           txn['to'],
           amount
         )
-        cursor.execute('INSERT INTO Transactions(_timestamp, from_address, to_address, amount) ' + \
-            'VALUES(?,?,?,?)', transaction)
+        cursor.execute('INSERT INTO ' + \
+            'Transactions(block_number, _timestamp, from_address, to_address, amount) ' + \
+            'VALUES(?,?,?,?,?)', transaction)
 
   conn.commit()
   conn.close()
 
-def build_transaction_url(address):
+def build_transaction_url(address, startblock):
   module = 'account'
   action = 'txlist'
-  startblock = '1'
   endblock = 'latest'
   sort = 'asc'
   return 'https://api.etherscan.io/api?' + \
-        'module=%s&action=%s&address=%s&startblock=%s&endblock=%s&sort=%s&apikey=%s' \
-        % (module, action, address, startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
+         'module=%s&action=%s&address=%s&startblock=%s&endblock=%s&sort=%s&apikey=%s' \
+         % (module, action, address, startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
 
-def parse_eth_transactions():
+def parse_eth_transactions(startblock):
   address = '0xfD61352232157815cF7B71045557192Bf0CE1884'
-  url = build_transaction_url(address)
+  url = build_transaction_url(address, startblock)
   parse_transactions(json.loads(requests.get(url).text)['result'], address, price['ETH'])
   url = url.replace('txlist', 'txlistinternal')
   parse_transactions(json.loads(requests.get(url).text)['result'], address, price['ETH'])
 
-def parse_dai_transactions():
+def parse_dai_transactions(startblock):
   module = 'account'
   action = 'tokentx'
   contractaddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359'
   address = '0xfD61352232157815cF7B71045557192Bf0CE1884'
+  endblock = 'latest'
   sort = 'asc'
-  url = 'https://api.etherscan.io/api?' + \
-        'module=%s&action=%s&contractaddress=%s&address=%s&sort=%s&apikey=%s' \
-        % (module, action, contractaddress, address, sort, os.environ['ETHERSCAN_API_KEY'])
+  url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
+        'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
+        % (module, action, contractaddress, address,
+        startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
   parse_transactions(json.loads(requests.get(url).text)['result'], address, price['DAI'])
 
 def parse_staking_transactions():
   conn = sqlite3.connect(database)
   cursor = conn.cursor()
 
-  url = build_transaction_url('0xDF50A17bF58dea5039B73683a51c4026F3c7224E')
+  startblock = get_latest_block_number('StakingTransactions') + 1
+  url = build_transaction_url('0xDF50A17bF58dea5039B73683a51c4026F3c7224E', startblock)
   txns = json.loads(requests.get(url).text)['result']
   for txn in txns:
     if txn['isError'] == '0':
@@ -122,29 +128,23 @@ def parse_staking_transactions():
         start_time = datetime.fromtimestamp(int(txn['timeStamp']))
 
         staking_txn = (
+          int(txn['blockNumber'], 16),
           start_time,
           start_time + timedelta(days=250),
           address_to_contract_name(data[0][-40:]),
           float(int(data[1], 16)) / 10**18
         )
         cursor.execute('INSERT INTO ' + \
-            'StakingTransactions(start_time, end_time, contract_name, amount) ' + \
-            'VALUES(?,?,?,?)', staking_txn)
+            'StakingTransactions(block_number, start_time, end_time, contract_name, amount) ' + \
+            'VALUES(?,?,?,?,?)', staking_txn)
 
   conn.commit()
   conn.close()
 
 def parse_etherscan_data():
-  conn = sqlite3.connect(database)
-  cursor = conn.cursor()
-  cursor.execute('DELETE FROM Covers')
-  cursor.execute('DELETE FROM Transactions')
-  cursor.execute('DELETE FROM StakingTransactions')
-  conn.commit()
-  conn.close()
-
   set_crypto_prices()
   parse_event_logs()
-  parse_eth_transactions()
-  parse_dai_transactions()
+  startblock = get_latest_block_number('Transactions') + 1
+  parse_eth_transactions(startblock)
+  parse_dai_transactions(startblock)
   parse_staking_transactions()

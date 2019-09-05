@@ -10,10 +10,20 @@ def query_table(table_name):
   conn = sqlite3.connect(database)
   conn.row_factory = sqlite3.Row
   cursor = conn.cursor()
-  cursor.execute('SELECT * FROM {tn}'.format(tn=table_name))
+  cursor.execute('SELECT * FROM %s' % table_name)
   result = [dict(row) for row in cursor.fetchall()]
   conn.close()
   return result
+
+def get_latest_block_number(table_name):
+  conn = sqlite3.connect(database)
+  cursor = conn.cursor()
+  cursor.execute('SELECT MAX(block_number) FROM %s' % table_name)
+  block_number = cursor.fetchall()[0][0]
+  if not block_number:
+    block_number = 0
+  conn.close()
+  return block_number
 
 def set_crypto_prices():
   url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
