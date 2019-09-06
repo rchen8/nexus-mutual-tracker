@@ -1,29 +1,21 @@
+from .. import db
 import json
 import os
 import requests
-import sqlite3
 
 price = {}
-database = 'app/models/database/nexus.db'
 
-def query_table(table_name):
-  conn = sqlite3.connect(database)
-  conn.row_factory = sqlite3.Row
-  cursor = conn.cursor()
-  cursor.execute('SELECT * FROM %s' % table_name)
-  result = [dict(row) for row in cursor.fetchall()]
-  conn.close()
-  return result
+def query_table(table):
+  rows = []
+  for row in table.query.all():
+    row = row.__dict__
+    del row['_sa_instance_state']
+    rows.append(row)
+  return rows
 
-def get_latest_block_number(table_name):
-  conn = sqlite3.connect(database)
-  cursor = conn.cursor()
-  cursor.execute('SELECT MAX(block_number) FROM %s' % table_name)
-  block_number = cursor.fetchall()[0][0]
-  if not block_number:
-    block_number = 0
-  conn.close()
-  return block_number
+def get_latest_block_number(table):
+  block_number = db.session.query(db.func.max(table.block_number)).scalar()
+  return 0 if not block_number else block_number
 
 def set_crypto_prices():
   url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
