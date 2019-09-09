@@ -23,8 +23,10 @@ def get_active_cover_amount():
   for time in times:
     if time < datetime.now():
       intervals = tree[time]
+      eth_price = get_historical_crypto_price('ETH', time)
+      dai_price = get_historical_crypto_price('DAI', time)
       cover_amount[time.strftime('%Y-%m-%d %H:%M:%S')] = \
-          sum([interval.data[0] * get_historical_crypto_price(interval.data[1], time) \
+          sum([interval.data[0] * (eth_price if interval.data[1] == 'ETH' else dai_price) \
               for interval in intervals])
   return cover_amount
 
