@@ -13,7 +13,7 @@ def active_cover_amount_per_contract():
 
 @app.route('/all_covers', methods=['GET'])
 def covers():
-  return jsonify(script.get_covers())
+  return jsonify(script.get_all_covers())
 
 @app.route('/capital_pool_size', methods=['GET'])
 def capital_pool_size():

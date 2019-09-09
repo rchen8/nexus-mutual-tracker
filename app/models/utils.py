@@ -1,4 +1,6 @@
 from .. import db
+from .models import HistoricalPrice
+from datetime import datetime
 import json
 import os
 import requests
@@ -16,6 +18,27 @@ def query_table(table):
 def get_latest_block_number(table):
   block_number = db.session.query(db.func.max(table.block_number)).scalar()
   return 0 if not block_number else block_number
+
+def get_historical_crypto_price(symbol, timestamp):
+  crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
+  if crypto_price is not None:
+    return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
+
+  api = 'histominute' if (datetime.now() - timestamp).days < 7 else 'histohour'
+  url = 'https://min-api.cryptocompare.com/data/%s?fsym=ETH&tsym=USD&limit=1&toTs=%s' % \
+      (api, timestamp.timestamp())
+  eth_price = json.loads(requests.get(url).text)['Data'][-1]['close']
+  url = 'https://min-api.cryptocompare.com/data/%s?fsym=DAI&tsym=USDT&limit=1&toTs=%s' % \
+      (api, timestamp.timestamp())
+  dai_price = json.loads(requests.get(url).text)['Data'][-1]['close']
+
+  db.session.add(HistoricalPrice(
+    timestamp=timestamp,
+    eth_price=eth_price,
+    dai_price=dai_price
+  ))
+  db.session.commit()
+  return eth_price if symbol == 'ETH' else dai_price
 
 def set_crypto_prices():
   url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'

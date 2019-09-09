@@ -1,6 +1,6 @@
 from .. import db
 from .models import Cover, Transaction, StakingTransaction
-from .utils import address_to_contract_name, get_latest_block_number, price, set_crypto_prices
+from .utils import *
 from datetime import datetime, timedelta
 import json
 import os
@@ -33,39 +33,33 @@ def parse_event_logs():
   """
   for event in get_event_logs():
     data = textwrap.wrap(event['data'][2:], 64)
-
-    amount = float(int(data[1], 16))
-    if data[-1].startswith('455448'):
-      amount *= price['ETH']
-    elif data[-1].startswith('444149'):
-      amount *= price['DAI']
-    else:
-      raise
-
     db.session.add(Cover(
       block_number=int(event['blockNumber'], 16),
       cover_id=int(event['topics'][1], 16),
       contract_name=address_to_contract_name(data[0][-40:]),
-      amount=amount,
+      amount=float(int(data[1], 16)),
+      currency='ETH' if data[-1].startswith('455448') else 'DAI',
       start_time=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       end_time=datetime.fromtimestamp(int(data[2], 16))
     ))
     db.session.commit()
 
-def parse_transactions(txns, address, crypto_price):
+def parse_transactions(txns, address, symbol):
   for txn in txns:
     if 'isError' not in txn or txn['isError'] == '0':
-      amount = float(txn['value']) / 10**18 * crypto_price
+      amount = float(txn['value']) / 10**18
       if txn['from'].lower() == address.lower():
         amount = -amount
 
       if amount != 0:
+        timestamp = datetime.fromtimestamp(int(txn['timeStamp']))
         db.session.add(Transaction(
           block_number=int(txn['blockNumber'], 16),
-          timestamp=datetime.fromtimestamp(int(txn['timeStamp'])),
+          timestamp=timestamp,
           from_address=txn['from'],
           to_address=txn['to'],
-          amount=amount
+          amount=amount,
+          currency=symbol
         ))
         db.session.commit()
 
@@ -81,9 +75,9 @@ def build_transaction_url(address, startblock):
 def parse_eth_transactions(startblock):
   address = '0xfD61352232157815cF7B71045557192Bf0CE1884'
   url = build_transaction_url(address, startblock)
-  parse_transactions(json.loads(requests.get(url).text)['result'], address, price['ETH'])
+  parse_transactions(json.loads(requests.get(url).text)['result'], address, 'ETH')
   url = url.replace('txlist', 'txlistinternal')
-  parse_transactions(json.loads(requests.get(url).text)['result'], address, price['ETH'])
+  parse_transactions(json.loads(requests.get(url).text)['result'], address, 'ETH')
 
 def parse_dai_transactions(startblock):
   module = 'account'
@@ -96,7 +90,7 @@ def parse_dai_transactions(startblock):
         'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
         % (module, action, contractaddress, address,
         startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
-  parse_transactions(json.loads(requests.get(url).text)['result'], address, price['DAI'])
+  parse_transactions(json.loads(requests.get(url).text)['result'], address, 'DAI')
 
 def parse_staking_transactions():
   startblock = get_latest_block_number(StakingTransaction) + 1
