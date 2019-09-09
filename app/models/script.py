@@ -1,5 +1,5 @@
 from .models import Cover, Transaction, StakingTransaction
-from .utils import get_historical_crypto_price, price, query_table
+from .utils import get_historical_crypto_price, price, query_table, set_current_crypto_prices
 from collections import defaultdict
 from datetime import datetime, timedelta
 from intervaltree import IntervalTree
@@ -31,6 +31,9 @@ def get_active_cover_amount():
   return cover_amount
 
 def get_active_cover_amount_per_contract():
+  if not price:
+    set_current_crypto_prices()
+
   cover_amount_per_contract = defaultdict(int)
   for cover in query_table(Cover):
     if datetime.now() < cover['end_time']:
@@ -39,6 +42,9 @@ def get_active_cover_amount_per_contract():
   return dict(cover_amount_per_contract)
 
 def get_all_covers():
+  if not price:
+    set_current_crypto_prices()
+
   covers = query_table(Cover)
   for cover in covers:
     cover['start_time'] = cover['start_time'].strftime('%Y-%m-%d %H:%M:%S')
@@ -61,6 +67,9 @@ def get_capital_pool_size():
   return capital_pool_size
 
 def get_capital_pool_distribution():
+  if not price:
+    set_current_crypto_prices()
+
   nxm_address = '0xfd61352232157815cf7b71045557192bf0ce1884'
   capital_pool_distribution = defaultdict(int)
   for txn in query_table(Transaction):

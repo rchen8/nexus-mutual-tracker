@@ -44,7 +44,7 @@ def get_historical_crypto_price(symbol, timestamp):
   db.session.commit()
   return eth_price if symbol == 'ETH' else dai_price
 
-def set_crypto_prices():
+def set_current_crypto_prices():
   url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
   session = requests.Session()
   session.headers.update({

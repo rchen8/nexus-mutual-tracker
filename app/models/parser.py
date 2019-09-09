@@ -110,7 +110,7 @@ def parse_staking_transactions():
         db.session.commit()
 
 def parse_etherscan_data():
-  set_crypto_prices()
+  set_current_crypto_prices()
   parse_event_logs()
   startblock = get_latest_block_number(Transaction) + 1
   parse_eth_transactions(startblock)
