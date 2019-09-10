@@ -32,7 +32,10 @@
   <div class="container-fluid">
     <div class="card mb-3">
       <div class="card-header">
-        Active Cover Amount (USD)
+        Active Cover Amount
+        <span style="float:right;">
+          <button id="active-cover-amount-usd">USD</button><button id="active-cover-amount-eth">ETH</button>
+        </span>
       </div>
       <div class="card-body">
         <div id="activeCoverAmount"></div>
@@ -41,8 +44,11 @@
 
     <div class="card mb-3">
       <div class="card-header">
-        Active Cover Amount (USD) per Contract
-      </div>
+        Active Cover Amount per Contract
+        <span style="float:right;">
+          <button id="active-cover-amount-per-contract-usd">USD</button><button id="active-cover-amount-per-contract-eth">ETH</button>
+        </span>
+      </div>  
       <div class="card-body">
         <div id="activeCoverAmountPerContract"></div>
       </div>
@@ -51,6 +57,9 @@
     <div class="card mb-3">
       <div class="card-header">
         All Covers
+        <span style="float:right;">
+          <button id="all-covers-usd">USD</button><button id="all-covers-eth-dai">ETH/DAI</button>
+        </span>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -59,12 +68,11 @@
               <tr>
                 <th>Cover ID</th>
                 <th>Smart Contract</th>
-                <th>Cover Amount (USD)</th>
+                <th>Cover Amount</th>
                 <th>Start Date</th>
                 <th>Expiration Date</th>
               </tr>
             </thead>
-            <tbody id="covers"></tbody>
           </table>
         </div>
       </div>

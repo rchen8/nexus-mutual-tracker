@@ -1,10 +1,27 @@
+capitalPoolSize = undefined
+
+const renderCapitalPoolSize = (currency) => {
+  if (capitalPoolSize !== undefined) {
+    Plotly.newPlot('capitalPoolSize', [{
+      x: getDateTimesInLocalTimezone(Object.keys(capitalPoolSize[currency])),
+      y: Object.values(capitalPoolSize[currency]),
+      fill: 'tozeroy',
+      type: 'scatter'
+    }])
+  }
+}
+
 $.get('capital_pool_size', (response) => {
-  Plotly.newPlot('capitalPoolSize', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
-    fill: 'tozeroy',
-    type: 'scatter'
-  }])
+  capitalPoolSize = response
+  renderCapitalPoolSize('USD')
+})
+
+$('#capital-pool-size-usd').click(() => {
+  renderCapitalPoolSize('USD')
+})
+
+$('#capital-pool-size-eth').click(() => {
+  renderCapitalPoolSize('ETH')
 })
 
 $.get('capital_pool_distribution', (response) => {
