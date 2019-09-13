@@ -54,7 +54,7 @@ def parse_transactions(txns, address, symbol):
       if amount != 0:
         timestamp = datetime.fromtimestamp(int(txn['timeStamp']))
         db.session.add(Transaction(
-          block_number=int(txn['blockNumber'], 16),
+          block_number=txn['blockNumber'],
           timestamp=timestamp,
           from_address=txn['from'],
           to_address=txn['to'],
@@ -101,7 +101,7 @@ def parse_staking_transactions():
       if len(data) == 2:
         start_time = datetime.fromtimestamp(int(txn['timeStamp']))
         db.session.add(StakingTransaction(
-          block_number=int(txn['blockNumber'], 16),
+          block_number=txn['blockNumber'],
           start_time=start_time,
           end_time=start_time + timedelta(days=250),
           contract_name=address_to_contract_name(data[0][-40:]),
