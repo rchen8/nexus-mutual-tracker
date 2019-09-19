@@ -45,17 +45,10 @@ def get_historical_crypto_price(symbol, timestamp):
   return eth_price if symbol == 'ETH' else dai_price
 
 def set_current_crypto_prices():
-  url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
-  session = requests.Session()
-  session.headers.update({
-    'Accepts': 'application/json',
-    'X-CMC_PRO_API_KEY': os.environ['CMC_API_KEY']
-  })
-
-  price['ETH'] = json.loads(session.get(url, params={'symbol': 'ETH'}).text) \
-      ['data']['ETH']['quote']['USD']['price']
-  price['DAI'] = json.loads(session.get(url, params={'symbol': 'DAI'}).text) \
-      ['data']['DAI']['quote']['USD']['price']
+  url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DAI&tsyms=USD'
+  result = json.loads(requests.get(url).text)
+  price['ETH'] = result['ETH']['USD']
+  price['DAI'] = result['DAI']['USD']
 
 def address_to_contract_name(address):
   names = {

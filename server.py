@@ -1,4 +1,3 @@
 from app import app
-import os
 
-app.run(debug=True)
+app.run(host='localhost', port=1337, debug=True)
