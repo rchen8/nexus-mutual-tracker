@@ -12,7 +12,7 @@ def active_cover_amount_per_contract():
   return jsonify(script.get_active_cover_amount_per_contract())
 
 @app.route('/all_covers', methods=['GET'])
-def covers():
+def all_covers():
   return jsonify(script.get_all_covers())
 
 @app.route('/capital_pool_size', methods=['GET'])
@@ -30,6 +30,10 @@ def mcr_percentage():
 @app.route('/total_amount_staked', methods=['GET'])
 def total_amount_staked():
   return jsonify(script.get_total_amount_staked())
+
+@app.route('/all_stakes', methods=['GET'])
+def all_stakes():
+  return jsonify(script.get_all_stakes())
 
 @app.route('/amount_staked_per_contract', methods=['GET'])
 def amount_staked_per_contract():

@@ -1,5 +1,6 @@
 totalAmountStaked = undefined
 amountStakedPerContract = undefined
+allStakes = undefined
 
 const renderTotalAmountStaked = (currency) => {
   if (totalAmountStaked !== undefined) {
@@ -46,4 +47,40 @@ $('#amount-staked-per-contract-usd').click(() => {
 
 $('#amount-staked-per-contract-nxm').click(() => {
   renderAmountStakedPerContract('NXM')
+})
+
+const renderAllStakes = (currency) => {
+  if (allStakes !== undefined) {
+    table = $('#stakeDataTable').DataTable()
+    table.clear()
+    for (stake of allStakes) {
+      stakedAmount = 0
+      if (currency === 'USD') {
+        stakedAmount = '$' + stake['amount_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      } else {
+        stakedAmount = stake['amount'].toLocaleString() + ' NXM'
+      }
+
+      table.row.add([
+        stake['contract_name'],
+        stakedAmount,
+        toLocalTimezone(stake['start_time']),
+        toLocalTimezone(stake['end_time'])
+      ])
+    }
+    table.draw()
+  }
+}
+
+$.get('all_stakes', (response) => {
+  allStakes = response
+  renderAllStakes('USD')
+})
+
+$('#all-stakes-usd').click(() => {
+  renderAllStakes('USD')
+})
+
+$('#all-stakes-nxm').click(() => {
+  renderAllStakes('NXM')
 })

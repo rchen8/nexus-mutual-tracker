@@ -51,7 +51,7 @@ $('#active-cover-amount-per-contract-eth').click(() => {
 
 const renderAllCovers = (currency) => {
   if (allCovers !== undefined) {
-    table = $('#dataTable').DataTable()
+    table = $('#coverDataTable').DataTable()
     table.clear()
     for (cover of allCovers) {
       coverAmount = 0

@@ -146,3 +146,12 @@ def get_amount_staked_per_contract():
       amount_staked_per_contract['USD'][txn['contract_name']] += txn['amount'] * price['NXM']
       amount_staked_per_contract['NXM'][txn['contract_name']] += txn['amount']
   return dict(amount_staked_per_contract)
+
+def get_all_stakes():
+  get_nxm_token_price()
+  stakes = query_table(StakingTransaction)
+  for stake in stakes:
+    stake['start_time'] = stake['start_time'].strftime('%Y-%m-%d %H:%M:%S')
+    stake['end_time'] = stake['end_time'].strftime('%Y-%m-%d %H:%M:%S')
+    stake['amount_usd'] = stake['amount'] * price['NXM']
+  return stakes
