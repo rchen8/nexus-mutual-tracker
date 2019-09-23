@@ -99,6 +99,7 @@ def address_to_contract_name(address):
     'f55186cc537e7067ea616f2aae007b4427a120c8': 'Set Protocol',
     '882d80d3a191859d64477eb78cca46599307ec1c': 'Set Protocol',
     'c011a72400e58ecd99ee497cf89e3775d4bd732f': 'Synthetix',
+    'ffc91f7088bf40f0419b451fb9d85718d8903628': 'Synthetix',
     '94a1b5cdb22c43faab4abeb5c74999895464ddaf': 'Tornado Mixer',
     'cd2053679de3bcf2b7e2c2efb6b499c57701222c': 'Totle',
     'c0a47dfe034b400b47bdad5fecda2621de6c4d95': 'Uniswap',
