@@ -32,16 +32,17 @@ def get_historical_crypto_price(symbol, timestamp):
       (api, timestamp.timestamp())
   dai_price = json.loads(requests.get(url).text)['Data'][-1]['close']
 
-  crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
-  if crypto_price is not None:
+  try:
+    db.session.add(HistoricalPrice(
+      timestamp=timestamp,
+      eth_price=eth_price,
+      dai_price=dai_price
+    ))
+    db.session.commit()
+  except:
+    crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
     return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
 
-  db.session.add(HistoricalPrice(
-    timestamp=timestamp,
-    eth_price=eth_price,
-    dai_price=dai_price
-  ))
-  db.session.commit()
   return eth_price if symbol == 'ETH' else dai_price
 
 def set_current_crypto_prices():
