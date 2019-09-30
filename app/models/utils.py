@@ -40,6 +40,7 @@ def get_historical_crypto_price(symbol, timestamp):
     ))
     db.session.commit()
   except:
+    db.session.rollback()
     crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
     return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
 
@@ -55,6 +56,7 @@ def address_to_contract_name(address):
   names = {
     '080bf510fcbf18b91105470639e9561022937712': '0x',
     '12459c951127e0c374ff9105dda097662a027093': '0x',
+    '11111254369792b2ca5d084ab5eea397ca8fa48b': '1inch.exchange',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
     '3d9819210a31b4961b30ef54be2aed79b9c9cd3b': 'Compound',
