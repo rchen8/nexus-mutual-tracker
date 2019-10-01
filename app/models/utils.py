@@ -58,6 +58,8 @@ def address_to_contract_name(address):
     '12459c951127e0c374ff9105dda097662a027093': '0x',
     '11111254369792b2ca5d084ab5eea397ca8fa48b': '1inch.exchange',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
+    '132030497cbc19d10cb2690ecf9690803519b5de': 'Augustus Swapper',
+    '6b158039b9678b7452f311deb12dd08c579dad26': 'Augustus Swapper',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
     '3d9819210a31b4961b30ef54be2aed79b9c9cd3b': 'Compound',
     '4ddc2d193948926d02f9b1fe9e1daa0718270ed5': 'Compound',
