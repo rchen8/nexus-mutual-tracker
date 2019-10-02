@@ -78,6 +78,7 @@ def address_to_contract_name(address):
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
     '3a306a399085f3460bbcb5b77015ab33806a10d5': 'InstaDApp',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
+    '3361aa92e426e052141daf9e41a09d36e994ba23': 'Kickback',
     '63825c174ab367968ec60f061753d3bbd36a0d8f': 'Kyber',
     '8573f2f5a3bd960eee3d998473e50c75cdbe6828': 'Livepeer',
     '448a5065aebb8e423f0896e6c5d525c040f59af3': 'MakerDAO',
