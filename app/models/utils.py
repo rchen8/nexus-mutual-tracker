@@ -95,6 +95,7 @@ def address_to_contract_name(address):
     'ec67005c4e498ec7f55e092bd1d35cbc47c91892': 'Melonport',
     '58c5ad890fd9b25145f05f5afee11cb5b8f616de': 'MetaMoneyMarket',
     '1fd169a4f5c59acf79d0fd5d91d1201ef1bce9f1': 'MolochDAO',
+    '85bb8a852c29d8f100cb97ecdf4589086d1be2dd': 'Monolith',
     '08c3a887865684f30351a0ba6d683aa9b539829a': 'Nexus Mutual',
     '802275979b020f0ec871c5ec1db6e412b72ff20b': 'Nuo Network',
     'd26114cd6ee289accf82350c8d8487fedb8a0c07': 'OmiseGO',
