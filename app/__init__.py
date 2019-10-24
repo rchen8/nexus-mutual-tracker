@@ -6,10 +6,10 @@ import sys
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-if 'server.py' in sys.argv[0]: # Development database
-  app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/nexus'
-else: # Production database
+if 'gunicorn' in sys.argv[0]: # Production database
   heroku = Heroku(app)
+else: # Development database
+  app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/nexus'
 db = SQLAlchemy(app)
 
 from . import routes as Routes

@@ -24,16 +24,6 @@ $('#capital-pool-size-eth').click(() => {
   renderCapitalPoolSize('ETH')
 })
 
-$.get('capital_pool_distribution', (response) => {
-  Plotly.newPlot('capitalPoolDistribution', [{
-    labels: Object.keys(response),
-    values: Object.values(response),
-    type: 'pie',
-    hoverinfo: 'label+percent',
-    textinfo: 'none'
-  }])
-})
-
 $.get('mcr_percentage', (response) => {
   Plotly.newPlot('mcrPercentage', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),

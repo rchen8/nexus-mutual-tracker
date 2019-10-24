@@ -19,13 +19,9 @@ def all_covers():
 def capital_pool_size():
   return jsonify(script.get_capital_pool_size())
 
-@app.route('/capital_pool_distribution', methods=['GET'])
-def capital_pool_distribution():
-  return jsonify(script.get_capital_pool_distribution())
-
 @app.route('/mcr_percentage', methods=['GET'])
 def mcr_percentage():
-  return jsonify(script.get_mcr_percentage())
+  return jsonify(script.get_mcr_percentage(over_100=True))
 
 @app.route('/total_amount_staked', methods=['GET'])
 def total_amount_staked():
@@ -39,9 +35,21 @@ def all_stakes():
 def amount_staked_per_contract():
   return jsonify(script.get_amount_staked_per_contract())
 
-@app.route('/nxm_token_price', methods=['GET'])
-def nxm_token_price():
-  return jsonify(script.get_nxm_token_price())
+@app.route('/nxm_price', methods=['GET'])
+def nxm_price():
+  return jsonify(script.get_nxm_price())
+
+@app.route('/nxm_supply', methods=['GET'])
+def nxm_supply():
+  return jsonify(script.get_nxm_supply())
+
+@app.route('/nxm_market_cap', methods=['GET'])
+def nxm_market_cap():
+  return jsonify(script.get_nxm_market_cap())
+
+@app.route('/nxm_distribution', methods=['GET'])
+def nxm_distribution():
+  return jsonify(script.get_nxm_distribution())
 
 ####################################################################################################
 

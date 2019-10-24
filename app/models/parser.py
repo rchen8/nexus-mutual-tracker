@@ -1,5 +1,5 @@
 from .. import db
-from .models import Cover, Transaction, StakingTransaction
+from .models import Cover, Transaction, StakingTransaction, NXMTransaction
 from .utils import *
 from datetime import datetime, timedelta
 import json
@@ -7,31 +7,20 @@ import os
 import requests
 import textwrap
 
-def get_event_logs():
+def get_event_logs(table, address, topic0):
   module = 'logs'
   action = 'getLogs'
-  fromBlock = get_latest_block_number(Cover) + 1
+  fromBlock = get_latest_block_number(table) + 1
   toBlock = 'latest'
-  address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
-  topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
         % (module, action, fromBlock, toBlock, address, topic0, os.environ['ETHERSCAN_API_KEY'])
   return json.loads(requests.get(url).text)['result']
 
-def parse_event_logs():
-  """
-  index_topic_1 uint256 coverage_id
-  CoverDetailsEvent (
-    address smart_contract_address,
-    uint256 coverage_amount,
-    uint256 expiry,
-    uint256 premium,
-    uint256 premiumNXM,
-    bytes4 curr
-  )
-  """
-  for event in get_event_logs():
+def parse_cover_event_logs():
+  address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
+  topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
+  for event in get_event_logs(Cover, address, topic0):
     data = textwrap.wrap(event['data'][2:], 64)
     db.session.add(Cover(
       block_number=int(event['blockNumber'], 16),
@@ -41,6 +30,19 @@ def parse_event_logs():
       currency='ETH' if data[-1].startswith('455448') else 'DAI',
       start_time=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       end_time=datetime.fromtimestamp(int(data[2], 16))
+    ))
+    db.session.commit()
+
+def parse_nxm_event_logs():
+  address = '0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b'
+  topic0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+  for event in get_event_logs(NXMTransaction, address, topic0):
+    db.session.add(NXMTransaction(
+      block_number=int(event['blockNumber'], 16),
+      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      from_address='0x' + event['topics'][1][-40:],
+      to_address='0x' + event['topics'][2][-40:],
+      amount=int(event['data'], 16) / 10**18
     ))
     db.session.commit()
 
@@ -111,7 +113,9 @@ def parse_staking_transactions():
 
 def parse_etherscan_data():
   set_current_crypto_prices()
-  parse_event_logs()
+  parse_cover_event_logs()
+  parse_nxm_event_logs()
+
   startblock = get_latest_block_number(Transaction) + 1
   parse_eth_transactions(startblock)
   parse_dai_transactions(startblock)

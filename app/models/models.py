@@ -26,6 +26,14 @@ class StakingTransaction(db.Model):
   contract_name = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
 
+class NXMTransaction(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  block_number = db.Column(db.Integer, index=True, nullable=False)
+  timestamp = db.Column(db.DateTime, nullable=False)
+  from_address = db.Column(db.String, nullable=False)
+  to_address = db.Column(db.String, nullable=False)
+  amount = db.Column(db.Float, nullable=False)
+
 class HistoricalPrice(db.Model):
   timestamp = db.Column(db.DateTime, primary_key=True, index=True)
   eth_price = db.Column(db.Float)

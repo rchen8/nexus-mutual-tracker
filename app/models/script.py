@@ -1,4 +1,4 @@
-from .models import Cover, Transaction, StakingTransaction
+from .models import Cover, Transaction, StakingTransaction, NXMTransaction
 from .utils import get_historical_crypto_price, price, query_table, set_current_crypto_prices
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -8,7 +8,6 @@ import bisect
 MINIMUM_CAPITAL_REQUIREMENT = 7000
 
 capital_pool_size = {'USD': {}, 'ETH': {}}
-mcr_percentage = {}
 nxm_price = {'USD': {}, 'ETH': {}}
 
 def get_active_cover_amount():
@@ -76,36 +75,22 @@ def get_capital_pool_size():
         total['ETH'] + total['DAI'] / (eth_price / dai_price)
   return capital_pool_size
 
-def get_capital_pool_distribution():
-  if not price:
-    set_current_crypto_prices()
-
-  nxm_address = '0xfd61352232157815cf7b71045557192bf0ce1884'
-  capital_pool_distribution = defaultdict(int)
-  for txn in query_table(Transaction):
-    if txn['from_address'] != nxm_address:
-      capital_pool_distribution[txn['from_address']] += txn['amount'] * price[txn['currency']]
-    elif txn['to_address'] != nxm_address:
-      capital_pool_distribution[txn['to_address']] -= txn['amount'] * price[txn['currency']]
-  return capital_pool_distribution
-
-def get_mcr_percentage():
-  if mcr_percentage:
-    return mcr_percentage
-
+def get_mcr_percentage(over_100):
   get_capital_pool_size()
+  mcr_percentage = {}
   for time in capital_pool_size['ETH']:
-    if capital_pool_size['ETH'][time] > MINIMUM_CAPITAL_REQUIREMENT:
-      mcr_percentage[time] = capital_pool_size['ETH'][time] / MINIMUM_CAPITAL_REQUIREMENT * 100
+    if over_100 and capital_pool_size['ETH'][time] < MINIMUM_CAPITAL_REQUIREMENT:
+      continue
+    mcr_percentage[time] = capital_pool_size['ETH'][time] / MINIMUM_CAPITAL_REQUIREMENT * 100
   return mcr_percentage
 
-def get_nxm_token_price():
+def get_nxm_price():
   if nxm_price['USD'] and nxm_price['ETH']:
     return nxm_price
 
   A = 1028 / 10**5
   C = 5800000
-  get_mcr_percentage()
+  mcr_percentage = get_mcr_percentage(over_100=False)
   for time in mcr_percentage:
     eth_price = get_historical_crypto_price('ETH', datetime.strptime(time, '%Y-%m-%d %H:%M:%S'))
     nxm_price['USD'][time] = \
@@ -116,7 +101,7 @@ def get_nxm_token_price():
   return nxm_price
 
 def get_total_amount_staked():
-  get_nxm_token_price()
+  get_nxm_price()
   times = []
   tree = IntervalTree()
   for txn in query_table(StakingTransaction):
@@ -139,7 +124,7 @@ def get_total_amount_staked():
   return amount_staked
 
 def get_amount_staked_per_contract():
-  get_nxm_token_price()
+  get_nxm_price()
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for txn in query_table(StakingTransaction):
     if datetime.now() < txn['end_time']:
@@ -148,10 +133,49 @@ def get_amount_staked_per_contract():
   return dict(amount_staked_per_contract)
 
 def get_all_stakes():
-  get_nxm_token_price()
+  get_nxm_price()
   stakes = query_table(StakingTransaction)
   for stake in stakes:
     stake['start_time'] = stake['start_time'].strftime('%Y-%m-%d %H:%M:%S')
     stake['end_time'] = stake['end_time'].strftime('%Y-%m-%d %H:%M:%S')
     stake['amount_usd'] = stake['amount'] * price['NXM']
   return stakes
+
+def get_nxm_supply():
+  bonding_curve_address = '0x0000000000000000000000000000000000000000'
+  amount = 0
+  nxm_supply = {}
+  for txn in query_table(NXMTransaction):
+    if txn['from_address'] == bonding_curve_address:
+      amount += txn['amount']
+      if amount > 0:
+        nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
+    elif txn['to_address'] == bonding_curve_address:
+      amount -= txn['amount']
+      if amount > 0:
+        nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
+  return nxm_supply      
+
+def get_nxm_market_cap():
+  get_nxm_price()
+  nxm_supply = get_nxm_supply()
+  nxm_times = sorted(nxm_price['USD'].keys())
+  nxm_market_cap = {'USD': {}, 'ETH': {}}
+  for time in nxm_supply:
+    timestamp = nxm_times[bisect.bisect(nxm_times, time) - 1]
+    nxm_price_usd = nxm_price['USD'][timestamp]
+    nxm_price_eth = nxm_price['ETH'][timestamp]
+    nxm_market_cap['USD'][time] = nxm_price_usd * nxm_supply[time]
+    nxm_market_cap['ETH'][time] = nxm_price_eth * nxm_supply[time]
+  return nxm_market_cap
+
+def get_nxm_distribution():
+  nxm_distribution = defaultdict(int)
+  for txn in query_table(NXMTransaction):
+    nxm_distribution[txn['from_address']] -= txn['amount']
+    nxm_distribution[txn['to_address']] += txn['amount']
+
+  for address in list(nxm_distribution):
+    if nxm_distribution[address] < 10**-8:
+      del nxm_distribution[address]
+  return nxm_distribution
