@@ -9,6 +9,7 @@ MINIMUM_CAPITAL_REQUIREMENT = 7000
 
 capital_pool_size = {'USD': {}, 'ETH': {}}
 nxm_price = {'USD': {}, 'ETH': {}}
+nxm_supply = {}
 
 def get_active_cover_amount():
   times = []
@@ -142,23 +143,28 @@ def get_all_stakes():
   return stakes
 
 def get_nxm_supply():
+  if nxm_supply:
+    return nxm_supply
+
   bonding_curve_address = '0x0000000000000000000000000000000000000000'
-  amount = 0
-  nxm_supply = {}
-  for txn in query_table(NXMTransaction):
+  txns = query_table(NXMTransaction)
+  txns.sort(key=lambda x: x['timestamp'])
+  total = 0
+  for txn in txns:
     if txn['from_address'] == bonding_curve_address:
-      amount += txn['amount']
-      if amount > 0:
-        nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
+      total += txn['amount']
+      if total > 0:
+        nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
     elif txn['to_address'] == bonding_curve_address:
-      amount -= txn['amount']
-      if amount > 0:
-        nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
+      total -= txn['amount']
+      if total > 0:
+        nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
   return nxm_supply      
 
 def get_nxm_market_cap():
   get_nxm_price()
-  nxm_supply = get_nxm_supply()
+  get_nxm_supply()
+
   nxm_times = sorted(nxm_price['USD'].keys())
   nxm_market_cap = {'USD': {}, 'ETH': {}}
   for time in nxm_supply:
