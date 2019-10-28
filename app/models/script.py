@@ -7,10 +7,6 @@ import bisect
 
 MINIMUM_CAPITAL_REQUIREMENT = 7000
 
-capital_pool_size = {'USD': {}, 'ETH': {}}
-nxm_price = {'USD': {}, 'ETH': {}}
-nxm_supply = {}
-
 def get_active_cover_amount():
   times = []
   tree = IntervalTree()
@@ -59,12 +55,10 @@ def get_all_covers():
   return covers
 
 def get_capital_pool_size():
-  if capital_pool_size['USD'] and capital_pool_size['ETH']:
-    return capital_pool_size
-
   txns = query_table(Transaction)
   txns.sort(key=lambda x: x['timestamp'])
   total = defaultdict(int)
+  capital_pool_size = {'USD': {}, 'ETH': {}}
   for txn in txns:
     total[txn['currency']] += txn['amount']
     eth_price = get_historical_crypto_price('ETH', txn['timestamp'])
@@ -77,7 +71,7 @@ def get_capital_pool_size():
   return capital_pool_size
 
 def get_mcr_percentage(over_100):
-  get_capital_pool_size()
+  capital_pool_size = get_capital_pool_size()
   mcr_percentage = {}
   for time in capital_pool_size['ETH']:
     if over_100 and capital_pool_size['ETH'][time] < MINIMUM_CAPITAL_REQUIREMENT:
@@ -86,12 +80,10 @@ def get_mcr_percentage(over_100):
   return mcr_percentage
 
 def get_nxm_price():
-  if nxm_price['USD'] and nxm_price['ETH']:
-    return nxm_price
-
   A = 1028 / 10**5
   C = 5800000
   mcr_percentage = get_mcr_percentage(over_100=False)
+  nxm_price = {'USD': {}, 'ETH': {}}
   for time in mcr_percentage:
     eth_price = get_historical_crypto_price('ETH', datetime.strptime(time, '%Y-%m-%d %H:%M:%S'))
     nxm_price['USD'][time] = \
@@ -102,7 +94,7 @@ def get_nxm_price():
   return nxm_price
 
 def get_total_amount_staked():
-  get_nxm_price()
+  nxm_price = get_nxm_price()
   times = []
   tree = IntervalTree()
   for txn in query_table(StakingTransaction):
@@ -143,13 +135,11 @@ def get_all_stakes():
   return stakes
 
 def get_nxm_supply():
-  if nxm_supply:
-    return nxm_supply
-
   bonding_curve_address = '0x0000000000000000000000000000000000000000'
   txns = query_table(NXMTransaction)
   txns.sort(key=lambda x: x['timestamp'])
   total = 0
+  nxm_supply = {}
   for txn in txns:
     if txn['from_address'] == bonding_curve_address:
       total += txn['amount']
@@ -162,9 +152,8 @@ def get_nxm_supply():
   return nxm_supply      
 
 def get_nxm_market_cap():
-  get_nxm_price()
-  get_nxm_supply()
-
+  nxm_price = get_nxm_price()
+  nxm_supply = get_nxm_supply()
   nxm_times = sorted(nxm_price['USD'].keys())
   nxm_market_cap = {'USD': {}, 'ETH': {}}
   for time in nxm_supply:
