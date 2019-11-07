@@ -15,6 +15,10 @@ def query_table(table):
     rows.append(row)
   return rows
 
+def get_last_id(table):
+  id = db.session.query(db.func.max(table.id)).scalar()
+  return 0 if not id else id
+
 def get_latest_block_number(table):
   block_number = db.session.query(db.func.max(table.block_number)).scalar()
   return 0 if not block_number else block_number
@@ -51,6 +55,9 @@ def set_current_crypto_prices():
   result = json.loads(requests.get(url).text)
   price['ETH'] = result['ETH']['USD']
   price['DAI'] = result['DAI']['USD']
+
+def set_minimum_capital_requirement(mcr):
+  pass
 
 def address_to_contract_name(address):
   names = {

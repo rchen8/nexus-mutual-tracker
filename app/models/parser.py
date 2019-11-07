@@ -10,12 +10,19 @@ import textwrap
 def get_event_logs(table, address, topic0):
   module = 'logs'
   action = 'getLogs'
-  fromBlock = get_latest_block_number(table) + 1
+  fromBlock = 1 if table is None else get_latest_block_number(table) + 1
   toBlock = 'latest'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
         % (module, action, fromBlock, toBlock, address, topic0, os.environ['ETHERSCAN_API_KEY'])
   return json.loads(requests.get(url).text)['result']
+
+def parse_mcr_event_logs():
+  address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
+  topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
+  event = get_event_logs(None, address, topic0)[-1] # TODO historical MCR
+  data = textwrap.wrap(event['data'][2:], 64)
+  set_minimum_capital_requirement(int(data[3], 16) / 10**18)
 
 def parse_cover_event_logs():
   address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
@@ -38,6 +45,7 @@ def parse_nxm_event_logs():
   topic0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
   for event in get_event_logs(NXMTransaction, address, topic0):
     db.session.add(NXMTransaction(
+      id=get_last_id(NXMTransaction) + 1,
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       from_address='0x' + event['topics'][1][-40:],
@@ -56,6 +64,7 @@ def parse_transactions(txns, address, symbol):
       if amount != 0:
         timestamp = datetime.fromtimestamp(int(txn['timeStamp']))
         db.session.add(Transaction(
+          id=get_last_id(Transaction) + 1,
           block_number=txn['blockNumber'],
           timestamp=timestamp,
           from_address=txn['from'],
@@ -103,6 +112,7 @@ def parse_staking_transactions():
       if len(data) == 2:
         start_time = datetime.fromtimestamp(int(txn['timeStamp']))
         db.session.add(StakingTransaction(
+          id=get_last_id(StakingTransaction) + 1,
           block_number=txn['blockNumber'],
           start_time=start_time,
           end_time=start_time + timedelta(days=250),
@@ -113,6 +123,7 @@ def parse_staking_transactions():
 
 def parse_etherscan_data():
   set_current_crypto_prices()
+  parse_mcr_event_logs()
   parse_cover_event_logs()
   parse_nxm_event_logs()
 
