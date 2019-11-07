@@ -38,3 +38,8 @@ class HistoricalPrice(db.Model):
   timestamp = db.Column(db.DateTime, primary_key=True, index=True)
   eth_price = db.Column(db.Float)
   dai_price = db.Column(db.Float)
+
+class MinimumCapitalRequirement(db.Model):
+  timestamp = db.Column(db.DateTime, primary_key=True, index=True)
+  block_number = db.Column(db.Integer, nullable=False)
+  mcr = db.Column(db.Float, nullable=False)

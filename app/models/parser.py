@@ -1,5 +1,5 @@
 from .. import db
-from .models import Cover, Transaction, StakingTransaction, NXMTransaction
+from .models import *
 from .utils import *
 from datetime import datetime, timedelta
 import json
@@ -20,9 +20,13 @@ def get_event_logs(table, address, topic0):
 def parse_mcr_event_logs():
   address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
   topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
-  event = get_event_logs(None, address, topic0)[-1] # TODO historical MCR
-  data = textwrap.wrap(event['data'][2:], 64)
-  set_minimum_capital_requirement(int(data[3], 16) / 10**18)
+  for event in get_event_logs(MinimumCapitalRequirement, address, topic0):
+    db.session.add(MinimumCapitalRequirement(
+      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      block_number=int(event['blockNumber'], 16),
+      mcr=int(textwrap.wrap(event['data'][2:], 64)[3], 16) / 10**18
+    ))
+    db.session.commit()
 
 def parse_cover_event_logs():
   address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'

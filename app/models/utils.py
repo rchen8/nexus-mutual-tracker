@@ -56,8 +56,14 @@ def set_current_crypto_prices():
   price['ETH'] = result['ETH']['USD']
   price['DAI'] = result['DAI']['USD']
 
-def set_minimum_capital_requirement(mcr):
-  pass
+def get_minimum_capital_requirement(mcrs, timestamp):
+  for i in range(len(mcrs)):
+    mcr = mcrs[i]
+    if mcr['timestamp'] > datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S'):
+      if i == 0:
+        return 7000
+      return mcrs[i - 1]['mcr']
+  return mcrs[-1]['mcr']
 
 def address_to_contract_name(address):
   names = {
