@@ -24,6 +24,17 @@ $('#capital-pool-size-eth').click(() => {
   renderCapitalPoolSize('ETH')
 })
 
+$.get('minimum_capital_requirement', (response) => {
+  Plotly.newPlot('minimumCapitalRequirement', [{
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {
+    yaxis: {range: [7000, Math.max(...Object.values(response))]}
+  })
+})
+
 $.get('mcr_percentage', (response) => {
   Plotly.newPlot('mcrPercentage', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),

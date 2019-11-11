@@ -56,7 +56,7 @@ def set_current_crypto_prices():
   price['ETH'] = result['ETH']['USD']
   price['DAI'] = result['DAI']['USD']
 
-def get_minimum_capital_requirement(mcrs, timestamp):
+def timestamp_to_mcr(mcrs, timestamp):
   for i in range(len(mcrs)):
     mcr = mcrs[i]
     if mcr['timestamp'] > datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S'):

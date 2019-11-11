@@ -19,6 +19,10 @@ def all_covers():
 def capital_pool_size():
   return jsonify(script.get_capital_pool_size())
 
+@app.route('/minimum_capital_requirement', methods=['GET'])
+def minimum_capital_requirement():
+  return jsonify(script.get_minimum_capital_requirement())
+
 @app.route('/mcr_percentage', methods=['GET'])
 def mcr_percentage():
   return jsonify(script.get_mcr_percentage(over_100=True))

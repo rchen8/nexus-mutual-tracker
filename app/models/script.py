@@ -70,29 +70,36 @@ def get_capital_pool_size():
         total['ETH'] + total['DAI'] / (eth_price / dai_price)
   return capital_pool_size
 
+def get_minimum_capital_requirement():
+  minimum_capital_requirement = {}
+  minimum_capital_requirement['2019-07-12 08:44:52'] = 7000
+  minimum_capital_requirement['2019-11-06 07:00:03'] = 7000
+  for txn in query_table(MinimumCapitalRequirement):
+    minimum_capital_requirement[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = txn['mcr']
+  return minimum_capital_requirement
+
 def get_mcr_percentage(over_100):
   capital_pool_size = get_capital_pool_size()
-  mcrs = sorted(query_table(MinimumCapitalRequirement), key=lambda row: row['timestamp'])
+  mcrs = sorted(query_table(MinimumCapitalRequirement), key=lambda txn: txn['timestamp'])
   mcr_percentage = {}
   for time in capital_pool_size['ETH']:
-    if over_100 and capital_pool_size['ETH'][time] < get_minimum_capital_requirement(mcrs, time):
+    if over_100 and capital_pool_size['ETH'][time] < timestamp_to_mcr(mcrs, time):
       continue
-    mcr_percentage[time] = \
-        capital_pool_size['ETH'][time] / get_minimum_capital_requirement(mcrs, time) * 100
+    mcr_percentage[time] = capital_pool_size['ETH'][time] / timestamp_to_mcr(mcrs, time) * 100
   return mcr_percentage
 
 def get_nxm_price():
   A = 1028 / 10**5
   C = 5800000
-  mcrs = sorted(query_table(MinimumCapitalRequirement), key=lambda row: row['timestamp'])
+  mcrs = sorted(query_table(MinimumCapitalRequirement), key=lambda txn: txn['timestamp'])
   mcr_percentage = get_mcr_percentage(over_100=False)
   nxm_price = {'USD': {}, 'ETH': {}}
   for time in mcr_percentage:
     eth_price = get_historical_crypto_price('ETH', datetime.strptime(time, '%Y-%m-%d %H:%M:%S'))
-    nxm_price['USD'][time] = (A + (get_minimum_capital_requirement(mcrs, time) / C) * \
-        (mcr_percentage[time] / 100)**4) * eth_price
-    nxm_price['ETH'][time] = A + (get_minimum_capital_requirement(mcrs, time) / C) * \
-        (mcr_percentage[time] / 100)**4
+    nxm_price['USD'][time] = \
+        (A + (timestamp_to_mcr(mcrs, time) / C) * (mcr_percentage[time] / 100)**4) * eth_price
+    nxm_price['ETH'][time] = \
+        A + (timestamp_to_mcr(mcrs, time) / C) * (mcr_percentage[time] / 100)**4
   price['NXM'] = nxm_price['USD'][max(nxm_price['USD'])]
   return nxm_price
 

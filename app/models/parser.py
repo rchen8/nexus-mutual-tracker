@@ -10,7 +10,7 @@ import textwrap
 def get_event_logs(table, address, topic0):
   module = 'logs'
   action = 'getLogs'
-  fromBlock = 1 if table is None else get_latest_block_number(table) + 1
+  fromBlock = get_latest_block_number(table) + 1
   toBlock = 'latest'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
