@@ -114,6 +114,7 @@ def address_to_contract_name(address):
     'd26114cd6ee289accf82350c8d8487fedb8a0c07': 'OmiseGO',
     '132030497cbc19d10cb2690ecf9690803519b5de': 'Paraswap',
     '6b158039b9678b7452f311deb12dd08c579dad26': 'Paraswap',
+    '72338b82800400f5488eca2b5a37270ba3b7a111': 'Paraswap',
     '4aa42145aa6ebf72e164c9bbc74fbd3788045016': 'POA Network',
     'e1579debdd2df16ebdb9db8694391fa74eea201e': 'POA Network',
     '5b67871c3a857de81a1ca0f9f7945e5670d986dc': 'Set Protocol',
