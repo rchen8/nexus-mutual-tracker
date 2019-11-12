@@ -4,10 +4,20 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from intervaltree import IntervalTree
 import bisect
+import json
+import os
+import redis
+import sys
 
-MINIMUM_CAPITAL_REQUIREMENT = 7000
+if 'gunicorn' in sys.argv[0] or 'job.py' in sys.argv[0] or not sys.argv[0]: # Production Redis
+  r = redis.from_url(os.environ['REDIS_URL'])
+else: # Development Redis
+  r = redis.Redis(host='localhost', port=6379)
 
-def get_active_cover_amount():
+def get_active_cover_amount(cache=False):
+  if cache:
+    return json.loads(r.get('cover_amount'))
+
   times = []
   tree = IntervalTree()
   for cover in query_table(Cover):
@@ -30,7 +40,9 @@ def get_active_cover_amount():
               for interval in intervals])
   return cover_amount
 
-def get_active_cover_amount_per_contract():
+def get_active_cover_amount_per_contract(cache=False):
+  if cache:
+    return json.loads(r.get('cover_amount_per_contract'))
   if not price:
     set_current_crypto_prices()
 
@@ -43,7 +55,9 @@ def get_active_cover_amount_per_contract():
           cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
   return dict(cover_amount_per_contract)
 
-def get_all_covers():
+def get_all_covers(cache=False):
+  if cache:
+    return json.loads(r.get('covers'))
   if not price:
     set_current_crypto_prices()
 
@@ -54,7 +68,10 @@ def get_all_covers():
     cover['amount_usd'] = cover['amount'] * price[cover['currency']]
   return covers
 
-def get_capital_pool_size():
+def get_capital_pool_size(cache=False):
+  if cache:
+    return json.loads(r.get('capital_pool_size'))
+
   txns = query_table(Transaction)
   txns.sort(key=lambda x: x['timestamp'])
   total = defaultdict(int)
@@ -70,7 +87,10 @@ def get_capital_pool_size():
         total['ETH'] + total['DAI'] / (eth_price / dai_price)
   return capital_pool_size
 
-def get_minimum_capital_requirement():
+def get_minimum_capital_requirement(cache=False):
+  if cache:
+    return json.loads(r.get('minimum_capital_requirement'))
+
   minimum_capital_requirement = {}
   minimum_capital_requirement['2019-07-12 08:44:52'] = 7000
   minimum_capital_requirement['2019-11-06 07:00:03'] = 7000
@@ -78,9 +98,12 @@ def get_minimum_capital_requirement():
     minimum_capital_requirement[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = txn['mcr']
   return minimum_capital_requirement
 
-def get_mcr_percentage(over_100):
+def get_mcr_percentage(over_100, cache=False):
+  if over_100 and cache:
+    return json.loads(r.get('mcr_percentage'))
+
   capital_pool_size = get_capital_pool_size()
-  mcrs = sorted(query_table(MinimumCapitalRequirement), key=lambda txn: txn['timestamp'])
+  mcrs = query_table(MinimumCapitalRequirement, order=MinimumCapitalRequirement.timestamp)
   mcr_percentage = {}
   for time in capital_pool_size['ETH']:
     if over_100 and capital_pool_size['ETH'][time] < timestamp_to_mcr(mcrs, time):
@@ -88,10 +111,13 @@ def get_mcr_percentage(over_100):
     mcr_percentage[time] = capital_pool_size['ETH'][time] / timestamp_to_mcr(mcrs, time) * 100
   return mcr_percentage
 
-def get_nxm_price():
+def get_nxm_price(cache=False):
+  if cache:
+    return json.loads(r.get('nxm_price'))
+
   A = 1028 / 10**5
   C = 5800000
-  mcrs = sorted(query_table(MinimumCapitalRequirement), key=lambda txn: txn['timestamp'])
+  mcrs = query_table(MinimumCapitalRequirement, order=MinimumCapitalRequirement.timestamp)
   mcr_percentage = get_mcr_percentage(over_100=False)
   nxm_price = {'USD': {}, 'ETH': {}}
   for time in mcr_percentage:
@@ -103,7 +129,10 @@ def get_nxm_price():
   price['NXM'] = nxm_price['USD'][max(nxm_price['USD'])]
   return nxm_price
 
-def get_total_amount_staked():
+def get_total_amount_staked(cache=False):
+  if cache:
+    return json.loads(r.get('amount_staked'))
+
   nxm_price = get_nxm_price()
   times = []
   tree = IntervalTree()
@@ -126,7 +155,10 @@ def get_total_amount_staked():
           sum([interval.data for interval in intervals])
   return amount_staked
 
-def get_amount_staked_per_contract():
+def get_amount_staked_per_contract(cache=False):
+  if cache:
+    return json.loads(r.get('amount_staked_per_contract'))
+
   get_nxm_price()
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for txn in query_table(StakingTransaction):
@@ -135,7 +167,10 @@ def get_amount_staked_per_contract():
       amount_staked_per_contract['NXM'][txn['contract_name']] += txn['amount']
   return dict(amount_staked_per_contract)
 
-def get_all_stakes():
+def get_all_stakes(cache=False):
+  if cache:
+    return json.loads(r.get('stakes'))
+
   get_nxm_price()
   stakes = query_table(StakingTransaction)
   for stake in stakes:
@@ -144,7 +179,10 @@ def get_all_stakes():
     stake['amount_usd'] = stake['amount'] * price['NXM']
   return stakes
 
-def get_nxm_supply():
+def get_nxm_supply(cache=False):
+  if cache:
+    return json.loads(r.get('nxm_supply'))
+
   bonding_curve_address = '0x0000000000000000000000000000000000000000'
   txns = query_table(NXMTransaction)
   txns.sort(key=lambda x: x['timestamp'])
@@ -161,7 +199,10 @@ def get_nxm_supply():
         nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
   return nxm_supply
 
-def get_nxm_market_cap():
+def get_nxm_market_cap(cache=False):
+  if cache:
+    return json.loads(r.get('nxm_market_cap'))
+
   nxm_price = get_nxm_price()
   nxm_supply = get_nxm_supply()
   nxm_times = sorted(nxm_price['USD'].keys())
@@ -174,7 +215,10 @@ def get_nxm_market_cap():
     nxm_market_cap['ETH'][time] = nxm_price_eth * nxm_supply[time]
   return nxm_market_cap
 
-def get_nxm_distribution():
+def get_nxm_distribution(cache=False):
+  if cache:
+    return json.loads(r.get('nxm_distribution'))
+
   nxm_distribution = defaultdict(int)
   for txn in query_table(NXMTransaction):
     nxm_distribution[txn['from_address']] -= txn['amount']
@@ -184,3 +228,18 @@ def get_nxm_distribution():
     if nxm_distribution[address] < 10**-8:
       del nxm_distribution[address]
   return nxm_distribution
+
+def cache_graphs():
+  r.set('cover_amount', json.dumps(get_active_cover_amount(cache=False)))
+  r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
+  r.set('covers', json.dumps(get_all_covers(cache=False)))
+  r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))
+  r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))
+  r.set('mcr_percentage', json.dumps(get_mcr_percentage(over_100=True, cache=False)))
+  r.set('nxm_price', json.dumps(get_nxm_price(cache=False)))
+  r.set('amount_staked', json.dumps(get_total_amount_staked(cache=False)))
+  r.set('amount_staked_per_contract', json.dumps(get_amount_staked_per_contract(cache=False)))
+  r.set('stakes', json.dumps(get_all_stakes(cache=False)))
+  r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
+  r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
+  r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))

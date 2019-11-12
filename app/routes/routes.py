@@ -5,66 +5,64 @@ import os
 
 @app.route('/active_cover_amount', methods=['GET'])
 def active_cover_amount():
-  return jsonify(script.get_active_cover_amount())
+  return jsonify(script.get_active_cover_amount(cache=True))
 
 @app.route('/active_cover_amount_per_contract', methods=['GET'])
 def active_cover_amount_per_contract():
-  return jsonify(script.get_active_cover_amount_per_contract())
+  return jsonify(script.get_active_cover_amount_per_contract(cache=True))
 
 @app.route('/all_covers', methods=['GET'])
 def all_covers():
-  return jsonify(script.get_all_covers())
+  return jsonify(script.get_all_covers(cache=True))
 
 @app.route('/capital_pool_size', methods=['GET'])
 def capital_pool_size():
-  return jsonify(script.get_capital_pool_size())
+  return jsonify(script.get_capital_pool_size(cache=True))
 
 @app.route('/minimum_capital_requirement', methods=['GET'])
 def minimum_capital_requirement():
-  return jsonify(script.get_minimum_capital_requirement())
+  return jsonify(script.get_minimum_capital_requirement(cache=True))
 
 @app.route('/mcr_percentage', methods=['GET'])
 def mcr_percentage():
-  return jsonify(script.get_mcr_percentage(over_100=True))
+  return jsonify(script.get_mcr_percentage(over_100=True, cache=True))
 
 @app.route('/total_amount_staked', methods=['GET'])
 def total_amount_staked():
-  return jsonify(script.get_total_amount_staked())
+  return jsonify(script.get_total_amount_staked(cache=True))
 
 @app.route('/all_stakes', methods=['GET'])
 def all_stakes():
-  return jsonify(script.get_all_stakes())
+  return jsonify(script.get_all_stakes(cache=True))
 
 @app.route('/amount_staked_per_contract', methods=['GET'])
 def amount_staked_per_contract():
-  return jsonify(script.get_amount_staked_per_contract())
+  return jsonify(script.get_amount_staked_per_contract(cache=True))
 
 @app.route('/nxm_price', methods=['GET'])
 def nxm_price():
-  return jsonify(script.get_nxm_price())
+  return jsonify(script.get_nxm_price(cache=True))
 
 @app.route('/nxm_supply', methods=['GET'])
 def nxm_supply():
-  return jsonify(script.get_nxm_supply())
+  return jsonify(script.get_nxm_supply(cache=True))
 
 @app.route('/nxm_market_cap', methods=['GET'])
 def nxm_market_cap():
-  return jsonify(script.get_nxm_market_cap())
+  return jsonify(script.get_nxm_market_cap(cache=True))
 
 @app.route('/nxm_distribution', methods=['GET'])
 def nxm_distribution():
-  return jsonify(script.get_nxm_distribution())
+  return jsonify(script.get_nxm_distribution(cache=True))
 
 ####################################################################################################
 
 @app.route('/<template>', methods=['GET'])
 def render(template):
-  parser.parse_etherscan_data()
   return render_template(template + '.html')
 
 @app.route('/', methods=['GET'])
 def index():
-  parser.parse_etherscan_data()
   return render_template('covers.html')
 
 @app.route('/favicon.ico', methods=['GET'])

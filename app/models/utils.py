@@ -7,9 +7,10 @@ import requests
 
 price = {}
 
-def query_table(table):
+def query_table(table, order=None):
   rows = []
-  for row in table.query.all():
+  query = table.query.all() if order is None else table.query.order_by(order.asc()).all()
+  for row in query:
     row = row.__dict__
     del row['_sa_instance_state']
     rows.append(row)
