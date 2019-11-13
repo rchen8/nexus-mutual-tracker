@@ -229,7 +229,7 @@ def get_nxm_distribution(cache=False):
       del nxm_distribution[address]
   return nxm_distribution
 
-def cache_graphs():
+def cache_graph_data():
   r.set('cover_amount', json.dumps(get_active_cover_amount(cache=False)))
   r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))
