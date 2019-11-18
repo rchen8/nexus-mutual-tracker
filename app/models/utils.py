@@ -101,6 +101,7 @@ def address_to_contract_name(address):
     'bda109309f9fafa6dd6a9cb9f1df4085b27ee8ef': 'MakerDAO',
     '9b0f70df76165442ca6092939132bbaea77f2d7a': 'MakerDAO',
     'f53ad2c6851052a81b42133467480961b2321c09': 'MakerDAO',
+    '35d1b3f3d7966a1dfe207aa4514c12a259a0492b': 'MakerDAO',
     'ba23485a04b897c957918fde2dabd4867838140b': 'Market Protocol',
     '6217d5392f6b7b6b3a9b2512a2b0ec4cbb14c448': 'Market Protocol',
     '94772cc6e33b186bfdd0719a287f12d3ca816657': 'Market Protocol',
