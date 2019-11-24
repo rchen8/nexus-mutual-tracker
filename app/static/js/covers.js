@@ -1,5 +1,6 @@
 activeCoverAmount = undefined
 activeCoverAmountPerContract = undefined
+activeCoverAmountByExpirationDate = undefined
 allCovers = undefined
 
 const renderActiveCoverAmount = (currency) => {
@@ -47,6 +48,29 @@ $('#active-cover-amount-per-contract-usd').click(() => {
 
 $('#active-cover-amount-per-contract-eth').click(() => {
   renderActiveCoverAmountPerContract('ETH')
+})
+
+const renderActiveCoverAmountByExpirationDate = (currency) => {
+  if (activeCoverAmountByExpirationDate !== undefined) {
+    Plotly.newPlot('activeCoverAmountByExpirationDate', [{
+      x: Object.keys(activeCoverAmountByExpirationDate[currency]),
+      y: Object.values(activeCoverAmountByExpirationDate[currency]),
+      type: 'bar'
+    }])
+  }
+}
+
+$.get('active_cover_amount_by_expiration_date', (response) => {
+  activeCoverAmountByExpirationDate = response
+  renderActiveCoverAmountByExpirationDate('USD')
+})
+
+$('#active-cover-amount-by-expiration-date-usd').click(() => {
+  renderActiveCoverAmountByExpirationDate('USD')
+})
+
+$('#active-cover-amount-by-expiration-date-eth').click(() => {
+  renderActiveCoverAmountByExpirationDate('ETH')
 })
 
 const renderAllCovers = (currency) => {

@@ -55,6 +55,21 @@ def get_active_cover_amount_per_contract(cache=False):
           cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
   return dict(cover_amount_per_contract)
 
+def get_active_cover_amount_by_expiration_date(cache=False):
+  if cache:
+    return json.loads(r.get('cover_amount_by_expiration_date'))
+  if not price:
+    set_current_crypto_prices()
+
+  cover_amount_by_expiration_date = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+  for cover in query_table(Cover):
+    if datetime.now() < cover['end_time']:
+      end_date = cover['end_time'].strftime('%Y-%m-%d')
+      cover_amount_by_expiration_date['USD'][end_date] += cover['amount'] * price[cover['currency']]
+      cover_amount_by_expiration_date['ETH'][end_date] += \
+          cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+  return dict(cover_amount_by_expiration_date)
+
 def get_all_covers(cache=False):
   if cache:
     return json.loads(r.get('covers'))
@@ -232,6 +247,8 @@ def get_nxm_distribution(cache=False):
 def cache_graph_data():
   r.set('cover_amount', json.dumps(get_active_cover_amount(cache=False)))
   r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
+  r.set('cover_amount_by_expiration_date',
+      json.dumps(get_active_cover_amount_by_expiration_date(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))
   r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))
   r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))

@@ -11,6 +11,10 @@ def active_cover_amount():
 def active_cover_amount_per_contract():
   return jsonify(script.get_active_cover_amount_per_contract(cache=True))
 
+@app.route('/active_cover_amount_by_expiration_date', methods=['GET'])
+def active_cover_amount_by_expiration_date():
+  return jsonify(script.get_active_cover_amount_by_expiration_date(cache=True))
+
 @app.route('/all_covers', methods=['GET'])
 def all_covers():
   return jsonify(script.get_all_covers(cache=True))
