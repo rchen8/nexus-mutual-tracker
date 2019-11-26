@@ -72,6 +72,7 @@ def address_to_contract_name(address):
     '12459c951127e0c374ff9105dda097662a027093': '0x',
     '11111254369792b2ca5d084ab5eea397ca8fa48b': '1inch.exchange',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
+    'd5d2b9e9bcd172d5fc8521afd2c98dd239f5b607': 'Band Protocol',
     '8b3d70d628ebd30d4a2ea82db95ba2e906c71633': 'bZx',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
     '3d9819210a31b4961b30ef54be2aed79b9c9cd3b': 'Compound',
