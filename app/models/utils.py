@@ -48,7 +48,6 @@ def get_historical_crypto_price(symbol, timestamp):
     db.session.rollback()
     crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
     return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
-
   return eth_price if symbol == 'ETH' else dai_price
 
 def set_current_crypto_prices():

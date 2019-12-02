@@ -26,6 +26,14 @@ class StakingTransaction(db.Model):
   contract_name = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
 
+class StakingReward(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  block_number = db.Column(db.Integer, nullable=False)
+  timestamp = db.Column(db.DateTime, index=True, nullable=False)
+  staker = db.Column(db.String, nullable=False)
+  contract_name = db.Column(db.String, nullable=False)
+  amount = db.Column(db.Float, nullable=False)
+
 class NXMTransaction(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   block_number = db.Column(db.Integer, index=True, nullable=False)

@@ -1,5 +1,7 @@
 totalAmountStaked = undefined
 amountStakedPerContract = undefined
+totalStakingReward = undefined
+stakingRewardPerContract = undefined
 allStakes = undefined
 
 const renderTotalAmountStaked = (currency) => {
@@ -47,6 +49,53 @@ $('#amount-staked-per-contract-usd').click(() => {
 
 $('#amount-staked-per-contract-nxm').click(() => {
   renderAmountStakedPerContract('NXM')
+})
+
+const renderTotalStakingReward = (currency) => {
+  if (totalStakingReward !== undefined) {
+    Plotly.newPlot('totalStakingReward', [{
+      x: getDateTimesInLocalTimezone(Object.keys(totalStakingReward[currency])),
+      y: Object.values(totalStakingReward[currency]),
+      fill: 'tozeroy',
+      type: 'scatter'
+    }])
+  }
+}
+
+$.get('total_staking_reward', (response) => {
+  totalStakingReward = response
+  renderTotalStakingReward('USD')
+})
+
+$('#total-staking-reward-usd').click(() => {
+  renderTotalStakingReward('USD')
+})
+
+$('#total-staking-reward-nxm').click(() => {
+  renderTotalStakingReward('NXM')
+})
+
+const renderStakingRewardPerContract = (currency) => {
+  if (stakingRewardPerContract !== undefined) {
+    Plotly.newPlot('stakingRewardPerContract', [{
+      x: Object.keys(stakingRewardPerContract[currency]),
+      y: Object.values(stakingRewardPerContract[currency]),
+      type: 'bar'
+    }])
+  }
+}
+
+$.get('staking_reward_per_contract', (response) => {
+  stakingRewardPerContract = response
+  renderStakingRewardPerContract('USD')
+})
+
+$('#staking-reward-per-contract-usd').click(() => {
+  renderStakingRewardPerContract('USD')
+})
+
+$('#staking-reward-per-contract-nxm').click(() => {
+  renderStakingRewardPerContract('NXM')
 })
 
 const renderAllStakes = (currency) => {

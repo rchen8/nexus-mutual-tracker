@@ -35,13 +35,21 @@ def mcr_percentage():
 def total_amount_staked():
   return jsonify(script.get_total_amount_staked(cache=True))
 
-@app.route('/all_stakes', methods=['GET'])
-def all_stakes():
-  return jsonify(script.get_all_stakes(cache=True))
-
 @app.route('/amount_staked_per_contract', methods=['GET'])
 def amount_staked_per_contract():
   return jsonify(script.get_amount_staked_per_contract(cache=True))
+
+@app.route('/total_staking_reward', methods=['GET'])
+def total_staking_reward():
+  return jsonify(script.get_total_staking_reward(cache=True))
+
+@app.route('/staking_reward_per_contract', methods=['GET'])
+def staking_reward_per_contract():
+  return jsonify(script.get_staking_reward_per_contract(cache=True))
+
+@app.route('/all_stakes', methods=['GET'])
+def all_stakes():
+  return jsonify(script.get_all_stakes(cache=True))
 
 @app.route('/nxm_price', methods=['GET'])
 def nxm_price():

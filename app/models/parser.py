@@ -17,17 +17,6 @@ def get_event_logs(table, address, topic0):
         % (module, action, fromBlock, toBlock, address, topic0, os.environ['ETHERSCAN_API_KEY'])
   return json.loads(requests.get(url).text)['result']
 
-def parse_mcr_event_logs():
-  address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
-  topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
-  for event in get_event_logs(MinimumCapitalRequirement, address, topic0):
-    db.session.add(MinimumCapitalRequirement(
-      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
-      block_number=int(event['blockNumber'], 16),
-      mcr=int(textwrap.wrap(event['data'][2:], 64)[3], 16) / 10**18
-    ))
-    db.session.commit()
-
 def parse_cover_event_logs():
   address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
   topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
@@ -44,8 +33,33 @@ def parse_cover_event_logs():
     ))
     db.session.commit()
 
+def parse_mcr_event_logs():
+  address = '0x2EC5d566bd104e01790B13DE33fD51876d57C495'
+  topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
+  for event in get_event_logs(MinimumCapitalRequirement, address, topic0):
+    db.session.add(MinimumCapitalRequirement(
+      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      block_number=int(event['blockNumber'], 16),
+      mcr=int(textwrap.wrap(event['data'][2:], 64)[3], 16) / 10**18
+    ))
+    db.session.commit()
+
+def parse_staking_event_logs():
+  address='0xE20B3aE826Cdb43676e418F7C3B84B75b5697a40'
+  topic0 = '0x05456de91d83e21ad7c41a09ae7cb41836049c49e6ddaf07bdfc40c2231885d2'
+  for event in get_event_logs(StakingReward, address, topic0):
+    db.session.add(StakingReward(
+      id=get_last_id(StakingReward) + 1,
+      block_number=int(event['blockNumber'], 16),
+      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      staker='0x' + event['topics'][1][-40:],
+      contract_name=address_to_contract_name(event['topics'][2][-40:]),
+      amount=int(event['data'], 16) / 10**18
+    ))
+    db.session.commit()
+
 def parse_nxm_event_logs():
-  address = '0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b'
+  address = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B'
   topic0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
   for event in get_event_logs(NXMTransaction, address, topic0):
     db.session.add(NXMTransaction(
@@ -127,8 +141,10 @@ def parse_staking_transactions():
 
 def parse_etherscan_data():
   set_current_crypto_prices()
-  parse_mcr_event_logs()
+
   parse_cover_event_logs()
+  parse_mcr_event_logs()
+  parse_staking_event_logs()
   parse_nxm_event_logs()
 
   startblock = get_latest_block_number(Transaction) + 1

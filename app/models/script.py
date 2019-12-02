@@ -182,6 +182,35 @@ def get_amount_staked_per_contract(cache=False):
       amount_staked_per_contract['NXM'][txn['contract_name']] += txn['amount']
   return dict(amount_staked_per_contract)
 
+def get_total_staking_reward(cache=False):
+  if cache:
+    return json.loads(r.get('staking_reward'))
+
+  nxm_price = get_nxm_price()
+  nxm_times = sorted(nxm_price['USD'].keys())
+  total = 0
+  staking_reward = {'USD': {}, 'NXM': {}}
+  for reward in query_table(StakingReward, order=StakingReward.timestamp):
+    total += reward['amount']
+    historical_nxm_price = nxm_price['USD'] \
+        [nxm_times[bisect.bisect(nxm_times, reward['timestamp'].strftime('%Y-%m-%d %H:%M:%S')) - 1]]
+
+    staking_reward['USD'][reward['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = \
+        total * historical_nxm_price
+    staking_reward['NXM'][reward['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
+  return staking_reward
+
+def get_staking_reward_per_contract(cache=False):
+  if cache:
+    return json.loads(r.get('staking_reward_per_contract'))
+
+  get_nxm_price()
+  staking_reward_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
+  for reward in query_table(StakingReward):
+    staking_reward_per_contract['USD'][reward['contract_name']] += reward['amount'] * price['NXM']
+    staking_reward_per_contract['NXM'][reward['contract_name']] += reward['amount']
+  return dict(staking_reward_per_contract)
+
 def get_all_stakes(cache=False):
   if cache:
     return json.loads(r.get('stakes'))
@@ -256,6 +285,8 @@ def cache_graph_data():
   r.set('nxm_price', json.dumps(get_nxm_price(cache=False)))
   r.set('amount_staked', json.dumps(get_total_amount_staked(cache=False)))
   r.set('amount_staked_per_contract', json.dumps(get_amount_staked_per_contract(cache=False)))
+  r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
+  r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
   r.set('stakes', json.dumps(get_all_stakes(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
