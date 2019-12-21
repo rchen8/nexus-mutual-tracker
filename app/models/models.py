@@ -5,6 +5,7 @@ class Cover(db.Model):
   cover_id = db.Column(db.Integer, primary_key=True)
   contract_name = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
+  premium = db.Column(db.Float, nullable=False)
   currency = db.Column(db.String, nullable=False)
   start_time = db.Column(db.DateTime, nullable=False)
   end_time = db.Column(db.DateTime, nullable=False)

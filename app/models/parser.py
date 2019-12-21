@@ -27,6 +27,7 @@ def parse_cover_event_logs():
       cover_id=int(event['topics'][1], 16),
       contract_name=address_to_contract_name(data[0][-40:]),
       amount=float(int(data[1], 16)),
+      premium=float(int(data[3], 16)) / 10**18,
       currency='ETH' if data[-1].startswith('455448') else 'DAI',
       start_time=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       end_time=datetime.fromtimestamp(int(data[2], 16))

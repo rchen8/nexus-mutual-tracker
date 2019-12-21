@@ -81,6 +81,7 @@ def get_all_covers(cache=False):
     cover['start_time'] = cover['start_time'].strftime('%Y-%m-%d %H:%M:%S')
     cover['end_time'] = cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
     cover['amount_usd'] = cover['amount'] * price[cover['currency']]
+    cover['premium_usd'] = cover['premium'] * price[cover['currency']]
   return covers
 
 def get_capital_pool_size(cache=False):

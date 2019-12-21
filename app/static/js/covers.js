@@ -79,16 +79,20 @@ const renderAllCovers = (currency) => {
     table.clear()
     for (cover of allCovers) {
       coverAmount = 0
+      premium = 0
       if (currency === 'USD') {
         coverAmount = '$' + cover['amount_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        premium = '$' + cover['premium_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       } else {
         coverAmount = cover['amount'].toLocaleString() + ' ' + cover['currency']
+        premium = cover['premium'].toLocaleString() + ' ' + cover['currency']
       }
 
       table.row.add([
         cover['cover_id'],
         cover['contract_name'],
         coverAmount,
+        premium,
         toLocalTimezone(cover['start_time']),
         toLocalTimezone(cover['end_time'])
       ])
