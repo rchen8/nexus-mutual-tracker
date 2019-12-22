@@ -19,6 +19,13 @@
   })
 })(jQuery)
 
+const toggleCurrency = (query_selector, activeCurrency, inactiveCurrency) => {
+  $(query_selector + '-' + activeCurrency).attr('disabled', 'disabled')
+  $(query_selector + '-' + activeCurrency).css({'color': 'black', 'background-color': 'white'})
+  $(query_selector + '-' + inactiveCurrency).removeAttr('disabled')
+  $(query_selector + '-' + inactiveCurrency).css('background-color', 'grey')
+}
+ 
 const toLocalTimezone = (date) => {
   date = new Date(Date.parse(date))
   date.setMinutes(date.getMinutes() - new Date().getTimezoneOffset())

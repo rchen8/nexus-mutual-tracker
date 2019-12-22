@@ -13,15 +13,17 @@ const renderCapitalPoolSize = (currency) => {
 
 $.get('capital_pool_size', (response) => {
   capitalPoolSize = response
-  renderCapitalPoolSize('USD')
+  $('#capital-pool-size-usd').click()
 })
 
 $('#capital-pool-size-usd').click(() => {
   renderCapitalPoolSize('USD')
+  toggleCurrency('#capital-pool-size', 'usd', 'eth')
 })
 
 $('#capital-pool-size-eth').click(() => {
   renderCapitalPoolSize('ETH')
+  toggleCurrency('#capital-pool-size', 'eth', 'usd')
 })
 
 $.get('minimum_capital_requirement', (response) => {

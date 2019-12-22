@@ -16,15 +16,17 @@ const renderActiveCoverAmount = (currency) => {
 
 $.get('active_cover_amount', (response) => {
   activeCoverAmount = response
-  renderActiveCoverAmount('USD')
+  $('#active-cover-amount-usd').click()
 })
 
 $('#active-cover-amount-usd').click(() => {
   renderActiveCoverAmount('USD')
+  toggleCurrency('#active-cover-amount', 'usd', 'eth')
 })
 
 $('#active-cover-amount-eth').click(() => {
   renderActiveCoverAmount('ETH')
+  toggleCurrency('#active-cover-amount', 'eth', 'usd')
 })
 
 const renderActiveCoverAmountPerContract = (currency) => {
@@ -39,15 +41,17 @@ const renderActiveCoverAmountPerContract = (currency) => {
 
 $.get('active_cover_amount_per_contract', (response) => {
   activeCoverAmountPerContract = response
-  renderActiveCoverAmountPerContract('USD')
+  $('#active-cover-amount-per-contract-usd').click()
 })
 
 $('#active-cover-amount-per-contract-usd').click(() => {
   renderActiveCoverAmountPerContract('USD')
+  toggleCurrency('#active-cover-amount-per-contract', 'usd', 'eth')
 })
 
 $('#active-cover-amount-per-contract-eth').click(() => {
   renderActiveCoverAmountPerContract('ETH')
+  toggleCurrency('#active-cover-amount-per-contract', 'eth', 'usd')
 })
 
 const renderActiveCoverAmountByExpirationDate = (currency) => {
@@ -62,15 +66,17 @@ const renderActiveCoverAmountByExpirationDate = (currency) => {
 
 $.get('active_cover_amount_by_expiration_date', (response) => {
   activeCoverAmountByExpirationDate = response
-  renderActiveCoverAmountByExpirationDate('USD')
+  $('#active-cover-amount-by-expiration-date-usd').click()
 })
 
 $('#active-cover-amount-by-expiration-date-usd').click(() => {
   renderActiveCoverAmountByExpirationDate('USD')
+  toggleCurrency('#active-cover-amount-by-expiration-date', 'usd', 'eth')
 })
 
 $('#active-cover-amount-by-expiration-date-eth').click(() => {
   renderActiveCoverAmountByExpirationDate('ETH')
+  toggleCurrency('#active-cover-amount-by-expiration-date', 'eth', 'usd')
 })
 
 const renderAllCovers = (currency) => {
@@ -103,13 +109,15 @@ const renderAllCovers = (currency) => {
 
 $.get('all_covers', (response) => {
   allCovers = response
-  renderAllCovers('USD')
+  $('#all-covers-usd').click()
 })
 
 $('#all-covers-usd').click(() => {
   renderAllCovers('USD')
+  toggleCurrency('#all-covers', 'usd', 'eth-dai')
 })
 
 $('#all-covers-eth-dai').click(() => {
   renderAllCovers('ETH/DAI')
+  toggleCurrency('#all-covers', 'eth-dai', 'usd')
 })

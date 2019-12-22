@@ -17,15 +17,17 @@ const renderTotalAmountStaked = (currency) => {
 
 $.get('total_amount_staked', (response) => {
   totalAmountStaked = response
-  renderTotalAmountStaked('USD')
+  $('#total-amount-staked-usd').click()
 })
 
 $('#total-amount-staked-usd').click(() => {
   renderTotalAmountStaked('USD')
+  toggleCurrency('#total-amount-staked', 'usd', 'nxm')
 })
 
 $('#total-amount-staked-nxm').click(() => {
   renderTotalAmountStaked('NXM')
+  toggleCurrency('#total-amount-staked', 'nxm', 'usd')
 })
 
 const renderAmountStakedPerContract = (currency) => {
@@ -40,15 +42,17 @@ const renderAmountStakedPerContract = (currency) => {
 
 $.get('amount_staked_per_contract', (response) => {
   amountStakedPerContract = response
-  renderAmountStakedPerContract('USD')
+  $('#amount-staked-per-contract-usd').click()
 })
 
 $('#amount-staked-per-contract-usd').click(() => {
   renderAmountStakedPerContract('USD')
+  toggleCurrency('#amount-staked-per-contract', 'usd', 'nxm')
 })
 
 $('#amount-staked-per-contract-nxm').click(() => {
   renderAmountStakedPerContract('NXM')
+  toggleCurrency('#amount-staked-per-contract', 'nxm', 'usd')
 })
 
 const renderTotalStakingReward = (currency) => {
@@ -64,15 +68,17 @@ const renderTotalStakingReward = (currency) => {
 
 $.get('total_staking_reward', (response) => {
   totalStakingReward = response
-  renderTotalStakingReward('USD')
+  $('#total-staking-reward-usd').click()
 })
 
 $('#total-staking-reward-usd').click(() => {
   renderTotalStakingReward('USD')
+  toggleCurrency('#total-staking-reward', 'usd', 'nxm')
 })
 
 $('#total-staking-reward-nxm').click(() => {
   renderTotalStakingReward('NXM')
+  toggleCurrency('#total-staking-reward', 'nxm', 'usd')
 })
 
 const renderStakingRewardPerContract = (currency) => {
@@ -87,15 +93,17 @@ const renderStakingRewardPerContract = (currency) => {
 
 $.get('staking_reward_per_contract', (response) => {
   stakingRewardPerContract = response
-  renderStakingRewardPerContract('USD')
+  $('#staking-reward-per-contract-usd').click()
 })
 
 $('#staking-reward-per-contract-usd').click(() => {
   renderStakingRewardPerContract('USD')
+  toggleCurrency('#staking-reward-per-contract', 'usd', 'nxm')
 })
 
 $('#staking-reward-per-contract-nxm').click(() => {
   renderStakingRewardPerContract('NXM')
+  toggleCurrency('#staking-reward-per-contract', 'nxm', 'usd')
 })
 
 const renderAllStakes = (currency) => {
@@ -123,13 +131,15 @@ const renderAllStakes = (currency) => {
 
 $.get('all_stakes', (response) => {
   allStakes = response
-  renderAllStakes('USD')
+  $('#all-stakes-usd').click()
 })
 
 $('#all-stakes-usd').click(() => {
   renderAllStakes('USD')
+  toggleCurrency('#all-stakes', 'usd', 'nxm')
 })
 
 $('#all-stakes-nxm').click(() => {
   renderAllStakes('NXM')
+  toggleCurrency('#all-stakes', 'nxm', 'usd')
 })

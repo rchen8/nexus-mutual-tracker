@@ -17,15 +17,17 @@ const renderNXMPrice = (currency) => {
 
 $.get('nxm_price', (response) => {
   nxmPrice = response
-  renderNXMPrice('USD')
+  $('#nxm-price-usd').click()
 })
 
 $('#nxm-price-usd').click(() => {
   renderNXMPrice('USD')
+  toggleCurrency('#nxm-price', 'usd', 'eth')
 })
 
 $('#nxm-price-eth').click(() => {
   renderNXMPrice('ETH')
+  toggleCurrency('#nxm-price', 'eth', 'usd')
 })
 
 $.get('nxm_supply', (response) => {
@@ -55,15 +57,17 @@ const renderNXMMarketCap = (currency) => {
 
 $.get('nxm_market_cap', (response) => {
   nxmMarketCap = response
-  renderNXMMarketCap('USD')
+  $('#nxm-market-cap-usd').click()
 })
 
 $('#nxm-market-cap-usd').click(() => {
   renderNXMMarketCap('USD')
+  toggleCurrency('#nxm-market-cap', 'usd', 'eth')
 })
 
 $('#nxm-market-cap-eth').click(() => {
   renderNXMMarketCap('ETH')
+  toggleCurrency('#nxm-market-cap', 'eth', 'usd')
 })
 
 $.get('nxm_distribution', (response) => {
