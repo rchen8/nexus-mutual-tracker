@@ -272,6 +272,8 @@ def get_nxm_distribution(cache=False):
   for address in list(nxm_distribution):
     if nxm_distribution[address] < 10**-8:
       del nxm_distribution[address]
+  nxm_distribution['Staking Contract'] = \
+      nxm_distribution.pop('0x5407381b6c251cfd498ccd4a1d877739cb7960b8')
   return nxm_distribution
 
 def cache_graph_data():
