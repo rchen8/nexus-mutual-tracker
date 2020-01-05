@@ -79,6 +79,7 @@ def address_to_contract_name(address):
     '4ddc2d193948926d02f9b1fe9e1daa0718270ed5': 'Compound',
     '3fda67f7583380e67ef93072294a7fac882fd7e7': 'Compound',
     'f5dce57282a584d2746faf1593d3121fcac444dc': 'Compound',
+    '5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'Compound',
     '06012c8cf97bead5deae237070f9587f8e7a266d': 'CryptoKitties',
     '89d24a6b4ccb1b6faa2625fe562bdd9a23260359': 'Dai',
     '6b175474e89094c44da98b954eedeac495271d0f': 'Dai',
