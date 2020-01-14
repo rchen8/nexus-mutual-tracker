@@ -120,6 +120,7 @@ const renderAllStakes = (currency) => {
 
       table.row.add([
         stake['contract_name'],
+        stake['address'],
         stakedAmount,
         toLocalTimezone(stake['start_time']),
         toLocalTimezone(stake['end_time'])

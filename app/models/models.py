@@ -25,6 +25,7 @@ class StakingTransaction(db.Model):
   start_time = db.Column(db.DateTime, nullable=False)
   end_time = db.Column(db.DateTime, nullable=False)
   contract_name = db.Column(db.String, nullable=False)
+  address = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
 
 class StakingReward(db.Model):

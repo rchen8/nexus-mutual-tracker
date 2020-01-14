@@ -136,6 +136,7 @@ def parse_staking_transactions():
           start_time=start_time,
           end_time=start_time + timedelta(days=250),
           contract_name=address_to_contract_name(data[0][-40:]),
+          address='0x' + data[0][-40:],
           amount=float(int(data[1], 16)) / 10**18
         ))
         db.session.commit()
