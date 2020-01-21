@@ -129,6 +129,8 @@ def address_to_contract_name(address):
     'f92c1ad75005e6436b4ee84e88cb23ed8a290988': 'Paraswap',
     '4aa42145aa6ebf72e164c9bbc74fbd3788045016': 'POA Network',
     'e1579debdd2df16ebdb9db8694391fa74eea201e': 'POA Network',
+    'b7896fce748396ecfc240f5a0d3cc92ca42d7d84': 'PoolTogether',
+    '29fe7d60ddf151e5b52e5fab4f1325da6b2bd958': 'PoolTogether',
     '5b67871c3a857de81a1ca0f9f7945e5670d986dc': 'Set Protocol',
     'f55186cc537e7067ea616f2aae007b4427a120c8': 'Set Protocol',
     '882d80d3a191859d64477eb78cca46599307ec1c': 'Set Protocol',
