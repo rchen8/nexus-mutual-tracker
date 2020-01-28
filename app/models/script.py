@@ -62,12 +62,25 @@ def get_active_cover_amount_by_expiration_date(cache=False):
     set_current_crypto_prices()
 
   cover_amount_by_expiration_date = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
-  for cover in query_table(Cover):
+  covers = query_table(Cover)
+
+  last_cover_amount_usd = 0
+  last_cover_amount_eth = 0
+  for cover in covers:
     if datetime.now() < cover['end_time']:
-      end_date = cover['end_time'].strftime('%Y-%m-%d')
-      cover_amount_by_expiration_date['USD'][end_date] += cover['amount'] * price[cover['currency']]
-      cover_amount_by_expiration_date['ETH'][end_date] += \
+      last_cover_amount_usd += cover['amount'] * price[cover['currency']]
+      last_cover_amount_eth += \
           cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+
+  covers.sort(key=lambda x: x['end_time'])
+  for cover in covers:
+    if datetime.now() < cover['end_time']:
+      end_time = cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
+      last_cover_amount_usd -= cover['amount'] * price[cover['currency']]
+      last_cover_amount_eth -= \
+          cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+      cover_amount_by_expiration_date['USD'][end_time] = last_cover_amount_usd
+      cover_amount_by_expiration_date['ETH'][end_time] = last_cover_amount_eth
   return dict(cover_amount_by_expiration_date)
 
 def get_all_covers(cache=False):

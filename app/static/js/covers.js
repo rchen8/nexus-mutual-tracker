@@ -59,7 +59,8 @@ const renderActiveCoverAmountByExpirationDate = (currency) => {
     Plotly.newPlot('activeCoverAmountByExpirationDate', [{
       x: Object.keys(activeCoverAmountByExpirationDate[currency]),
       y: Object.values(activeCoverAmountByExpirationDate[currency]),
-      type: 'bar'
+      fill: 'tozeroy',
+      type: 'scatter'
     }])
   }
 }
