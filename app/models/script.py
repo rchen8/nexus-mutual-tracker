@@ -83,6 +83,30 @@ def get_active_cover_amount_by_expiration_date(cache=False):
       cover_amount_by_expiration_date['ETH'][end_time] = last_cover_amount_eth
   return dict(cover_amount_by_expiration_date)
 
+def get_average_cover_amount(cache=False):
+  if cache:
+    return json.loads(r.get('average_cover_amount'))
+
+  average_cover_amount = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+  covers = query_table(Cover)
+  covers.sort(key=lambda x: x['cover_id'])
+
+  last_average_usd = 0
+  last_average_eth = 0
+  for cover in covers:
+    last_average_usd = ((last_average_usd * (cover['cover_id'] - 1)) + cover['amount'] * \
+        get_historical_crypto_price(cover['currency'], cover['start_time'])) / cover['cover_id']
+    last_average_eth = ((last_average_eth * (cover['cover_id'] - 1)) + cover['amount'] / \
+        (1 if cover['currency'] == 'ETH' else \
+        get_historical_crypto_price('ETH', cover['start_time']) / \
+        get_historical_crypto_price('DAI', cover['start_time']))) / \
+        cover['cover_id']
+
+    start_time = cover['start_time'].strftime('%Y-%m-%d %H:%M:%S')
+    average_cover_amount['USD'][start_time] = last_average_usd
+    average_cover_amount['ETH'][start_time] = last_average_eth
+  return dict(average_cover_amount)
+
 def get_all_covers(cache=False):
   if cache:
     return json.loads(r.get('covers'))
@@ -294,6 +318,7 @@ def cache_graph_data():
   r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
   r.set('cover_amount_by_expiration_date',
       json.dumps(get_active_cover_amount_by_expiration_date(cache=False)))
+  r.set('average_cover_amount', json.dumps(get_average_cover_amount(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))
   r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))
   r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))

@@ -1,6 +1,7 @@
 activeCoverAmount = undefined
 activeCoverAmountPerContract = undefined
 activeCoverAmountByExpirationDate = undefined
+averageCoverAmount = undefined
 allCovers = undefined
 
 const renderActiveCoverAmount = (currency) => {
@@ -78,6 +79,32 @@ $('#active-cover-amount-by-expiration-date-usd').click(() => {
 $('#active-cover-amount-by-expiration-date-eth').click(() => {
   renderActiveCoverAmountByExpirationDate('ETH')
   toggleCurrency('#active-cover-amount-by-expiration-date', 'eth', 'usd')
+})
+
+const renderAverageCoverAmount = (currency) => {
+  if (averageCoverAmount !== undefined) {
+    Plotly.newPlot('averageCoverAmount', [{
+      x: Object.keys(averageCoverAmount[currency]),
+      y: Object.values(averageCoverAmount[currency]),
+      fill: 'tozeroy',
+      type: 'scatter'
+    }])
+  }
+}
+
+$.get('average_cover_amount', (response) => {
+  averageCoverAmount = response
+  $('#average-cover-amount-usd').click()
+})
+
+$('#average-cover-amount-usd').click(() => {
+  renderAverageCoverAmount('USD')
+  toggleCurrency('#average-cover-amount', 'usd', 'eth')
+})
+
+$('#average-cover-amount-eth').click(() => {
+  renderAverageCoverAmount('ETH')
+  toggleCurrency('#average-cover-amount', 'eth', 'usd')
 })
 
 const renderAllCovers = (currency) => {
