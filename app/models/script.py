@@ -75,10 +75,15 @@ def get_active_cover_amount_by_expiration_date(cache=False):
   covers.sort(key=lambda x: x['end_time'])
   for cover in covers:
     if datetime.now() < cover['end_time']:
-      end_time = cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
       last_cover_amount_usd -= cover['amount'] * price[cover['currency']]
       last_cover_amount_eth -= \
           cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+      if last_cover_amount_usd < 0.01:
+        last_cover_amount_usd = 0
+      if last_cover_amount_eth < 0.01:
+        last_cover_amount_eth = 0
+
+      end_time = cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
       cover_amount_by_expiration_date['USD'][end_time] = last_cover_amount_usd
       cover_amount_by_expiration_date['ETH'][end_time] = last_cover_amount_eth
   return dict(cover_amount_by_expiration_date)
