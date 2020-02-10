@@ -99,6 +99,7 @@ def address_to_contract_name(address):
     'ff1a8eda5eacdb6aaf729905492bdc6376dbe2dd': 'Gnosis',
     '34cfac646f301356faa8b21e94227e3583fe3f5f': 'Gnosis',
     '2a0c0dbecc7e4d658f48e01e3fa353f44050c208': 'IDEX',
+    '10ec0d497824e342bcb0edce00959142aaa766dd': 'Idle',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
     '3a306a399085f3460bbcb5b77015ab33806a10d5': 'InstaDApp',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
