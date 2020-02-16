@@ -74,6 +74,7 @@ def address_to_contract_name(address):
     '3dfd23a6c5e8bbcfc9581d2e864a68feb6a076d3': 'Aave',
     'c1d2819ce78f3e15ee69c6738eb1b400a26e632a': 'Aave',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
+    'b1cd6e4153b2a390cf00a6556b0fc1458c4a5533': 'Bancor',
     'd5d2b9e9bcd172d5fc8521afd2c98dd239f5b607': 'Band Protocol',
     '8b3d70d628ebd30d4a2ea82db95ba2e906c71633': 'bZx',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
