@@ -43,6 +43,10 @@ def total_amount_staked():
 def amount_staked_per_contract():
   return jsonify(script.get_amount_staked_per_contract(cache=True))
 
+@app.route('/percent_nxm_supply_staked', methods=['GET'])
+def percent_nxm_supply_staked():
+  return jsonify(script.get_percent_nxm_supply_staked(cache=True))
+
 @app.route('/total_staking_reward', methods=['GET'])
 def total_staking_reward():
   return jsonify(script.get_total_staking_reward(cache=True))

@@ -275,6 +275,8 @@ def get_nxm_return_vs_eth(cache=False):
   nxm_return_vs_eth = {}
   for time in nxm_price:
     nxm_return_vs_eth[time] = (nxm_price[time] / start_price - 1) * 100
+    if abs(nxm_return_vs_eth[time]) < 0.01:
+      nxm_return_vs_eth[time] = 0
   return nxm_return_vs_eth
 
 def get_nxm_supply(cache=False):
@@ -296,6 +298,21 @@ def get_nxm_supply(cache=False):
       if total > 0:
         nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
   return nxm_supply
+
+def get_percent_nxm_supply_staked(cache=False):
+  if cache:
+    return json.loads(r.get('percent_nxm_supply_staked'))
+
+  amount_staked = get_total_amount_staked(cache=True)['NXM']
+  nxm_supply = get_nxm_supply(cache=True)
+  nxm_times = sorted(nxm_supply.keys())
+  percent_nxm_supply_staked = {}
+  for time in amount_staked:
+    percent_nxm_supply_staked[time] = amount_staked[time] / \
+        nxm_supply[nxm_times[bisect.bisect(nxm_times, time) - 1]] * 100
+    if percent_nxm_supply_staked[time] < 0.01:
+      percent_nxm_supply_staked[time] = 0
+  return percent_nxm_supply_staked
 
 def get_nxm_market_cap(cache=False):
   if cache:
@@ -347,5 +364,6 @@ def cache_graph_data():
   r.set('stakes', json.dumps(get_all_stakes(cache=False)))
   r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
+  r.set('percent_nxm_supply_staked', json.dumps(get_percent_nxm_supply_staked(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
   r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))

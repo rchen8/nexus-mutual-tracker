@@ -55,6 +55,15 @@ $('#amount-staked-per-contract-nxm').click(() => {
   toggleCurrency('#amount-staked-per-contract', 'nxm', 'usd')
 })
 
+$.get('percent_nxm_supply_staked', (response) => {
+  Plotly.newPlot('percentNxmSupplyStaked', [{
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }])
+})
+
 const renderTotalStakingReward = (currency) => {
   if (totalStakingReward !== undefined) {
     Plotly.newPlot('totalStakingReward', [{
