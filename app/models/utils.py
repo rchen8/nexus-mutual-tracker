@@ -103,6 +103,7 @@ def address_to_contract_name(address):
     '2a0c0dbecc7e4d658f48e01e3fa353f44050c208': 'IDEX',
     '10ec0d497824e342bcb0edce00959142aaa766dd': 'Idle',
     '9d25057e62939d3408406975ad75ffe834da4cdd': 'iearn.finance',
+    '16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'iearn.finance',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
     '3a306a399085f3460bbcb5b77015ab33806a10d5': 'InstaDApp',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
