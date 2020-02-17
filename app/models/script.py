@@ -191,7 +191,7 @@ def get_total_amount_staked(cache=False):
   if cache:
     return json.loads(r.get('amount_staked'))
 
-  nxm_price = get_nxm_price()
+  nxm_price = get_nxm_price(cache=True)
   times = []
   tree = IntervalTree()
   for txn in query_table(StakingTransaction):
@@ -217,7 +217,7 @@ def get_amount_staked_per_contract(cache=False):
   if cache:
     return json.loads(r.get('amount_staked_per_contract'))
 
-  get_nxm_price()
+  get_nxm_price(cache=True)
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for txn in query_table(StakingTransaction):
     if datetime.now() < txn['end_time']:
@@ -229,7 +229,7 @@ def get_total_staking_reward(cache=False):
   if cache:
     return json.loads(r.get('staking_reward'))
 
-  nxm_price = get_nxm_price()
+  nxm_price = get_nxm_price(cache=True)
   nxm_times = sorted(nxm_price['USD'].keys())
   total = 0
   staking_reward = {'USD': {}, 'NXM': {}}
@@ -247,7 +247,7 @@ def get_staking_reward_per_contract(cache=False):
   if cache:
     return json.loads(r.get('staking_reward_per_contract'))
 
-  get_nxm_price()
+  get_nxm_price(cache=True)
   staking_reward_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for reward in query_table(StakingReward):
     staking_reward_per_contract['USD'][reward['contract_name']] += reward['amount'] * price['NXM']
@@ -258,13 +258,24 @@ def get_all_stakes(cache=False):
   if cache:
     return json.loads(r.get('stakes'))
 
-  get_nxm_price()
+  get_nxm_price(cache=True)
   stakes = query_table(StakingTransaction)
   for stake in stakes:
     stake['start_time'] = stake['start_time'].strftime('%Y-%m-%d %H:%M:%S')
     stake['end_time'] = stake['end_time'].strftime('%Y-%m-%d %H:%M:%S')
     stake['amount_usd'] = stake['amount'] * price['NXM']
   return stakes
+
+def get_nxm_return_vs_eth(cache=False):
+  if cache:
+    return json.loads(r.get('nxm_return_vs_eth'))
+
+  start_price = 0.01028
+  nxm_price = get_nxm_price(cache=True)['ETH']
+  nxm_return_vs_eth = {}
+  for time in nxm_price:
+    nxm_return_vs_eth[time] = (nxm_price[time] / start_price - 1) * 100
+  return nxm_return_vs_eth
 
 def get_nxm_supply(cache=False):
   if cache:
@@ -290,7 +301,7 @@ def get_nxm_market_cap(cache=False):
   if cache:
     return json.loads(r.get('nxm_market_cap'))
 
-  nxm_price = get_nxm_price()
+  nxm_price = get_nxm_price(cache=True)
   nxm_supply = get_nxm_supply()
   nxm_times = sorted(nxm_price['USD'].keys())
   nxm_market_cap = {'USD': {}, 'ETH': {}}
@@ -334,6 +345,7 @@ def cache_graph_data():
   r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
   r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
   r.set('stakes', json.dumps(get_all_stakes(cache=False)))
+  r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
   r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))

@@ -59,6 +59,10 @@ def all_stakes():
 def nxm_price():
   return jsonify(script.get_nxm_price(cache=True))
 
+@app.route('/nxm_return_vs_eth', methods=['GET'])
+def nxm_return_vs_eth():
+  return jsonify(script.get_nxm_return_vs_eth(cache=True))
+
 @app.route('/nxm_supply', methods=['GET'])
 def nxm_supply():
   return jsonify(script.get_nxm_supply(cache=True))
