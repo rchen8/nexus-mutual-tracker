@@ -26,6 +26,15 @@ $('#capital-pool-size-eth').click(() => {
   toggleCurrency('#capital-pool-size', 'eth', 'usd')
 })
 
+$.get('cover_amount_to_capital_pool_ratio', (response) => {
+  Plotly.newPlot('activeCoverAmountToCapitalPoolSizeRatio', [{
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }])
+})
+
 $.get('minimum_capital_requirement', (response) => {
   Plotly.newPlot('minimumCapitalRequirement', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),

@@ -27,6 +27,10 @@ def all_covers():
 def capital_pool_size():
   return jsonify(script.get_capital_pool_size(cache=True))
 
+@app.route('/cover_amount_to_capital_pool_ratio', methods=['GET'])
+def cover_amount_to_capital_pool_ratio():
+  return jsonify(script.get_cover_amount_to_capital_pool_ratio(cache=True))
+
 @app.route('/minimum_capital_requirement', methods=['GET'])
 def minimum_capital_requirement():
   return jsonify(script.get_minimum_capital_requirement(cache=True))

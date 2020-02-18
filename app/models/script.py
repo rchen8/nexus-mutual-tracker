@@ -145,6 +145,19 @@ def get_capital_pool_size(cache=False):
         total['ETH'] + total['DAI'] / (eth_price / dai_price)
   return capital_pool_size
 
+def get_cover_amount_to_capital_pool_ratio(cache=False):
+  if cache:
+    return json.loads(r.get('cover_amount_to_capital_pool_ratio'))
+
+  cover_amount = get_active_cover_amount(cache=True)['USD']
+  capital_pool_size = get_capital_pool_size(cache=True)['USD']
+  capital_pool_times = sorted(capital_pool_size.keys())
+  cover_amount_to_capital_pool_ratio = {}
+  for time in cover_amount:
+    cover_amount_to_capital_pool_ratio[time] = cover_amount[time] / \
+        capital_pool_size[capital_pool_times[bisect.bisect(capital_pool_times, time) - 1]] * 100
+  return cover_amount_to_capital_pool_ratio
+
 def get_minimum_capital_requirement(cache=False):
   if cache:
     return json.loads(r.get('minimum_capital_requirement'))
@@ -354,6 +367,8 @@ def cache_graph_data():
   r.set('average_cover_amount', json.dumps(get_average_cover_amount(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))
   r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))
+  r.set('cover_amount_to_capital_pool_ratio',
+      json.dumps(get_cover_amount_to_capital_pool_ratio(cache=False)))
   r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))
   r.set('mcr_percentage', json.dumps(get_mcr_percentage(over_100=True, cache=False)))
   r.set('nxm_price', json.dumps(get_nxm_price(cache=False)))

@@ -56,7 +56,7 @@ $('#amount-staked-per-contract-nxm').click(() => {
 })
 
 $.get('percent_nxm_supply_staked', (response) => {
-  Plotly.newPlot('percentNxmSupplyStaked', [{
+  Plotly.newPlot('percentOfNxmSupplyStaked', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
     fill: 'tozeroy',
