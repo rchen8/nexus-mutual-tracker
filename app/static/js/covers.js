@@ -81,30 +81,30 @@ $('#active-cover-amount-by-expiration-date-eth').click(() => {
   toggleCurrency('#active-cover-amount-by-expiration-date', 'eth', 'usd')
 })
 
-const renderAverageCoverAmount = (currency) => {
-  if (averageCoverAmount !== undefined) {
-    Plotly.newPlot('averageCoverAmount', [{
-      x: Object.keys(averageCoverAmount[currency]),
-      y: Object.values(averageCoverAmount[currency]),
+const renderPremiumsPaid = (currency) => {
+  if (premiumsPaid !== undefined) {
+    Plotly.newPlot('premiumsPaid', [{
+      x: Object.keys(premiumsPaid[currency]),
+      y: Object.values(premiumsPaid[currency]),
       fill: 'tozeroy',
       type: 'scatter'
     }])
   }
 }
 
-$.get('average_cover_amount', (response) => {
-  averageCoverAmount = response
-  $('#average-cover-amount-usd').click()
+$.get('premiums_paid', (response) => {
+  premiumsPaid = response
+  $('#premiums-paid-usd').click()
 })
 
-$('#average-cover-amount-usd').click(() => {
-  renderAverageCoverAmount('USD')
-  toggleCurrency('#average-cover-amount', 'usd', 'eth')
+$('#premiums-paid-usd').click(() => {
+  renderPremiumsPaid('USD')
+  toggleCurrency('#premiums-paid', 'usd', 'eth')
 })
 
-$('#average-cover-amount-eth').click(() => {
-  renderAverageCoverAmount('ETH')
-  toggleCurrency('#average-cover-amount', 'eth', 'usd')
+$('#premiums-paid-eth').click(() => {
+  renderPremiumsPaid('ETH')
+  toggleCurrency('#premiums-paid', 'eth', 'usd')
 })
 
 const renderAllCovers = (currency) => {
