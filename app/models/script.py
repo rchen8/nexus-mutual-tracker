@@ -43,23 +43,19 @@ def get_active_cover_amount(cache=False):
 def get_active_cover_amount_per_contract(cache=False):
   if cache:
     return json.loads(r.get('cover_amount_per_contract'))
-  if not price:
-    set_current_crypto_prices()
 
   cover_amount_per_contract = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   for cover in query_table(Cover):
     if datetime.now() < cover['end_time']:
       cover_amount_per_contract['USD'][cover['contract_name']] += \
-          cover['amount'] * price[cover['currency']]
-      cover_amount_per_contract['ETH'][cover['contract_name']] += \
-          cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+          cover['amount'] * float(r.get(cover['currency']))
+      cover_amount_per_contract['ETH'][cover['contract_name']] += cover['amount'] / \
+          (1 if cover['currency'] == 'ETH' else float(r.get('ETH')) / float(r.get('DAI')))
   return dict(cover_amount_per_contract)
 
 def get_active_cover_amount_by_expiration_date(cache=False):
   if cache:
     return json.loads(r.get('cover_amount_by_expiration_date'))
-  if not price:
-    set_current_crypto_prices()
 
   cover_amount_by_expiration_date = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   covers = query_table(Cover)
@@ -68,16 +64,16 @@ def get_active_cover_amount_by_expiration_date(cache=False):
   last_cover_amount_eth = 0
   for cover in covers:
     if datetime.now() < cover['end_time']:
-      last_cover_amount_usd += cover['amount'] * price[cover['currency']]
-      last_cover_amount_eth += \
-          cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+      last_cover_amount_usd += cover['amount'] * float(r.get(cover['currency']))
+      last_cover_amount_eth += cover['amount'] / \
+          (1 if cover['currency'] == 'ETH' else float(r.get('ETH')) / float(r.get('DAI')))
 
   covers.sort(key=lambda x: x['end_time'])
   for cover in covers:
     if datetime.now() < cover['end_time']:
-      last_cover_amount_usd -= cover['amount'] * price[cover['currency']]
-      last_cover_amount_eth -= \
-          cover['amount'] / (1 if cover['currency'] == 'ETH' else price['ETH'] / price['DAI'])
+      last_cover_amount_usd -= cover['amount'] * float(r.get(cover['currency']))
+      last_cover_amount_eth -= cover['amount'] / \
+          (1 if cover['currency'] == 'ETH' else float(r.get('ETH')) / float(r.get('DAI')))
       if last_cover_amount_usd < 0.01:
         last_cover_amount_usd = 0
       if last_cover_amount_eth < 0.01:
@@ -112,15 +108,13 @@ def get_premiums_paid(cache=False):
 def get_all_covers(cache=False):
   if cache:
     return json.loads(r.get('covers'))
-  if not price:
-    set_current_crypto_prices()
 
   covers = query_table(Cover)
   for cover in covers:
     cover['start_time'] = cover['start_time'].strftime('%Y-%m-%d %H:%M:%S')
     cover['end_time'] = cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
-    cover['amount_usd'] = cover['amount'] * price[cover['currency']]
-    cover['premium_usd'] = cover['premium'] * price[cover['currency']]
+    cover['amount_usd'] = cover['amount'] * float(r.get(cover['currency']))
+    cover['premium_usd'] = cover['premium'] * float(r.get(cover['currency']))
   return covers
 
 def get_all_claims(cache=False):
@@ -147,7 +141,9 @@ def get_all_votes(cache=False):
     if 'Claim %s' % vote['claim_id'] not in votes['USD']:
       votes['USD']['Claim %s' % vote['claim_id']] = {'Yes': 0, 'No': 0}
       votes['NXM']['Claim %s' % vote['claim_id']] = {'Yes': 0, 'No': 0}
-    votes['USD']['Claim %s' % vote['claim_id']][vote['verdict']] += vote['amount'] * price['NXM']
+
+    votes['USD']['Claim %s' % vote['claim_id']][vote['verdict']] += \
+        vote['amount'] * float(r.get('NXM'))
     votes['NXM']['Claim %s' % vote['claim_id']][vote['verdict']] += vote['amount']
   return votes
 
@@ -222,7 +218,7 @@ def get_nxm_price(cache=False):
         (A + (timestamp_to_mcr(mcrs, time) / C) * (mcr_percentage[time] / 100)**4) * eth_price
     nxm_price['ETH'][time] = \
         A + (timestamp_to_mcr(mcrs, time) / C) * (mcr_percentage[time] / 100)**4
-  price['NXM'] = nxm_price['USD'][max(nxm_price['USD'])]
+  r.set('NXM', nxm_price['USD'][max(nxm_price['USD'])])
   return nxm_price
 
 def get_total_amount_staked(cache=False):
@@ -258,7 +254,7 @@ def get_amount_staked_per_contract(cache=False):
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for txn in query_table(StakingTransaction):
     if datetime.now() < txn['end_time']:
-      amount_staked_per_contract['USD'][txn['contract_name']] += txn['amount'] * price['NXM']
+      amount_staked_per_contract['USD'][txn['contract_name']] += txn['amount'] * float(r.get('NXM'))
       amount_staked_per_contract['NXM'][txn['contract_name']] += txn['amount']
   return dict(amount_staked_per_contract)
 
@@ -286,7 +282,8 @@ def get_staking_reward_per_contract(cache=False):
 
   staking_reward_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for reward in query_table(StakingReward):
-    staking_reward_per_contract['USD'][reward['contract_name']] += reward['amount'] * price['NXM']
+    staking_reward_per_contract['USD'][reward['contract_name']] += \
+        reward['amount'] * float(r.get('NXM'))
     staking_reward_per_contract['NXM'][reward['contract_name']] += reward['amount']
   return dict(staking_reward_per_contract)
 
@@ -298,7 +295,7 @@ def get_all_stakes(cache=False):
   for stake in stakes:
     stake['start_time'] = stake['start_time'].strftime('%Y-%m-%d %H:%M:%S')
     stake['end_time'] = stake['end_time'].strftime('%Y-%m-%d %H:%M:%S')
-    stake['amount_usd'] = stake['amount'] * price['NXM']
+    stake['amount_usd'] = stake['amount'] * float(r.get('NXM'))
   return stakes
 
 def get_nxm_return_vs_eth(cache=False):

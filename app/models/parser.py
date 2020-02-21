@@ -188,8 +188,6 @@ def parse_staking_transactions():
   db.session.commit()
 
 def parse_etherscan_data():
-  set_current_crypto_prices()
-
   parse_cover_event_logs()
   parse_claim_event_logs()
   parse_verdict_event_logs()

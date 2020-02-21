@@ -3,9 +3,14 @@ from .models import HistoricalPrice
 from datetime import datetime
 import json
 import os
+import redis
 import requests
+import sys
 
-price = {}
+if 'gunicorn' in sys.argv[0] or 'job.py' in sys.argv[0] or not sys.argv[0]: # Production Redis
+  r = redis.from_url(os.environ['REDIS_URL'])
+else: # Development Redis
+  r = redis.Redis(host='localhost', port=6379)
 
 def query_table(table, order=None):
   rows = []
@@ -55,8 +60,8 @@ def get_historical_crypto_price(symbol, timestamp):
 def set_current_crypto_prices():
   url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DAI&tsyms=USD'
   result = json.loads(requests.get(url).text)
-  price['ETH'] = result['ETH']['USD']
-  price['DAI'] = result['DAI']['USD']
+  r.set('ETH', result['ETH']['USD'])
+  r.set('DAI', result['DAI']['USD'])
 
 def timestamp_to_mcr(mcrs, timestamp):
   for i in range(len(mcrs)):

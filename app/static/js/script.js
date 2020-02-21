@@ -34,6 +34,7 @@ const toLocalTimezone = (date) => {
       (date.getMonth() + 1) + '-'
   date_string += date.getDate() <= 9 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
   date_string += date.toLocaleTimeString('en-US', {'hour12' : false})
+  date_string = date_string.replace(' 24:', ' 00:')
   return date_string
 }
 
