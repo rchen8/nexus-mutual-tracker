@@ -23,6 +23,14 @@ def average_cover_amount():
 def all_covers():
   return jsonify(script.get_all_covers(cache=True))
 
+@app.route('/all_claims', methods=['GET'])
+def all_claims():
+  return jsonify(script.get_all_claims(cache=True))
+
+@app.route('/all_votes', methods=['GET'])
+def all_votes():
+  return jsonify(script.get_all_votes(cache=True))
+
 @app.route('/capital_pool_size', methods=['GET'])
 def capital_pool_size():
   return jsonify(script.get_capital_pool_size(cache=True))

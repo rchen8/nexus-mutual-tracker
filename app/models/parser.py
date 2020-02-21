@@ -18,7 +18,7 @@ def get_event_logs(table, address, topic0):
   return json.loads(requests.get(url).text)['result']
 
 def parse_cover_event_logs():
-  address = '0x1776651F58a17a50098d31ba3C3cD259C1903f7A'
+  address = '0x1776651f58a17a50098d31ba3c3cd259c1903f7a'
   topic0 = '0x535c0318711210e1ce39e443c5948dd7fa396c2774d0949812fcb74800e22730'
   for event in get_event_logs(Cover, address, topic0):
     data = textwrap.wrap(event['data'][2:], 64)
@@ -32,10 +32,48 @@ def parse_cover_event_logs():
       start_time=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       end_time=datetime.fromtimestamp(int(data[2], 16))
     ))
-    db.session.commit()
+  db.session.commit()
+
+def parse_claim_event_logs():
+  address = '0xdc2d359f59f6a26162972c3bd0cfbfd8c9ef43af'
+  topic0 = '0x040b2cc991821ffe51dd33e7f7a2d0e6f64d2ad487cdabbf9e8c1805a93028c4'
+  for event in get_event_logs(Claim, address, topic0):
+    data = textwrap.wrap(event['data'][2:], 64)
+    db.session.add(Claim(
+      block_number=int(event['blockNumber'], 16),
+      claim_id=int(data[0], 16),
+      cover_id=int(event['topics'][1], 16),
+      date=datetime.fromtimestamp(int(data[1], 16))
+    ))
+  db.session.commit()
+
+def parse_verdict_event_logs():
+  address = '0x1776651f58a17a50098d31ba3c3cd259c1903f7a'
+  topic0 = '0x7f1cec39abbda212a819b9165ccfc4064f73eb454b052a312807b2270067a53d'
+  for event in get_event_logs(None, address, topic0):
+    if int(event['data'], 16) == 1:
+      Claim.query.filter_by(cover_id=int(event['topics'][1], 16)).first().verdict = 'Accepted'
+    elif int(event['data'], 16) == 2:
+      Claim.query.filter_by(cover_id=int(event['topics'][1], 16)).first().verdict = 'Denied'
+  db.session.commit()
+
+def parse_vote_event_logs():
+  address = '0xdc2d359f59f6a26162972c3bd0cfbfd8c9ef43af'
+  topic0 = '0xccc99158fb6c7b960e4d6e873692c8e8f8785c44da681aad285f3251940840d9'
+  for event in get_event_logs(Vote, address, topic0):
+    data = textwrap.wrap(event['data'][2:], 64)
+    db.session.add(Vote(
+      id=get_last_id(Vote) + 1,
+      block_number=int(event['blockNumber'], 16),
+      claim_id=int(event['topics'][2], 16),
+      amount=int(data[0], 16) / 10**18,
+      date=datetime.fromtimestamp(int(data[1], 16)),
+      verdict='Yes' if int(data[2], 16) == 1 else 'No'
+    ))
+  db.session.commit()
 
 def parse_mcr_event_logs():
-  address = '0x2EC5d566bd104e01790B13DE33fD51876d57C495'
+  address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
   topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
   for event in get_event_logs(MinimumCapitalRequirement, address, topic0):
     db.session.add(MinimumCapitalRequirement(
@@ -43,10 +81,10 @@ def parse_mcr_event_logs():
       block_number=int(event['blockNumber'], 16),
       mcr=int(textwrap.wrap(event['data'][2:], 64)[3], 16) / 10**18
     ))
-    db.session.commit()
+  db.session.commit()
 
 def parse_staking_event_logs():
-  address='0xE20B3aE826Cdb43676e418F7C3B84B75b5697a40'
+  address='0xe20b3ae826cdb43676e418f7c3b84b75b5697a40'
   topic0 = '0x05456de91d83e21ad7c41a09ae7cb41836049c49e6ddaf07bdfc40c2231885d2'
   for event in get_event_logs(StakingReward, address, topic0):
     db.session.add(StakingReward(
@@ -57,10 +95,10 @@ def parse_staking_event_logs():
       contract_name=address_to_contract_name(event['topics'][2][-40:]),
       amount=int(event['data'], 16) / 10**18
     ))
-    db.session.commit()
+  db.session.commit()
 
 def parse_nxm_event_logs():
-  address = '0xd7c49CEE7E9188cCa6AD8FF264C1DA2e69D4Cf3B'
+  address = '0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b'
   topic0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
   for event in get_event_logs(NXMTransaction, address, topic0):
     db.session.add(NXMTransaction(
@@ -71,7 +109,7 @@ def parse_nxm_event_logs():
       to_address='0x' + event['topics'][2][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
-    db.session.commit()
+  db.session.commit()
 
 def parse_transactions(txns, address, symbol):
   for txn in txns:
@@ -91,7 +129,7 @@ def parse_transactions(txns, address, symbol):
           amount=amount,
           currency=symbol
         ))
-        db.session.commit()
+  db.session.commit()
 
 def build_transaction_url(address, startblock):
   module = 'account'
@@ -103,8 +141,8 @@ def build_transaction_url(address, startblock):
          % (module, action, address, startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
 
 def parse_eth_transactions(startblock):
-  addresses = ['0xfD61352232157815cF7B71045557192Bf0CE1884',
-               '0x7cbE5682be6b648Cc1100C76D4F6C96997F753d6']
+  addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
+               '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
   for address in addresses:
     url = build_transaction_url(address, startblock)
     parse_transactions(json.loads(requests.get(url).text)['result'], address, 'ETH')
@@ -112,12 +150,12 @@ def parse_eth_transactions(startblock):
     parse_transactions(json.loads(requests.get(url).text)['result'], address, 'ETH')
 
 def parse_dai_transactions(startblock):
-  addresses = ['0xfD61352232157815cF7B71045557192Bf0CE1884',
-               '0x7cbE5682be6b648Cc1100C76D4F6C96997F753d6']
+  addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
+               '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
   for address in addresses:
     module = 'account'
     action = 'tokentx'
-    contractaddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359'
+    contractaddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
     endblock = 'latest'
     sort = 'asc'
     url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
@@ -128,7 +166,7 @@ def parse_dai_transactions(startblock):
 
 def parse_staking_transactions():
   startblock = get_latest_block_number(StakingTransaction) + 1
-  url = build_transaction_url('0xDF50A17bF58dea5039B73683a51c4026F3c7224E', startblock)
+  url = build_transaction_url('0xdf50a17bf58dea5039b73683a51c4026f3c7224e', startblock)
   for txn in json.loads(requests.get(url).text)['result']:
     if txn['isError'] == '0':
       data = textwrap.wrap(txn['input'][10:], 64)
@@ -143,12 +181,16 @@ def parse_staking_transactions():
           address='0x' + data[0][-40:],
           amount=float(int(data[1], 16)) / 10**18
         ))
-        db.session.commit()
+  db.session.commit()
 
 def parse_etherscan_data():
   set_current_crypto_prices()
 
   parse_cover_event_logs()
+  parse_claim_event_logs()
+  parse_verdict_event_logs()
+  parse_vote_event_logs()
+
   parse_mcr_event_logs()
   parse_staking_event_logs()
   parse_nxm_event_logs()

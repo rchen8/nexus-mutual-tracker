@@ -21,6 +21,8 @@ def get_last_id(table):
   return 0 if not id else id
 
 def get_latest_block_number(table):
+  if table is None:
+    return 0
   block_number = db.session.query(db.func.max(table.block_number)).scalar()
   return 0 if not block_number else block_number
 

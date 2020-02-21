@@ -126,6 +126,34 @@ def get_all_covers(cache=False):
     cover['premium_usd'] = cover['premium'] * price[cover['currency']]
   return covers
 
+def get_all_claims(cache=False):
+  if cache:
+    return json.loads(r.get('claims'))
+
+  covers = sorted(get_all_covers(cache=True), key=lambda x: x['cover_id'])
+  claims = query_table(Claim)
+  for claim in claims:
+    claim['contract_name'] = covers[claim['cover_id'] - 1]['contract_name']
+    claim['amount_usd'] = covers[claim['cover_id'] - 1]['amount_usd']
+    claim['amount'] = covers[claim['cover_id'] - 1]['amount']
+    claim['currency'] = covers[claim['cover_id'] - 1]['currency']
+    claim['start_time'] = covers[claim['cover_id'] - 1]['start_time']
+    claim['date'] = claim['date'].strftime('%Y-%m-%d %H:%M:%S')
+  return claims
+
+def get_all_votes(cache=False):
+  if cache:
+    return json.loads(r.get('votes'))
+
+  votes = {'USD': {}, 'NXM': {}}
+  for vote in query_table(Vote):
+    if 'Claim %s' % vote['claim_id'] not in votes['USD']:
+      votes['USD']['Claim %s' % vote['claim_id']] = {'Yes': 0, 'No': 0}
+      votes['NXM']['Claim %s' % vote['claim_id']] = {'Yes': 0, 'No': 0}
+    votes['USD']['Claim %s' % vote['claim_id']][vote['verdict']] += vote['amount'] * price['NXM']
+    votes['NXM']['Claim %s' % vote['claim_id']][vote['verdict']] += vote['amount']
+  return votes
+
 def get_capital_pool_size(cache=False):
   if cache:
     return json.loads(r.get('capital_pool_size'))
@@ -230,7 +258,6 @@ def get_amount_staked_per_contract(cache=False):
   if cache:
     return json.loads(r.get('amount_staked_per_contract'))
 
-  get_nxm_price(cache=True)
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for txn in query_table(StakingTransaction):
     if datetime.now() < txn['end_time']:
@@ -260,7 +287,6 @@ def get_staking_reward_per_contract(cache=False):
   if cache:
     return json.loads(r.get('staking_reward_per_contract'))
 
-  get_nxm_price(cache=True)
   staking_reward_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for reward in query_table(StakingReward):
     staking_reward_per_contract['USD'][reward['contract_name']] += reward['amount'] * price['NXM']
@@ -271,7 +297,6 @@ def get_all_stakes(cache=False):
   if cache:
     return json.loads(r.get('stakes'))
 
-  get_nxm_price(cache=True)
   stakes = query_table(StakingTransaction)
   for stake in stakes:
     stake['start_time'] = stake['start_time'].strftime('%Y-%m-%d %H:%M:%S')
@@ -366,12 +391,14 @@ def cache_graph_data():
       json.dumps(get_active_cover_amount_by_expiration_date(cache=False)))
   r.set('average_cover_amount', json.dumps(get_average_cover_amount(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))
+  r.set('claims', json.dumps(get_all_claims(cache=False)))
   r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))
   r.set('cover_amount_to_capital_pool_ratio',
       json.dumps(get_cover_amount_to_capital_pool_ratio(cache=False)))
   r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))
   r.set('mcr_percentage', json.dumps(get_mcr_percentage(over_100=True, cache=False)))
   r.set('nxm_price', json.dumps(get_nxm_price(cache=False)))
+  r.set('votes', json.dumps(get_all_votes(cache=False)))
   r.set('amount_staked', json.dumps(get_total_amount_staked(cache=False)))
   r.set('amount_staked_per_contract', json.dumps(get_amount_staked_per_contract(cache=False)))
   r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))

@@ -1,8 +1,8 @@
-activeCoverAmount = undefined
-activeCoverAmountPerContract = undefined
-activeCoverAmountByExpirationDate = undefined
-averageCoverAmount = undefined
-allCovers = undefined
+let activeCoverAmount = undefined
+let activeCoverAmountPerContract = undefined
+let activeCoverAmountByExpirationDate = undefined
+let averageCoverAmount = undefined
+let allCovers = undefined
 
 const renderActiveCoverAmount = (currency) => {
   if (activeCoverAmount !== undefined) {
@@ -109,11 +109,11 @@ $('#average-cover-amount-eth').click(() => {
 
 const renderAllCovers = (currency) => {
   if (allCovers !== undefined) {
-    table = $('#coverDataTable').DataTable()
+    const table = $('#coverDataTable').DataTable()
     table.clear()
-    for (cover of allCovers) {
-      coverAmount = 0
-      premium = 0
+    for (let cover of allCovers) {
+      let coverAmount = 0
+      let premium = 0
       if (currency === 'USD') {
         coverAmount = '$' + cover['amount_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         premium = '$' + cover['premium_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')

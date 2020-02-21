@@ -1,5 +1,5 @@
-nxmPrice = undefined
-nxmMarketCap = undefined
+let nxmPrice = undefined
+let nxmMarketCap = undefined
 
 const renderNXMPrice = (currency) => {
   if (nxmPrice !== undefined) {

@@ -1,8 +1,8 @@
-totalAmountStaked = undefined
-amountStakedPerContract = undefined
-totalStakingReward = undefined
-stakingRewardPerContract = undefined
-allStakes = undefined
+let totalAmountStaked = undefined
+let amountStakedPerContract = undefined
+let totalStakingReward = undefined
+let stakingRewardPerContract = undefined
+let allStakes = undefined
 
 const renderTotalAmountStaked = (currency) => {
   if (totalAmountStaked !== undefined) {
@@ -117,10 +117,10 @@ $('#staking-reward-per-contract-nxm').click(() => {
 
 const renderAllStakes = (currency) => {
   if (allStakes !== undefined) {
-    table = $('#stakeDataTable').DataTable()
+    const table = $('#stakeDataTable').DataTable()
     table.clear()
-    for (stake of allStakes) {
-      stakedAmount = 0
+    for (let stake of allStakes) {
+      let stakedAmount = 0
       if (currency === 'USD') {
         stakedAmount = '$' + stake['amount_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       } else {

@@ -8,7 +8,7 @@
       <span>Covers</span>
     </a>
   </li>
-  <li class="nav-item">
+  <li class="nav-item active">
     <a class="nav-link" href="claims">
       <i class="fas fa-ticket-alt"></i>
       <span>Claims</span>
@@ -26,7 +26,7 @@
       <span>Staking</span>
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item">
     <a class="nav-link" href="token">
       <i class="fas fa-chart-line"></i>
       <span>NXM Token</span>
@@ -38,52 +38,39 @@
   <div class="container-fluid">
     <div class="card mb-3">
       <div class="card-header">
-        NXM Price
+        All Claims
         <span style="float:right;">
-          <button id="nxm-price-usd">USD</button><button id="nxm-price-eth">ETH</button>
+          <button id="all-claims-usd">USD</button><button id="all-claims-eth-dai">ETH/DAI</button>
         </span>
       </div>
       <div class="card-body">
-        <div id="nxmPrice"></div>
+        <div class="table-responsive">
+          <table class="table table-bordered" id="claimDataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Claim ID</th>
+                <th>Cover ID</th>
+                <th>Smart Contract</th>
+                <th>Claim Amount</th>
+                <th>Purchase Date</th>
+                <th>Claim Submitted</th>
+                <th>Final Verdict</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
       </div>
     </div>
 
     <div class="card mb-3">
       <div class="card-header">
-        NXM Return vs. ETH (%)
-      </div>
-      <div class="card-body">
-        <div id="nxmReturnVsEth"></div>
-      </div>
-    </div>
-
-    <div class="card mb-3">
-      <div class="card-header">
-        NXM Supply
-      </div>
-      <div class="card-body">
-        <div id="nxmSupply"></div>
-      </div>
-    </div>
-
-    <div class="card mb-3">
-      <div class="card-header">
-        NXM Market Cap
+        All Votes
         <span style="float:right;">
-          <button id="nxm-market-cap-usd">USD</button><button id="nxm-market-cap-eth">ETH</button>
+          <button id="all-votes-usd">USD</button><button id="all-votes-nxm">NXM</button>
         </span>
       </div>
       <div class="card-body">
-        <div id="nxmMarketCap"></div>
-      </div>
-    </div>
-
-    <div class="card mb-3">
-      <div class="card-header">
-        NXM Distribution
-      </div>
-      <div class="card-body">
-        <div id="nxmDistribution"></div>
+        <div id="allVotes"></div>
       </div>
     </div>
   </div>
@@ -91,6 +78,6 @@
   {% include '_footer.html' %}
 </div>
 
-<script src="js/token.js"></script>
+<script src="js/claims.js"></script>
 
 {% endblock %}

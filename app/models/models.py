@@ -10,6 +10,21 @@ class Cover(db.Model):
   start_time = db.Column(db.DateTime, nullable=False)
   end_time = db.Column(db.DateTime, nullable=False)
 
+class Claim(db.Model):
+  block_number = db.Column(db.Integer, index=True, nullable=False)
+  claim_id = db.Column(db.Integer, primary_key=True)
+  cover_id = db.Column(db.Integer, nullable=False)
+  date = db.Column(db.DateTime, nullable=False)
+  verdict = db.Column(db.String, default='Pending')
+
+class Vote(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  block_number = db.Column(db.Integer, index=True, nullable=False)
+  claim_id = db.Column(db.Integer, nullable=False)
+  amount = db.Column(db.Float, nullable=False)
+  date = db.Column(db.DateTime, nullable=False)
+  verdict = db.Column(db.String, nullable=False)
+
 class Transaction(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   block_number = db.Column(db.Integer, index=True, nullable=False)
