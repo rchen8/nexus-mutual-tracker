@@ -63,6 +63,24 @@ def set_current_crypto_prices():
   r.set('ETH', result['ETH']['USD'])
   r.set('DAI', result['DAI']['USD'])
 
+def json_to_csv(graph):
+  data = json.loads(r.get(graph))
+  if type(data) is list:
+    csv = [list(data[0].keys())]
+    for row in data:
+      csv.append([row[key] for key in csv[0]])
+    return csv
+  elif 'USD' in data:
+    csv = [[''] + list(data.keys())]
+    for key in sorted(list(data[csv[0][1]].keys())):
+      csv.append([key, data[csv[0][1]][key], data[csv[0][2]][key]])
+    return csv
+  else:
+    csv = []
+    for key in sorted(data.keys()):
+      csv.append([key, data[key]])
+    return csv
+
 def timestamp_to_mcr(mcrs, timestamp):
   for i in range(len(mcrs)):
     mcr = mcrs[i]
