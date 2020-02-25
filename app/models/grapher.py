@@ -378,6 +378,22 @@ def get_nxm_distribution(cache=False):
       nxm_distribution.pop('0x5407381b6c251cfd498ccd4a1d877739cb7960b8')
   return nxm_distribution
 
+def get_unique_addresses(cache=False):
+  if cache:
+    return json.loads(r.get('unique_addresses'))
+
+  balances = defaultdict(int)
+  unique_addresses = {}
+  for txn in query_table(NXMTransaction, order=NXMTransaction.block_number):
+    balances[txn['from_address']] -= txn['amount']
+    balances[txn['to_address']] += txn['amount']
+
+    for address in list(balances):
+      if balances[address] < 10**-8:
+        del balances[address]
+    unique_addresses[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = len(balances)
+  return unique_addresses
+
 def cache_graph_data():
   r.set('cover_amount', json.dumps(get_active_cover_amount(cache=False)))
   r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
@@ -403,3 +419,4 @@ def cache_graph_data():
   r.set('percent_nxm_supply_staked', json.dumps(get_percent_nxm_supply_staked(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
   r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))
+  r.set('unique_addresses', json.dumps(get_unique_addresses(cache=False)))

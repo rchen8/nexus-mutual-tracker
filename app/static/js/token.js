@@ -88,3 +88,12 @@ $.get('nxm_distribution', (response) => {
     textinfo: 'none'
   }])
 })
+
+$.get('unique_addresses', (response) => {
+  Plotly.newPlot('uniqueAddresses', [{
+    x: getDateTimesInLocalTimezone(Object.keys(response)),
+    y: Object.values(response),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }])
+})

@@ -93,6 +93,10 @@ def nxm_market_cap():
 def nxm_distribution():
   return jsonify(grapher.get_nxm_distribution(cache=True))
 
+@app.route('/unique_addresses', methods=['GET'])
+def unique_addresses():
+  return jsonify(grapher.get_unique_addresses(cache=True))
+
 ####################################################################################################
 
 @app.route('/download/<graph>', methods=['GET'])
