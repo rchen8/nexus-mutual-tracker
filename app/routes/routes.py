@@ -1,5 +1,5 @@
 from ..models import parser, grapher, utils
-from flask import jsonify, make_response, render_template, request, send_from_directory
+from flask import jsonify, make_response, redirect, render_template, send_from_directory
 from app import app
 import csv
 import io
@@ -108,6 +108,10 @@ def download(graph):
   output.headers['Content-Disposition'] = 'attachment; filename=%s.csv' % graph
   output.headers['Content-type'] = 'text/csv'
   return output
+
+@app.route('/staked', methods=['GET'])
+def staked():
+  return redirect('/staking')
 
 @app.route('/<template>', methods=['GET'])
 def render(template):
