@@ -388,9 +388,8 @@ def get_unique_addresses(cache=False):
     balances[txn['from_address']] -= txn['amount']
     balances[txn['to_address']] += txn['amount']
 
-    for address in list(balances):
-      if balances[address] < 10**-8:
-        del balances[address]
+    if balances[txn['from_address']] < 10**-8:
+      del balances[txn['from_address']]
     unique_addresses[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = len(balances)
   return unique_addresses
 
