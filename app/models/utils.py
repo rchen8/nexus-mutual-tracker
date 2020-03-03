@@ -125,6 +125,7 @@ def address_to_contract_name(address):
     '6e95c8e8557abc08b46f3c347ba06f8dc012763f': 'Gnosis',
     'ff1a8eda5eacdb6aaf729905492bdc6376dbe2dd': 'Gnosis',
     '34cfac646f301356faa8b21e94227e3583fe3f5f': 'Gnosis',
+    '2b591e99afe9f32eaa6214f7b7629768c40eeb39': 'HEX',
     '2a0c0dbecc7e4d658f48e01e3fa353f44050c208': 'IDEX',
     '10ec0d497824e342bcb0edce00959142aaa766dd': 'Idle',
     '9d25057e62939d3408406975ad75ffe834da4cdd': 'iearn.finance',
