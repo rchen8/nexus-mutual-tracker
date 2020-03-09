@@ -95,7 +95,7 @@ def address_to_contract_name(address):
     '080bf510fcbf18b91105470639e9561022937712': '0x',
     '12459c951127e0c374ff9105dda097662a027093': '0x',
     'b27f1db0a7e473304a5a06e54bdf035f671400c0': '0x',
-    '11111254369792b2ca5d084ab5eea397ca8fa48b': '1inch.exchange',
+    '11111254369792b2ca5d084ab5eea397ca8fa48b': '1inch',
     '3dfd23a6c5e8bbcfc9581d2e864a68feb6a076d3': 'Aave',
     'c1d2819ce78f3e15ee69c6738eb1b400a26e632a': 'Aave',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
