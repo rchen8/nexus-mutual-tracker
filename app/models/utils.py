@@ -171,6 +171,7 @@ def address_to_contract_name(address):
     '94a1b5cdb22c43faab4abeb5c74999895464ddaf': 'Tornado.cash',
     '12d66f87a04a9e220743712ce6d9bb1b5616b8fc': 'Tornado.cash',
     'cd2053679de3bcf2b7e2c2efb6b499c57701222c': 'Totle',
+    '77208a6000691e440026bed1b178ef4661d37426': 'Totle',
     'c0a47dfe034b400b47bdad5fecda2621de6c4d95': 'Uniswap',
     '2c4bd064b998838076fa341a83d007fc2fa50957': 'Uniswap',
     '09cabec1ead1c0ba254b09efb3ee13841712be14': 'Uniswap',
