@@ -138,13 +138,13 @@ def get_all_votes(cache=False):
 
   votes = {'USD': {}, 'NXM': {}}
   for vote in query_table(Vote):
-    if 'Claim %s' % vote['claim_id'] not in votes['USD']:
-      votes['USD']['Claim %s' % vote['claim_id']] = {'Yes': 0, 'No': 0}
-      votes['NXM']['Claim %s' % vote['claim_id']] = {'Yes': 0, 'No': 0}
+    if 'Claim {:02d}'.format(vote['claim_id']) not in votes['USD']:
+      votes['USD']['Claim {:02d}'.format(vote['claim_id'])] = {'Yes': 0, 'No': 0}
+      votes['NXM']['Claim {:02d}'.format(vote['claim_id'])] = {'Yes': 0, 'No': 0}
 
-    votes['USD']['Claim %s' % vote['claim_id']][vote['verdict']] += \
+    votes['USD']['Claim {:02d}'.format(vote['claim_id'])][vote['verdict']] += \
         vote['amount'] * float(r.get('NXM'))
-    votes['NXM']['Claim %s' % vote['claim_id']][vote['verdict']] += vote['amount']
+    votes['NXM']['Claim {:02d}'.format(vote['claim_id'])][vote['verdict']] += vote['amount']
   return votes
 
 def get_capital_pool_size(cache=False):
