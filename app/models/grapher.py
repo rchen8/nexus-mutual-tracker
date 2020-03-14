@@ -105,6 +105,18 @@ def get_premiums_paid(cache=False):
         total_eth + total_dai / (eth_price / dai_price)
   return premiums_paid
 
+def get_premiums_paid_per_contract(cache=False):
+  if cache:
+    return json.loads(r.get('premiums_paid_per_contract'))
+
+  premiums_paid_per_contract = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+  for cover in query_table(Cover):
+    premiums_paid_per_contract['USD'][cover['contract_name']] += \
+        cover['premium'] * float(r.get(cover['currency']))
+    premiums_paid_per_contract['ETH'][cover['contract_name']] += cover['premium'] / \
+        (1 if cover['currency'] == 'ETH' else float(r.get('ETH')) / float(r.get('DAI')))
+  return dict(premiums_paid_per_contract)  
+
 def get_all_covers(cache=False):
   if cache:
     return json.loads(r.get('covers'))
@@ -399,6 +411,7 @@ def cache_graph_data():
   r.set('cover_amount_by_expiration_date',
       json.dumps(get_active_cover_amount_by_expiration_date(cache=False)))
   r.set('premiums_paid', json.dumps(get_premiums_paid(cache=False)))
+  r.set('premiums_paid_per_contract', json.dumps(get_premiums_paid_per_contract(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))
   r.set('claims', json.dumps(get_all_claims(cache=False)))
   r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))

@@ -1,7 +1,8 @@
 let activeCoverAmount = undefined
 let activeCoverAmountPerContract = undefined
 let activeCoverAmountByExpirationDate = undefined
-let averageCoverAmount = undefined
+let premiumsPaid = undefined
+let premiumsPaidPerContract = undefined
 let allCovers = undefined
 
 const renderActiveCoverAmount = (currency) => {
@@ -105,6 +106,31 @@ $('#premiums-paid-usd').click(() => {
 $('#premiums-paid-eth').click(() => {
   renderPremiumsPaid('ETH')
   toggleCurrency('#premiums-paid', 'eth', 'usd')
+})
+
+const renderPremiumsPaidPerContract = (currency) => {
+  if (premiumsPaidPerContract !== undefined) {
+    Plotly.newPlot('premiumsPaidPerContract', [{
+      x: Object.keys(premiumsPaidPerContract[currency]),
+      y: Object.values(premiumsPaidPerContract[currency]),
+      type: 'bar'
+    }])
+  }
+}
+
+$.get('premiums_paid_per_contract', (response) => {
+  premiumsPaidPerContract = response
+  $('#premiums-paid-per-contract-usd').click()
+})
+
+$('#premiums-paid-per-contract-usd').click(() => {
+  renderPremiumsPaidPerContract('USD')
+  toggleCurrency('#premiums-paid-per-contract', 'usd', 'eth')
+})
+
+$('#premiums-paid-per-contract-eth').click(() => {
+  renderPremiumsPaidPerContract('ETH')
+  toggleCurrency('#premiums-paid-per-contract', 'eth', 'usd')
 })
 
 const renderAllCovers = (currency) => {

@@ -21,6 +21,10 @@ def active_cover_amount_by_expiration_date():
 def premiums_paid():
   return jsonify(grapher.get_premiums_paid(cache=True))
 
+@app.route('/premiums_paid_per_contract', methods=['GET'])
+def premiums_paid_per_contract():
+  return jsonify(grapher.get_premiums_paid_per_contract(cache=True))
+
 @app.route('/all_covers', methods=['GET'])
 def all_covers():
   return jsonify(grapher.get_all_covers(cache=True))
