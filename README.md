@@ -13,7 +13,8 @@ python -
 >>> from app import db
 >>> db.create_all()
 ```
-If starting the app for the first time, first run `python job.py`. To start the app:
+To start the app:
 ```
+python job.py
 python server.py
 ```
