@@ -67,7 +67,7 @@ const renderAllVotes = (currency) => {
     type: 'bar',
   };
 
-  Plotly.newPlot('allVotes', [yes, no]);
+  Plotly.newPlot('allVotes', [yes, no], { height: 30 * Object.keys(allVotes[currency]).length });
 }
 
 $.get('all_votes', (response) => {
