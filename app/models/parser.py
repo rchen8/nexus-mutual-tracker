@@ -156,17 +156,19 @@ def parse_eth_transactions(startblock):
 def parse_dai_transactions(startblock):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
                '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
+  contractaddresses = ['0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
+                       '0x6b175474e89094c44da98b954eedeac495271d0f']
   for address in addresses:
-    module = 'account'
-    action = 'tokentx'
-    contractaddress = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
-    endblock = 'latest'
-    sort = 'asc'
-    url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
-          'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
-          % (module, action, contractaddress, address,
-          startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
-    parse_transactions(json.loads(requests.get(url).text)['result'], address, 'DAI')
+    for contractaddress in contractaddresses:
+      module = 'account'
+      action = 'tokentx'
+      endblock = 'latest'
+      sort = 'asc'
+      url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
+            'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
+            % (module, action, contractaddress, address,
+            startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
+      parse_transactions(json.loads(requests.get(url).text)['result'], address, 'DAI')
 
 def parse_staking_transactions():
   startblock = get_latest_block_number(StakingTransaction) + 1
