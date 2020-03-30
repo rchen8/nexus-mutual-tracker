@@ -15,6 +15,6 @@ python -
 ```
 To start the app:
 ```
-python job.py
-python server.py
+python job.py # populate the database
+python server.py # start the app
 ```
