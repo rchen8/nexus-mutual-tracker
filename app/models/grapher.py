@@ -253,10 +253,10 @@ def get_total_amount_staked(cache=False):
       historical_nxm_price = nxm_price['USD'] \
           [nxm_times[bisect.bisect(nxm_times, time.strftime('%Y-%m-%d %H:%M:%S')) - 1]]
 
-      amount_staked['USD'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
-          sum([interval.data for interval in intervals]) * historical_nxm_price
-      amount_staked['NXM'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
-          sum([interval.data for interval in intervals])
+      amount = sum([(interval.end - time).total_seconds() / timedelta(days=250).total_seconds() * \
+          interval.data for interval in intervals])
+      amount_staked['USD'][time.strftime('%Y-%m-%d %H:%M:%S')] = amount * historical_nxm_price
+      amount_staked['NXM'][time.strftime('%Y-%m-%d %H:%M:%S')] = amount
   return amount_staked
 
 def get_amount_staked_per_contract(cache=False):
@@ -266,8 +266,10 @@ def get_amount_staked_per_contract(cache=False):
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for txn in query_table(StakingTransaction):
     if datetime.now() < txn['end_time']:
-      amount_staked_per_contract['USD'][txn['contract_name']] += txn['amount'] * float(r.get('NXM'))
-      amount_staked_per_contract['NXM'][txn['contract_name']] += txn['amount']
+      amount = (txn['end_time'] - datetime.now()).total_seconds() / \
+          timedelta(days=250).total_seconds() * txn['amount']
+      amount_staked_per_contract['USD'][txn['contract_name']] += amount * float(r.get('NXM'))
+      amount_staked_per_contract['NXM'][txn['contract_name']] += amount
   return dict(amount_staked_per_contract)
 
 def get_total_staking_reward(cache=False):
