@@ -154,6 +154,7 @@ def address_to_contract_name(address):
     '08c3a887865684f30351a0ba6d683aa9b539829a': 'Nexus Mutual',
     '802275979b020f0ec871c5ec1db6e412b72ff20b': 'Nuo Network',
     'd26114cd6ee289accf82350c8d8487fedb8a0c07': 'OmiseGO',
+    'b529964f86fbf99a6aa67f72a27e59fa3fa4feac': 'Opyn',
     '132030497cbc19d10cb2690ecf9690803519b5de': 'ParaSwap',
     '6b158039b9678b7452f311deb12dd08c579dad26': 'ParaSwap',
     '72338b82800400f5488eca2b5a37270ba3b7a111': 'ParaSwap',
