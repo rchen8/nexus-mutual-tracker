@@ -165,6 +165,7 @@ def address_to_contract_name(address):
     'b7896fce748396ecfc240f5a0d3cc92ca42d7d84': 'PoolTogether',
     '29fe7d60ddf151e5b52e5fab4f1325da6b2bd958': 'PoolTogether',
     '932773ae4b661029704e731722cf8129e1b32494': 'PoolTogether',
+    'af350211414c5dc176421ea05423f0cc494261fb': 'Saturn Network',
     '5b67871c3a857de81a1ca0f9f7945e5670d986dc': 'Set Protocol',
     'f55186cc537e7067ea616f2aae007b4427a120c8': 'Set Protocol',
     '882d80d3a191859d64477eb78cca46599307ec1c': 'Set Protocol',
