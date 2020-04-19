@@ -180,6 +180,7 @@ def address_to_contract_name(address):
     '09cabec1ead1c0ba254b09efb3ee13841712be14': 'Uniswap',
     '22d8432cc7aa4f8712a655fc4cdfb1baec29fca9': 'Uniswap',
     'f173214c720f58e03e194085b1db28b50acdeead': 'Uniswap',
+    '2157a7894439191e520825fe9399ab8655e0f708': 'Uniswap',
     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'Wrapped ETH'
   }
   return names[address.lower()] if address.lower() in names else 'Other'
