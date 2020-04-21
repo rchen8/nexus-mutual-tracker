@@ -117,6 +117,7 @@ def address_to_contract_name(address):
     '4e0f2b97307ad60b741f993c052733acc1ea5811': 'Dharma',
     'f7b3fc555c458c46d288ffd049ddbfb09f706df7': 'Dharma',
     '1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e': 'dYdX',
+    '364508a5ca0538d8119d3bf40a284635686c98c4': 'dYdX',
     'fec6f679e32d45e22736ad09dfdf6e3368704e31': 'Edgeware',
     '1b75b90e60070d37cfa9d87affd124bb345bf70a': 'Edgeware',
     '12f208476f64de6e6f933e55069ba9596d818e08': 'Flexa',
