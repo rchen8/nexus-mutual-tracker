@@ -109,6 +109,7 @@ def address_to_contract_name(address):
     'f5dce57282a584d2746faf1593d3121fcac444dc': 'Compound',
     '5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'Compound',
     '45f783cce6b7ff23b2ab2d70e416cdb7d6055f51': 'Curve',
+    '79a8c46dea5ada233abaffd40f3a0a2b1e5a4f27': 'Curve',
     '06012c8cf97bead5deae237070f9587f8e7a266d': 'CryptoKitties',
     '89d24a6b4ccb1b6faa2625fe562bdd9a23260359': 'Dai',
     '6b175474e89094c44da98b954eedeac495271d0f': 'Dai',
@@ -129,6 +130,7 @@ def address_to_contract_name(address):
     '2b591e99afe9f32eaa6214f7b7629768c40eeb39': 'HEX',
     '2a0c0dbecc7e4d658f48e01e3fa353f44050c208': 'IDEX',
     '10ec0d497824e342bcb0edce00959142aaa766dd': 'Idle',
+    '78751b12da02728f467a44eac40f5cbc16bd7934': 'Idle',
     '9d25057e62939d3408406975ad75ffe834da4cdd': 'iearn',
     '16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'iearn',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
@@ -183,6 +185,7 @@ def address_to_contract_name(address):
     '22d8432cc7aa4f8712a655fc4cdfb1baec29fca9': 'Uniswap',
     'f173214c720f58e03e194085b1db28b50acdeead': 'Uniswap',
     '2157a7894439191e520825fe9399ab8655e0f708': 'Uniswap',
+    '5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f': 'Uniswap',
     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'Wrapped ETH'
   }
   return names[address.lower()] if address.lower() in names else 'Other'
