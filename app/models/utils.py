@@ -113,6 +113,7 @@ def address_to_contract_name(address):
     '06012c8cf97bead5deae237070f9587f8e7a266d': 'CryptoKitties',
     '89d24a6b4ccb1b6faa2625fe562bdd9a23260359': 'Dai',
     '6b175474e89094c44da98b954eedeac495271d0f': 'Dai',
+    '519b70055af55a007110b4ff99b0ea33071c720a': 'DAOstack',
     '241e82c79452f51fbfc89fac6d912e021db1a3b7': 'DDEX',
     '8ef1351941d0cd8da09d5a4c74f2d64503031a18': 'Dharma',
     '4e0f2b97307ad60b741f993c052733acc1ea5811': 'Dharma',
