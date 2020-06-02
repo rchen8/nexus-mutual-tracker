@@ -2,7 +2,6 @@ from .. import db
 from .models import *
 from .utils import *
 from datetime import datetime, timedelta
-import json
 import os
 import requests
 import textwrap
@@ -15,7 +14,7 @@ def get_event_logs(table, address, topic0):
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
         % (module, action, fromBlock, toBlock, address, topic0, os.environ['ETHERSCAN_API_KEY'])
-  return json.loads(requests.get(url).text)['result']
+  return requests.get(url).json()['result']
 
 def parse_cover_event_logs():
   address = '0x1776651f58a17a50098d31ba3c3cd259c1903f7a'
@@ -149,9 +148,9 @@ def parse_eth_transactions(startblock):
                '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
   for address in addresses:
     url = build_transaction_url(address, startblock)
-    parse_transactions(json.loads(requests.get(url).text)['result'], address, 'ETH')
+    parse_transactions(requests.get(url).json()['result'], address, 'ETH')
     url = url.replace('txlist', 'txlistinternal')
-    parse_transactions(json.loads(requests.get(url).text)['result'], address, 'ETH')
+    parse_transactions(requests.get(url).json()['result'], address, 'ETH')
 
 def parse_dai_transactions(startblock):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
@@ -168,25 +167,30 @@ def parse_dai_transactions(startblock):
             'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
             % (module, action, contractaddress, address,
             startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
-      parse_transactions(json.loads(requests.get(url).text)['result'], address, 'DAI')
+      parse_transactions(requests.get(url).json()['result'], address, 'DAI')
 
 def parse_staking_transactions():
   startblock = get_latest_block_number(StakingTransaction) + 1
-  url = build_transaction_url('0xdf50a17bf58dea5039b73683a51c4026f3c7224e', startblock)
-  for txn in json.loads(requests.get(url).text)['result']:
-    if txn['isError'] == '0':
-      data = textwrap.wrap(txn['input'][10:], 64)
-      if len(data) == 2:
-        start_time = datetime.fromtimestamp(int(txn['timeStamp']))
-        db.session.add(StakingTransaction(
-          id=get_last_id(StakingTransaction) + 1,
-          block_number=txn['blockNumber'],
-          start_time=start_time,
-          end_time=start_time + timedelta(days=250),
-          contract_name=address_to_contract_name(data[0][-40:]),
-          address='0x' + data[0][-40:],
-          amount=float(int(data[1], 16)) / 10**18
-        ))
+  addresses = ['0xdf50a17bf58dea5039b73683a51c4026f3c7224e',
+               '0xa94c7e87e212669baee95d5d45305d05e6b8a28f']
+  for address in addresses:
+    url = build_transaction_url(address, startblock)
+    for txn in requests.get(url).json()['result']:
+      if txn['isError'] == '0':
+        data = textwrap.wrap(txn['input'][10:], 64)
+        if len(data) == 2:
+          amount = float(int(data[1], 16)) / 10**18
+          if amount >= 10**-8:
+            start_time = datetime.fromtimestamp(int(txn['timeStamp']))
+            db.session.add(StakingTransaction(
+              id=get_last_id(StakingTransaction) + 1,
+              block_number=txn['blockNumber'],
+              start_time=start_time,
+              end_time=start_time + timedelta(days=250),
+              contract_name=address_to_contract_name(data[0][-40:]),
+              address='0x' + data[0][-40:],
+              amount=amount
+            ))
   db.session.commit()
 
 def parse_etherscan_data():

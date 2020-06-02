@@ -39,10 +39,10 @@ def get_historical_crypto_price(symbol, timestamp):
   api = 'histominute' if (datetime.now() - timestamp).days < 7 else 'histohour'
   url = 'https://min-api.cryptocompare.com/data/%s?fsym=ETH&tsym=USD&limit=1&toTs=%s' % \
       (api, timestamp.timestamp())
-  eth_price = json.loads(requests.get(url).text)['Data'][-1]['close']
+  eth_price = requests.get(url).json()['Data'][-1]['close']
   url = 'https://min-api.cryptocompare.com/data/%s?fsym=DAI&tsym=USDT&limit=1&toTs=%s' % \
       (api, timestamp.timestamp())
-  dai_price = json.loads(requests.get(url).text)['Data'][-1]['close']
+  dai_price = requests.get(url).json()['Data'][-1]['close']
 
   try:
     db.session.add(HistoricalPrice(
@@ -59,7 +59,7 @@ def get_historical_crypto_price(symbol, timestamp):
 
 def set_current_crypto_prices():
   url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DAI&tsyms=USD'
-  result = json.loads(requests.get(url).text)
+  result = requests.get(url).json()
   r.set('ETH', result['ETH']['USD'])
   r.set('DAI', result['DAI']['USD'])
 
