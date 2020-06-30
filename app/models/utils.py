@@ -110,6 +110,7 @@ def address_to_contract_name(address):
     '3fda67f7583380e67ef93072294a7fac882fd7e7': 'Compound',
     'f5dce57282a584d2746faf1593d3121fcac444dc': 'Compound',
     '5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'Compound',
+    '6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e': 'Compound',
     '45f783cce6b7ff23b2ab2d70e416cdb7d6055f51': 'Curve',
     '79a8c46dea5ada233abaffd40f3a0a2b1e5a4f27': 'Curve',
     '7fc77b5c7614e1533320ea6ddc2eb61fa00a9714': 'Curve',
