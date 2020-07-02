@@ -263,14 +263,15 @@ def get_total_amount_staked(cache=False):
   # Pooled staking
   amount = 0
   for stake in query_table(Stake, order=Stake.timestamp):
-    if stake['timestamp'] > datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
-      amount += stake['amount']
-    if stake['timestamp'] > datetime.strptime('2020-06-30 12:16:10', '%Y-%m-%d %H:%M:%S'):
-      historical_nxm_price = nxm_price['USD'] \
-          [nxm_times[bisect.bisect(nxm_times, stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')) - 1]]
-      amount_staked['USD'][stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = \
-          amount * historical_nxm_price
-      amount_staked['NXM'][stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
+    if stake['timestamp'] < datetime.now():
+      if stake['timestamp'] > datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
+        amount += stake['amount']
+      if stake['timestamp'] > datetime.strptime('2020-06-30 12:16:10', '%Y-%m-%d %H:%M:%S'):
+        historical_nxm_price = nxm_price['USD'][nxm_times \
+            [bisect.bisect(nxm_times, stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')) - 1]]
+        amount_staked['USD'][stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = \
+            amount * historical_nxm_price
+        amount_staked['NXM'][stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
 
   return amount_staked
 
@@ -286,7 +287,7 @@ def get_amount_staked_per_contract(cache=False):
             timedelta(days=250).total_seconds() * stake['amount']
         amount_staked_per_contract['USD'][stake['contract_name']] += amount * float(r.get('NXM'))
         amount_staked_per_contract['NXM'][stake['contract_name']] += amount
-    else:
+    elif stake['timestamp'] < datetime.now():
       amount_staked_per_contract['USD'][stake['contract_name']] += \
           stake['amount'] * float(r.get('NXM'))
       amount_staked_per_contract['NXM'][stake['contract_name']] += stake['amount']
@@ -383,7 +384,7 @@ def get_nxm_distribution(cache=False):
     if nxm_distribution[address] < 10**-8:
       del nxm_distribution[address]
   nxm_distribution['Staking Contract'] = \
-      nxm_distribution.pop('0x5407381b6c251cfd498ccd4a1d877739cb7960b8')
+      nxm_distribution.pop('0x84edffa16bb0b9ab1163abb0a13ff0744c11272f')
   return nxm_distribution
 
 def get_unique_addresses(cache=False):

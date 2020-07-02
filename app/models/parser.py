@@ -86,7 +86,7 @@ def parse_mcr_event_logs():
     ))
   db.session.commit()
 
-def parse_pooled_staking_event_logs():
+def parse_stake_event_logs():
   address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
   topic0 = '0x5dac0c1b1112564a045ba943c9d50270893e8e826c49be8e7073adc713ab7bd7'
   for event in get_event_logs(Stake, address, topic0):
@@ -98,6 +98,22 @@ def parse_pooled_staking_event_logs():
       contract_name=address_to_contract_name(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
+    ))
+  db.session.commit()
+
+def parse_unstake_event_logs():
+  address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
+  topic0 = '0xfe07ce9fff39f8420b3de5fbc6909ce08f809e2572b62f9df35c25f56d610bb0'
+  for event in get_event_logs(None, address, topic0):
+    data = textwrap.wrap(event['data'][2:], 64)
+    db.session.add(Stake(
+      id=get_last_id(Stake) + 1,
+      block_number=int(event['blockNumber'], 16),
+      timestamp=datetime.fromtimestamp(int(data[1], 16)),
+      staker='0x' + event['topics'][2][-40:],
+      contract_name=address_to_contract_name(event['topics'][1][-40:]),
+      address='0x' + event['topics'][1][-40:],
+      amount=-int(data[0], 16) / 10**18
     ))
   db.session.commit()
 
@@ -213,7 +229,8 @@ def parse_etherscan_data():
   parse_verdict_event_logs()
   parse_vote_event_logs()
   parse_mcr_event_logs()
-  parse_pooled_staking_event_logs()
+  parse_stake_event_logs()
+  parse_unstake_event_logs()
   parse_staking_reward_event_logs()
   parse_nxm_event_logs()
 
