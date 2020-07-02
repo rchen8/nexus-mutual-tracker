@@ -84,7 +84,6 @@ $.get('nxm_distribution', (response) => {
     labels: Object.keys(response),
     values: Object.values(response),
     type: 'pie',
-    hoverinfo: 'label+percent',
     textinfo: 'none'
   }])
 })

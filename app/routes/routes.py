@@ -61,9 +61,9 @@ def total_amount_staked():
 def amount_staked_per_contract():
   return jsonify(grapher.get_amount_staked_per_contract(cache=True))
 
-@app.route('/percent_nxm_supply_staked', methods=['GET'])
-def percent_nxm_supply_staked():
-  return jsonify(grapher.get_percent_nxm_supply_staked(cache=True))
+@app.route('/top_stakers', methods=['GET'])
+def top_stakers():
+  return jsonify(grapher.get_top_stakers(cache=True))
 
 @app.route('/total_staking_reward', methods=['GET'])
 def total_staking_reward():
@@ -72,10 +72,6 @@ def total_staking_reward():
 @app.route('/staking_reward_per_contract', methods=['GET'])
 def staking_reward_per_contract():
   return jsonify(grapher.get_staking_reward_per_contract(cache=True))
-
-@app.route('/all_stakes', methods=['GET'])
-def all_stakes():
-  return jsonify(grapher.get_all_stakes(cache=True))
 
 @app.route('/nxm_price', methods=['GET'])
 def nxm_price():
@@ -112,10 +108,6 @@ def download(graph):
   output.headers['Content-Disposition'] = 'attachment; filename=%s.csv' % graph
   output.headers['Content-type'] = 'text/csv'
   return output
-
-@app.route('/staked', methods=['GET'])
-def staked():
-  return redirect('/staking')
 
 @app.route('/<template>', methods=['GET'])
 def render(template):

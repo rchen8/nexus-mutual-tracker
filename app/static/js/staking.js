@@ -1,5 +1,6 @@
 let totalAmountStaked = undefined
 let amountStakedPerContract = undefined
+let topStakers = undefined
 let totalStakingReward = undefined
 let stakingRewardPerContract = undefined
 
@@ -52,6 +53,32 @@ $('#amount-staked-per-contract-usd').click(() => {
 $('#amount-staked-per-contract-nxm').click(() => {
   renderAmountStakedPerContract('NXM')
   toggleCurrency('#amount-staked-per-contract', 'nxm', 'usd')
+})
+
+const renderTopStakers = (currency) => {
+  if (topStakers !== undefined) {
+    Plotly.newPlot('topStakers', [{
+      labels: Object.keys(topStakers[currency]),
+      values: Object.values(topStakers[currency]),
+      type: 'pie',
+      textinfo: 'none'
+    }])
+  }
+}
+
+$.get('top_stakers', (response) => {
+  topStakers = response
+  $('#top-stakers-usd').click()
+})
+
+$('#top-stakers-usd').click(() => {
+  renderTopStakers('USD')
+  toggleCurrency('#top-stakers', 'usd', 'nxm')
+})
+
+$('#top-stakers-nxm').click(() => {
+  renderTopStakers('NXM')
+  toggleCurrency('#top-stakers', 'nxm', 'usd')
 })
 
 const renderTotalStakingReward = (currency) => {

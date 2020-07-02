@@ -281,17 +281,24 @@ def get_amount_staked_per_contract(cache=False):
 
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for stake in query_table(Stake):
-    if stake['timestamp'] < datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
-      if datetime.now() < stake['timestamp'] + timedelta(days=250):
-        amount = (stake['timestamp'] + timedelta(days=250) - datetime.now()).total_seconds() / \
-            timedelta(days=250).total_seconds() * stake['amount']
-        amount_staked_per_contract['USD'][stake['contract_name']] += amount * float(r.get('NXM'))
-        amount_staked_per_contract['NXM'][stake['contract_name']] += amount
-    elif stake['timestamp'] < datetime.now():
+    if stake['timestamp'] > datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S') and \
+        stake['timestamp'] < datetime.now():
       amount_staked_per_contract['USD'][stake['contract_name']] += \
           stake['amount'] * float(r.get('NXM'))
       amount_staked_per_contract['NXM'][stake['contract_name']] += stake['amount']
   return dict(amount_staked_per_contract)
+
+def get_top_stakers(cache=False):
+  if cache:
+    return json.loads(r.get('top_stakers'))
+
+  top_stakers = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
+  for stake in query_table(Stake):
+    if stake['timestamp'] > datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S') and \
+        stake['timestamp'] < datetime.now():
+      top_stakers['USD'][stake['staker']] += stake['amount'] * float(r.get('NXM'))
+      top_stakers['NXM'][stake['staker']] += stake['amount']
+  return dict(top_stakers)
 
 def get_total_staking_reward(cache=False):
   if cache:
@@ -420,6 +427,7 @@ def cache_graph_data():
   r.set('votes', json.dumps(get_all_votes(cache=False)))
   r.set('amount_staked', json.dumps(get_total_amount_staked(cache=False)))
   r.set('amount_staked_per_contract', json.dumps(get_amount_staked_per_contract(cache=False)))
+  r.set('top_stakers', json.dumps(get_top_stakers(cache=False)))
   r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
   r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
   r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))

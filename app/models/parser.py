@@ -104,7 +104,7 @@ def parse_stake_event_logs():
 def parse_unstake_event_logs():
   address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
   topic0 = '0xfe07ce9fff39f8420b3de5fbc6909ce08f809e2572b62f9df35c25f56d610bb0'
-  for event in get_event_logs(None, address, topic0):
+  for event in get_event_logs(Stake, address, topic0):
     data = textwrap.wrap(event['data'][2:], 64)
     db.session.add(Stake(
       id=get_last_id(Stake) + 1,
