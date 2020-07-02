@@ -1,7 +1,7 @@
 from .. import db
 from .models import *
 from .utils import *
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import requests
 import textwrap
@@ -86,7 +86,22 @@ def parse_mcr_event_logs():
     ))
   db.session.commit()
 
-def parse_staking_event_logs():
+def parse_pooled_staking_event_logs():
+  address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
+  topic0 = '0x5dac0c1b1112564a045ba943c9d50270893e8e826c49be8e7073adc713ab7bd7'
+  for event in get_event_logs(Stake, address, topic0):
+    db.session.add(Stake(
+      id=get_last_id(Stake) + 1,
+      block_number=int(event['blockNumber'], 16),
+      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      staker='0x' + event['topics'][2][-40:],
+      contract_name=address_to_contract_name(event['topics'][1][-40:]),
+      address='0x' + event['topics'][1][-40:],
+      amount=int(event['data'], 16) / 10**18
+    ))
+  db.session.commit()
+
+def parse_staking_reward_event_logs():
   address='0xe20b3ae826cdb43676e418f7c3b84b75b5697a40'
   topic0 = '0x05456de91d83e21ad7c41a09ae7cb41836049c49e6ddaf07bdfc40c2231885d2'
   for event in get_event_logs(StakingReward, address, topic0):
@@ -170,7 +185,7 @@ def parse_dai_transactions(startblock):
       parse_transactions(requests.get(url).json()['result'], address, 'DAI')
 
 def parse_staking_transactions():
-  startblock = get_latest_block_number(StakingTransaction) + 1
+  startblock = get_latest_block_number(Stake) + 1
   addresses = ['0xdf50a17bf58dea5039b73683a51c4026f3c7224e',
                '0xa94c7e87e212669baee95d5d45305d05e6b8a28f']
   for address in addresses:
@@ -181,12 +196,11 @@ def parse_staking_transactions():
         if len(data) == 2:
           amount = float(int(data[1], 16)) / 10**18
           if amount >= 10**-8:
-            start_time = datetime.fromtimestamp(int(txn['timeStamp']))
-            db.session.add(StakingTransaction(
-              id=get_last_id(StakingTransaction) + 1,
+            db.session.add(Stake(
+              id=get_last_id(Stake) + 1,
               block_number=txn['blockNumber'],
-              start_time=start_time,
-              end_time=start_time + timedelta(days=250),
+              timestamp=datetime.fromtimestamp(int(txn['timeStamp'])),
+              staker=txn['from'],
               contract_name=address_to_contract_name(data[0][-40:]),
               address='0x' + data[0][-40:],
               amount=amount
@@ -198,9 +212,9 @@ def parse_etherscan_data():
   parse_claim_event_logs()
   parse_verdict_event_logs()
   parse_vote_event_logs()
-
   parse_mcr_event_logs()
-  parse_staking_event_logs()
+  parse_pooled_staking_event_logs()
+  parse_staking_reward_event_logs()
   parse_nxm_event_logs()
 
   startblock = get_latest_block_number(Transaction) + 1

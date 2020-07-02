@@ -25,20 +25,11 @@ class Vote(db.Model):
   date = db.Column(db.DateTime, nullable=False)
   verdict = db.Column(db.String, nullable=False)
 
-class Transaction(db.Model):
+class Stake(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   block_number = db.Column(db.Integer, index=True, nullable=False)
   timestamp = db.Column(db.DateTime, nullable=False)
-  from_address = db.Column(db.String, nullable=False)
-  to_address = db.Column(db.String, nullable=False)
-  amount = db.Column(db.Float, nullable=False)
-  currency = db.Column(db.String, nullable=False)
-
-class StakingTransaction(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  block_number = db.Column(db.Integer, index=True, nullable=False)
-  start_time = db.Column(db.DateTime, nullable=False)
-  end_time = db.Column(db.DateTime, nullable=False)
+  staker = db.Column(db.String, nullable=False)
   contract_name = db.Column(db.String, nullable=False)
   address = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
@@ -50,6 +41,15 @@ class StakingReward(db.Model):
   staker = db.Column(db.String, nullable=False)
   contract_name = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
+
+class Transaction(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  block_number = db.Column(db.Integer, index=True, nullable=False)
+  timestamp = db.Column(db.DateTime, nullable=False)
+  from_address = db.Column(db.String, nullable=False)
+  to_address = db.Column(db.String, nullable=False)
+  amount = db.Column(db.Float, nullable=False)
+  currency = db.Column(db.String, nullable=False)
 
 class NXMTransaction(db.Model):
   id = db.Column(db.Integer, primary_key=True)

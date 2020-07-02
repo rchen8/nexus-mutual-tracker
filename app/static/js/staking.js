@@ -2,7 +2,6 @@ let totalAmountStaked = undefined
 let amountStakedPerContract = undefined
 let totalStakingReward = undefined
 let stakingRewardPerContract = undefined
-let allStakes = undefined
 
 const renderTotalAmountStaked = (currency) => {
   if (totalAmountStaked !== undefined) {
@@ -55,15 +54,6 @@ $('#amount-staked-per-contract-nxm').click(() => {
   toggleCurrency('#amount-staked-per-contract', 'nxm', 'usd')
 })
 
-$.get('percent_nxm_supply_staked', (response) => {
-  Plotly.newPlot('percentOfNxmSupplyStaked', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
-    fill: 'tozeroy',
-    type: 'scatter'
-  }])
-})
-
 const renderTotalStakingReward = (currency) => {
   if (totalStakingReward !== undefined) {
     Plotly.newPlot('totalStakingReward', [{
@@ -113,43 +103,4 @@ $('#staking-reward-per-contract-usd').click(() => {
 $('#staking-reward-per-contract-nxm').click(() => {
   renderStakingRewardPerContract('NXM')
   toggleCurrency('#staking-reward-per-contract', 'nxm', 'usd')
-})
-
-const renderAllStakes = (currency) => {
-  if (allStakes !== undefined) {
-    const table = $('#stakeDataTable').DataTable()
-    table.clear()
-    for (let stake of allStakes) {
-      let stakedAmount = 0
-      if (currency === 'USD') {
-        stakedAmount = '$' + stake['amount_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      } else {
-        stakedAmount = stake['amount'].toLocaleString() + ' NXM'
-      }
-
-      table.row.add([
-        stake['contract_name'],
-        stake['address'],
-        stakedAmount,
-        toLocalTimezone(stake['start_time']),
-        toLocalTimezone(stake['end_time'])
-      ])
-    }
-    table.draw()
-  }
-}
-
-$.get('all_stakes', (response) => {
-  allStakes = response
-  $('#all-stakes-usd').click()
-})
-
-$('#all-stakes-usd').click(() => {
-  renderAllStakes('USD')
-  toggleCurrency('#all-stakes', 'usd', 'nxm')
-})
-
-$('#all-stakes-nxm').click(() => {
-  renderAllStakes('NXM')
-  toggleCurrency('#all-stakes', 'nxm', 'usd')
 })

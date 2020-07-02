@@ -237,18 +237,20 @@ def get_total_amount_staked(cache=False):
   if cache:
     return json.loads(r.get('amount_staked'))
 
+  # Queue staking
   nxm_price = get_nxm_price(cache=True)
   times = []
   tree = IntervalTree()
-  for txn in query_table(StakingTransaction):
-    times.append(txn['start_time'])
-    times.append(txn['end_time'])
-    tree[txn['start_time']:txn['end_time']] = txn['amount']
+  for stake in query_table(Stake):
+    if stake['timestamp'] < datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
+      times.append(stake['timestamp'])
+      times.append(stake['timestamp'] + timedelta(days=250))
+      tree[stake['timestamp']:stake['timestamp'] + timedelta(days=250)] = stake['amount']
 
   amount_staked = {'USD': {}, 'NXM': {}}
   nxm_times = sorted(nxm_price['USD'].keys())
   for time in times:
-    if time < datetime.now():
+    if time < datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
       intervals = tree[time]
       historical_nxm_price = nxm_price['USD'] \
           [nxm_times[bisect.bisect(nxm_times, time.strftime('%Y-%m-%d %H:%M:%S')) - 1]]
@@ -257,6 +259,19 @@ def get_total_amount_staked(cache=False):
           interval.data for interval in intervals])
       amount_staked['USD'][time.strftime('%Y-%m-%d %H:%M:%S')] = amount * historical_nxm_price
       amount_staked['NXM'][time.strftime('%Y-%m-%d %H:%M:%S')] = amount
+
+  # Pooled staking
+  amount = 0
+  for stake in query_table(Stake, order=Stake.timestamp):
+    if stake['timestamp'] > datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
+      amount += stake['amount']
+    if stake['timestamp'] > datetime.strptime('2020-06-30 12:16:10', '%Y-%m-%d %H:%M:%S'):
+      historical_nxm_price = nxm_price['USD'] \
+          [nxm_times[bisect.bisect(nxm_times, stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')) - 1]]
+      amount_staked['USD'][stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = \
+          amount * historical_nxm_price
+      amount_staked['NXM'][stake['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = amount
+
   return amount_staked
 
 def get_amount_staked_per_contract(cache=False):
@@ -264,12 +279,17 @@ def get_amount_staked_per_contract(cache=False):
     return json.loads(r.get('amount_staked_per_contract'))
 
   amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
-  for txn in query_table(StakingTransaction):
-    if datetime.now() < txn['end_time']:
-      amount = (txn['end_time'] - datetime.now()).total_seconds() / \
-          timedelta(days=250).total_seconds() * txn['amount']
-      amount_staked_per_contract['USD'][txn['contract_name']] += amount * float(r.get('NXM'))
-      amount_staked_per_contract['NXM'][txn['contract_name']] += amount
+  for stake in query_table(Stake):
+    if stake['timestamp'] < datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S'):
+      if datetime.now() < stake['timestamp'] + timedelta(days=250):
+        amount = (stake['timestamp'] + timedelta(days=250) - datetime.now()).total_seconds() / \
+            timedelta(days=250).total_seconds() * stake['amount']
+        amount_staked_per_contract['USD'][stake['contract_name']] += amount * float(r.get('NXM'))
+        amount_staked_per_contract['NXM'][stake['contract_name']] += amount
+    else:
+      amount_staked_per_contract['USD'][stake['contract_name']] += \
+          stake['amount'] * float(r.get('NXM'))
+      amount_staked_per_contract['NXM'][stake['contract_name']] += stake['amount']
   return dict(amount_staked_per_contract)
 
 def get_total_staking_reward(cache=False):
@@ -300,17 +320,6 @@ def get_staking_reward_per_contract(cache=False):
         reward['amount'] * float(r.get('NXM'))
     staking_reward_per_contract['NXM'][reward['contract_name']] += reward['amount']
   return dict(staking_reward_per_contract)
-
-def get_all_stakes(cache=False):
-  if cache:
-    return json.loads(r.get('stakes'))
-
-  stakes = query_table(StakingTransaction)
-  for stake in stakes:
-    stake['start_time'] = stake['start_time'].strftime('%Y-%m-%d %H:%M:%S')
-    stake['end_time'] = stake['end_time'].strftime('%Y-%m-%d %H:%M:%S')
-    stake['amount_usd'] = stake['amount'] * float(r.get('NXM'))
-  return stakes
 
 def get_nxm_return_vs_eth(cache=False):
   if cache:
@@ -344,21 +353,6 @@ def get_nxm_supply(cache=False):
       if total > 0:
         nxm_supply[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
   return nxm_supply
-
-def get_percent_nxm_supply_staked(cache=False):
-  if cache:
-    return json.loads(r.get('percent_nxm_supply_staked'))
-
-  amount_staked = get_total_amount_staked(cache=True)['NXM']
-  nxm_supply = get_nxm_supply(cache=True)
-  nxm_times = sorted(nxm_supply.keys())
-  percent_nxm_supply_staked = {}
-  for time in amount_staked:
-    percent_nxm_supply_staked[time] = amount_staked[time] / \
-        nxm_supply[nxm_times[bisect.bisect(nxm_times, time) - 1]] * 100
-    if percent_nxm_supply_staked[time] < 0.01:
-      percent_nxm_supply_staked[time] = 0
-  return percent_nxm_supply_staked
 
 def get_nxm_market_cap(cache=False):
   if cache:
@@ -427,10 +421,8 @@ def cache_graph_data():
   r.set('amount_staked_per_contract', json.dumps(get_amount_staked_per_contract(cache=False)))
   r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
   r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
-  r.set('stakes', json.dumps(get_all_stakes(cache=False)))
   r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
-  r.set('percent_nxm_supply_staked', json.dumps(get_percent_nxm_supply_staked(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
   r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))
   r.set('unique_addresses', json.dumps(get_unique_addresses(cache=False)))
