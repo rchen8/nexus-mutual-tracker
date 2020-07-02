@@ -38,7 +38,6 @@ class StakingReward(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   block_number = db.Column(db.Integer, nullable=False)
   timestamp = db.Column(db.DateTime, index=True, nullable=False)
-  staker = db.Column(db.String, nullable=False)
   contract_name = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
 

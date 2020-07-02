@@ -125,8 +125,18 @@ def parse_staking_reward_event_logs():
       id=get_last_id(StakingReward) + 1,
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
-      staker='0x' + event['topics'][1][-40:],
       contract_name=address_to_contract_name(event['topics'][2][-40:]),
+      amount=int(event['data'], 16) / 10**18
+    ))
+
+  address='0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
+  topic0 = '0x5f5b850fcbd0c09e2b8624b44902a5be89312011ae945e14bc73514fb719891e'
+  for event in get_event_logs(StakingReward, address, topic0):
+    db.session.add(StakingReward(
+      id=get_last_id(StakingReward) + 1,
+      block_number=int(event['blockNumber'], 16),
+      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      contract_name=address_to_contract_name(event['topics'][1][-40:]),
       amount=int(event['data'], 16) / 10**18
     ))
   db.session.commit()
