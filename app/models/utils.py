@@ -98,6 +98,7 @@ def address_to_contract_name(address):
     '11111254369792b2ca5d084ab5eea397ca8fa48b': '1inch',
     '3dfd23a6c5e8bbcfc9581d2e864a68feb6a076d3': 'Aave',
     'c1d2819ce78f3e15ee69c6738eb1b400a26e632a': 'Aave',
+    '398ec7346dcd622edc5ae82352f02be94c62d119': 'Aave',
     'd36132e0c1141b26e62733e018f12eb38a7b7678': 'Ampleforth',
     'b1dd690cc9af7bb1a906a9b5a94f94191cc553ce': 'Argent',
     '9424b1412450d0f8fc2255faf6046b98213b76bd': 'Balancer',
