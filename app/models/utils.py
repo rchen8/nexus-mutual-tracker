@@ -115,6 +115,7 @@ def address_to_contract_name(address):
     '45f783cce6b7ff23b2ab2d70e416cdb7d6055f51': 'Curve',
     '79a8c46dea5ada233abaffd40f3a0a2b1e5a4f27': 'Curve',
     '7fc77b5c7614e1533320ea6ddc2eb61fa00a9714': 'Curve',
+    'df5e0e81dff6faf3a7e52ba697820c5e32d806a8': 'Curve',
     '06012c8cf97bead5deae237070f9587f8e7a266d': 'CryptoKitties',
     '241e82c79452f51fbfc89fac6d912e021db1a3b7': 'DDEX',
     '5d22045daceab03b158031ecb7d9d06fad24609b': 'DeversiFi',
