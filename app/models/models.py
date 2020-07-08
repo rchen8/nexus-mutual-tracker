@@ -4,6 +4,7 @@ class Cover(db.Model):
   block_number = db.Column(db.Integer, index=True, nullable=False)
   cover_id = db.Column(db.Integer, primary_key=True)
   contract_name = db.Column(db.String, nullable=False)
+  address = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
   premium = db.Column(db.Float, nullable=False)
   currency = db.Column(db.String, nullable=False)
@@ -39,6 +40,7 @@ class StakingReward(db.Model):
   block_number = db.Column(db.Integer, nullable=False)
   timestamp = db.Column(db.DateTime, index=True, nullable=False)
   contract_name = db.Column(db.String, nullable=False)
+  address = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)
 
 class Transaction(db.Model):

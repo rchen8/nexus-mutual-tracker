@@ -25,6 +25,7 @@ def parse_cover_event_logs():
       block_number=int(event['blockNumber'], 16),
       cover_id=int(event['topics'][1], 16),
       contract_name=address_to_contract_name(data[0][-40:]),
+      address='0x' + data[0][-40:],
       amount=float(int(data[1], 16)),
       premium=float(int(data[3], 16)) / 10**18,
       currency='ETH' if data[-1].startswith('455448') else 'DAI',
@@ -126,6 +127,7 @@ def parse_staking_reward_event_logs():
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       contract_name=address_to_contract_name(event['topics'][2][-40:]),
+      address='0x' + event['topics'][2][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
 
@@ -137,6 +139,7 @@ def parse_staking_reward_event_logs():
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       contract_name=address_to_contract_name(event['topics'][1][-40:]),
+      address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
   db.session.commit()
