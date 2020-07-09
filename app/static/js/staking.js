@@ -3,6 +3,7 @@ let amountStakedPerContract = undefined
 let topStakers = undefined
 let totalStakingReward = undefined
 let stakingRewardPerContract = undefined
+let allStakes = undefined
 
 const renderTotalAmountStaked = (currency) => {
   if (totalAmountStaked !== undefined) {
@@ -130,4 +131,46 @@ $('#staking-reward-per-contract-usd').click(() => {
 $('#staking-reward-per-contract-nxm').click(() => {
   renderStakingRewardPerContract('NXM')
   toggleCurrency('#staking-reward-per-contract', 'nxm', 'usd')
+})
+
+const renderAllStakes = (currency) => {
+  if (allStakes !== undefined) {
+    const table = $('#stakeDataTable').DataTable()
+    table.clear()
+    for (let stake of allStakes) {
+      let totalReward = 0
+      let totalStaked = 0
+      if (currency === 'USD') {
+        totalReward = '$' + stake['total_reward_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        totalStaked = '$' + stake['total_staked_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      } else {
+        totalReward = stake['total_reward'].toLocaleString() + ' NXM'
+        totalStaked = stake['total_staked'].toLocaleString() + ' NXM'
+      }
+
+      table.row.add([
+        stake['contract_name'],
+        stake['address'],
+        totalReward,
+        totalStaked,
+        stake['historical_yield'].toFixed(2) + '%'
+      ])
+    }
+    table.draw()
+  }
+}
+
+$.get('all_stakes', (response) => {
+  allStakes = response
+  $('#all-stakes-usd').click()
+})
+
+$('#all-stakes-usd').click(() => {
+  renderAllStakes('USD')
+  toggleCurrency('#all-stakes', 'usd', 'nxm')
+})
+
+$('#all-stakes-nxm').click(() => {
+  renderAllStakes('NXM')
+  toggleCurrency('#all-stakes', 'nxm', 'usd')
 })

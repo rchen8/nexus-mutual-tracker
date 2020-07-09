@@ -329,6 +329,48 @@ def get_staking_reward_per_contract(cache=False):
     staking_reward_per_contract['NXM'][reward['contract_name']] += reward['amount']
   return dict(staking_reward_per_contract)
 
+def get_all_stakes(cache=False):
+  if cache:
+    return json.loads(r.get('stakes'))
+
+  query = """
+SELECT s.contract_name,
+       s.address,
+       sr.amount AS total_reward,
+       sum(s.amount) AS total_staked,
+       sr.amount / sum(s.amount) * 100 AS historical_yield
+FROM stake s
+INNER JOIN
+  (SELECT contract_name,
+          address,
+          sum(amount) AS amount
+   FROM staking_reward
+   WHERE timestamp >= '2020-06-30 11:31:12'
+   GROUP BY contract_name,
+            address
+   ORDER BY contract_name) sr ON s.address = sr.address
+WHERE s.timestamp >= '2020-06-30 11:31:12'
+  AND s.timestamp <= \'%s\'
+GROUP BY s.contract_name,
+         s.address,
+         sr.amount
+""" % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+  all_stakes = []
+  result = db.engine.execute(query)
+  for row in result:
+    all_stakes.append({
+      'contract_name': row[0],
+      'address': row[1],
+      'total_reward': row[2],
+      'total_reward_usd': row[2] * float(r.get('NXM')),
+      'total_staked': row[3],
+      'total_staked_usd': row[3] * float(r.get('NXM')),
+      'historical_yield': 365 / (datetime.now() - \
+          datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S')).days * row[4]
+    })
+  return all_stakes
+
 def get_nxm_return_vs_eth(cache=False):
   if cache:
     return json.loads(r.get('nxm_return_vs_eth'))
@@ -430,6 +472,7 @@ def cache_graph_data():
   r.set('top_stakers', json.dumps(get_top_stakers(cache=False)))
   r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
   r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
+  r.set('stakes', json.dumps(get_all_stakes(cache=False)))
   r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
