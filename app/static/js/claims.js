@@ -19,7 +19,7 @@ const renderAllClaims = (currency) => {
         claim['contract_name'],
         claimAmount,
         toLocalTimezone(claim['start_time']),
-        toLocalTimezone(claim['date']),
+        toLocalTimezone(claim['timestamp']),
         claim['verdict']
       ])
     }

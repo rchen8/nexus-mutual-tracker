@@ -15,7 +15,7 @@ class Claim(db.Model):
   block_number = db.Column(db.Integer, index=True, nullable=False)
   claim_id = db.Column(db.Integer, primary_key=True)
   cover_id = db.Column(db.Integer, nullable=False)
-  date = db.Column(db.DateTime, nullable=False)
+  timestamp = db.Column(db.DateTime, nullable=False)
   verdict = db.Column(db.String, default='Pending')
 
 class Vote(db.Model):
@@ -23,7 +23,7 @@ class Vote(db.Model):
   block_number = db.Column(db.Integer, index=True, nullable=False)
   claim_id = db.Column(db.Integer, nullable=False)
   amount = db.Column(db.Float, nullable=False)
-  date = db.Column(db.DateTime, nullable=False)
+  timestamp = db.Column(db.DateTime, nullable=False)
   verdict = db.Column(db.String, nullable=False)
 
 class Stake(db.Model):
@@ -62,8 +62,8 @@ class NXMTransaction(db.Model):
 
 class HistoricalPrice(db.Model):
   timestamp = db.Column(db.DateTime, primary_key=True, index=True)
-  eth_price = db.Column(db.Float)
-  dai_price = db.Column(db.Float)
+  eth_price = db.Column(db.Float, nullable=False)
+  dai_price = db.Column(db.Float, nullable=False)
 
 class MinimumCapitalRequirement(db.Model):
   timestamp = db.Column(db.DateTime, primary_key=True, index=True)

@@ -1,3 +1,4 @@
+from .. import db, r
 from .models import *
 from .utils import *
 from collections import defaultdict
@@ -6,13 +7,7 @@ from intervaltree import IntervalTree
 import bisect
 import json
 import os
-import redis
 import sys
-
-if 'gunicorn' in sys.argv[0] or 'job.py' in sys.argv[0] or not sys.argv[0]: # Production Redis
-  r = redis.from_url(os.environ['REDIS_URL'])
-else: # Development Redis
-  r = redis.Redis(host='localhost', port=6379)
 
 def get_active_cover_amount(cache=False):
   if cache:
@@ -141,7 +136,7 @@ def get_all_claims(cache=False):
     claim['amount'] = covers[claim['cover_id'] - 1]['amount']
     claim['currency'] = covers[claim['cover_id'] - 1]['currency']
     claim['start_time'] = covers[claim['cover_id'] - 1]['start_time']
-    claim['date'] = claim['date'].strftime('%Y-%m-%d %H:%M:%S')
+    claim['timestamp'] = claim['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
   return claims
 
 def get_all_votes(cache=False):
@@ -365,8 +360,8 @@ GROUP BY s.contract_name,
       'total_reward_usd': stake[2] * float(r.get('NXM')),
       'total_staked': stake[3],
       'total_staked_usd': stake[3] * float(r.get('NXM')),
-      'historical_yield': 365 / (datetime.now() - \
-          datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S')).days * stake[4]
+      'historical_yield': 365 * 86400 / (datetime.now() - \
+          datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S')).total_seconds() * stake[4]
     })
   return all_stakes
 

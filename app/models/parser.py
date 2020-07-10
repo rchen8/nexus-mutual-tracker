@@ -44,7 +44,7 @@ def parse_claim_event_logs():
       block_number=int(event['blockNumber'], 16),
       claim_id=int(data[0], 16),
       cover_id=int(event['topics'][1], 16),
-      date=datetime.fromtimestamp(int(data[1], 16))
+      timestamp=datetime.fromtimestamp(int(data[1], 16))
     ))
 
 def parse_verdict_event_logs():
@@ -70,7 +70,7 @@ def parse_vote_event_logs():
       block_number=int(event['blockNumber'], 16),
       claim_id=int(event['topics'][2], 16),
       amount=int(data[0], 16) / 10**18,
-      date=datetime.fromtimestamp(int(data[1], 16)),
+      timestamp=datetime.fromtimestamp(int(data[1], 16)),
       verdict='Yes' if int(data[2], 16) == 1 else 'No'
     ))
 

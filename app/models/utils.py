@@ -1,16 +1,10 @@
-from .. import db
+from .. import db, r
 from .models import HistoricalPrice
 from datetime import datetime
 import json
 import os
-import redis
 import requests
 import sys
-
-if 'gunicorn' in sys.argv[0] or 'job.py' in sys.argv[0] or not sys.argv[0]: # Production Redis
-  r = redis.from_url(os.environ['REDIS_URL'])
-else: # Development Redis
-  r = redis.Redis(host='localhost', port=6379)
 
 def query_table(table, order=None):
   rows = []
@@ -116,6 +110,7 @@ def address_to_contract_name(address):
     '79a8c46dea5ada233abaffd40f3a0a2b1e5a4f27': 'Curve',
     '7fc77b5c7614e1533320ea6ddc2eb61fa00a9714': 'Curve',
     'df5e0e81dff6faf3a7e52ba697820c5e32d806a8': 'Curve',
+    'a5407eae9ba41422680e2e00537571bcc53efbfd': 'Curve',
     '06012c8cf97bead5deae237070f9587f8e7a266d': 'CryptoKitties',
     '241e82c79452f51fbfc89fac6d912e021db1a3b7': 'DDEX',
     '5d22045daceab03b158031ecb7d9d06fad24609b': 'DeversiFi',
