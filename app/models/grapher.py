@@ -357,17 +357,16 @@ GROUP BY s.contract_name,
 """ % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
   all_stakes = []
-  result = db.engine.execute(query)
-  for row in result:
+  for stake in db.engine.execute(query):
     all_stakes.append({
-      'contract_name': row[0],
-      'address': row[1],
-      'total_reward': row[2],
-      'total_reward_usd': row[2] * float(r.get('NXM')),
-      'total_staked': row[3],
-      'total_staked_usd': row[3] * float(r.get('NXM')),
+      'contract_name': stake[0],
+      'address': stake[1],
+      'total_reward': stake[2],
+      'total_reward_usd': stake[2] * float(r.get('NXM')),
+      'total_staked': stake[3],
+      'total_staked_usd': stake[3] * float(r.get('NXM')),
       'historical_yield': 365 / (datetime.now() - \
-          datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S')).days * row[4]
+          datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S')).days * stake[4]
     })
   return all_stakes
 

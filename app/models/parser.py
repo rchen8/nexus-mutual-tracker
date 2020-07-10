@@ -6,14 +6,16 @@ import os
 import requests
 import textwrap
 
-def get_event_logs(table, address, topic0):
+def get_event_logs(table, address, topic0, fromblock=None):
+  if fromblock is None:
+    fromblock = get_latest_block_number(table) + 1
+
   module = 'logs'
   action = 'getLogs'
-  fromBlock = get_latest_block_number(table) + 1
-  toBlock = 'latest'
+  toblock = 'latest'
   url = 'https://api.etherscan.io/api?' + \
         'module=%s&action=%s&fromBlock=%s&toBlock=%s&address=%s&topic0=%s&apikey=%s' \
-        % (module, action, fromBlock, toBlock, address, topic0, os.environ['ETHERSCAN_API_KEY'])
+        % (module, action, fromblock, toblock, address, topic0, os.environ['ETHERSCAN_API_KEY'])
   return requests.get(url).json()['result']
 
 def parse_cover_event_logs():
@@ -32,7 +34,6 @@ def parse_cover_event_logs():
       start_time=datetime.fromtimestamp(int(event['timeStamp'], 16)),
       end_time=datetime.fromtimestamp(int(data[2], 16))
     ))
-  db.session.commit()
 
 def parse_claim_event_logs():
   address = '0xdc2d359f59f6a26162972c3bd0cfbfd8c9ef43af'
@@ -45,7 +46,6 @@ def parse_claim_event_logs():
       cover_id=int(event['topics'][1], 16),
       date=datetime.fromtimestamp(int(data[1], 16))
     ))
-  db.session.commit()
 
 def parse_verdict_event_logs():
   address = '0x1776651f58a17a50098d31ba3c3cd259c1903f7a'
@@ -59,7 +59,6 @@ def parse_verdict_event_logs():
       claim.verdict = 'Accepted'
     elif int(event['data'], 16) == 2:
       claim.verdict = 'Denied'
-  db.session.commit()
 
 def parse_vote_event_logs():
   address = '0xdc2d359f59f6a26162972c3bd0cfbfd8c9ef43af'
@@ -74,7 +73,6 @@ def parse_vote_event_logs():
       date=datetime.fromtimestamp(int(data[1], 16)),
       verdict='Yes' if int(data[2], 16) == 1 else 'No'
     ))
-  db.session.commit()
 
 def parse_mcr_event_logs():
   address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
@@ -85,12 +83,11 @@ def parse_mcr_event_logs():
       block_number=int(event['blockNumber'], 16),
       mcr=int(textwrap.wrap(event['data'][2:], 64)[3], 16) / 10**18
     ))
-  db.session.commit()
 
-def parse_stake_event_logs():
+def parse_stake_event_logs(fromblock):
   address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
   topic0 = '0x5dac0c1b1112564a045ba943c9d50270893e8e826c49be8e7073adc713ab7bd7'
-  for event in get_event_logs(Stake, address, topic0):
+  for event in get_event_logs(Stake, address, topic0, fromblock):
     db.session.add(Stake(
       id=get_last_id(Stake) + 1,
       block_number=int(event['blockNumber'], 16),
@@ -100,12 +97,11 @@ def parse_stake_event_logs():
       address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
-  db.session.commit()
 
-def parse_unstake_event_logs():
+def parse_unstake_event_logs(fromblock):
   address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
   topic0 = '0xfe07ce9fff39f8420b3de5fbc6909ce08f809e2572b62f9df35c25f56d610bb0'
-  for event in get_event_logs(Stake, address, topic0):
+  for event in get_event_logs(Stake, address, topic0, fromblock):
     data = textwrap.wrap(event['data'][2:], 64)
     db.session.add(Stake(
       id=get_last_id(Stake) + 1,
@@ -116,7 +112,6 @@ def parse_unstake_event_logs():
       address='0x' + event['topics'][1][-40:],
       amount=-int(data[0], 16) / 10**18
     ))
-  db.session.commit()
 
 def parse_staking_reward_event_logs():
   address='0xe20b3ae826cdb43676e418f7c3b84b75b5697a40'
@@ -142,7 +137,6 @@ def parse_staking_reward_event_logs():
       address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
-  db.session.commit()
 
 def parse_nxm_event_logs():
   address = '0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b'
@@ -156,7 +150,6 @@ def parse_nxm_event_logs():
       to_address='0x' + event['topics'][2][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
-  db.session.commit()
 
 def parse_transactions(txns, address, symbol):
   for txn in txns:
@@ -176,7 +169,6 @@ def parse_transactions(txns, address, symbol):
           amount=amount,
           currency=symbol
         ))
-  db.session.commit()
 
 def build_transaction_url(address, startblock):
   module = 'account'
@@ -234,7 +226,6 @@ def parse_staking_transactions():
               address='0x' + data[0][-40:],
               amount=amount
             ))
-  db.session.commit()
 
 def parse_etherscan_data():
   parse_cover_event_logs()
@@ -242,12 +233,16 @@ def parse_etherscan_data():
   parse_verdict_event_logs()
   parse_vote_event_logs()
   parse_mcr_event_logs()
-  parse_stake_event_logs()
-  parse_unstake_event_logs()
   parse_staking_reward_event_logs()
   parse_nxm_event_logs()
+
+  parse_staking_transactions()
+  fromblock = get_latest_block_number(Stake) + 1
+  parse_stake_event_logs(fromblock)
+  parse_unstake_event_logs(fromblock)
 
   startblock = get_latest_block_number(Transaction) + 1
   parse_eth_transactions(startblock)
   parse_dai_transactions(startblock)
-  parse_staking_transactions()
+
+  db.session.commit()
