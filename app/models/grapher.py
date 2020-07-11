@@ -6,8 +6,6 @@ from datetime import datetime, timedelta
 from intervaltree import IntervalTree
 import bisect
 import json
-import os
-import sys
 
 def get_active_cover_amount(cache=False):
   if cache:
@@ -333,22 +331,25 @@ SELECT s.contract_name,
        s.address,
        sr.amount AS total_reward,
        sum(s.amount) AS total_staked,
-       sr.amount / sum(s.amount) * 100 AS historical_yield
+       sr.annualized_amount
 FROM stake s
 INNER JOIN
-  (SELECT contract_name,
-          address,
-          sum(amount) AS amount
-   FROM staking_reward
-   WHERE timestamp >= '2020-06-30 11:31:12'
-   GROUP BY contract_name,
-            address
-   ORDER BY contract_name) sr ON s.address = sr.address
+  (SELECT sr.contract_name,
+          sr.address,
+          sum(sr.amount) AS amount,
+          sum(365 * 86400 / extract(epoch
+                                    FROM (end_time - start_time)) * sr.amount) AS annualized_amount
+   FROM staking_reward sr
+   INNER JOIN cover c ON sr.timestamp = c.start_time
+   WHERE TIMESTAMP >= '2020-06-30 11:31:12'
+   GROUP BY sr.contract_name,
+            sr.address) sr ON s.address = sr.address
 WHERE s.timestamp >= '2020-06-30 11:31:12'
   AND s.timestamp <= \'%s\'
 GROUP BY s.contract_name,
          s.address,
-         sr.amount
+         sr.amount,
+         sr.annualized_amount
 """ % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
   all_stakes = []
@@ -360,8 +361,7 @@ GROUP BY s.contract_name,
       'total_reward_usd': stake[2] * float(r.get('NXM')),
       'total_staked': stake[3],
       'total_staked_usd': stake[3] * float(r.get('NXM')),
-      'historical_yield': 365 * 86400 / (datetime.now() - \
-          datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S')).total_seconds() * stake[4]
+      'estimated_yield': stake[4] / stake[3] * 100
     })
   return all_stakes
 

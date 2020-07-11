@@ -153,7 +153,7 @@ const renderAllStakes = (currency) => {
         stake['address'],
         totalReward,
         totalStaked,
-        stake['historical_yield'].toFixed(2) + '%'
+        stake['estimated_yield'].toFixed(2) + '%'
       ])
     }
     table.draw()

@@ -2,9 +2,7 @@ from .. import db, r
 from .models import HistoricalPrice
 from datetime import datetime
 import json
-import os
 import requests
-import sys
 
 def query_table(table, order=None):
   rows = []
