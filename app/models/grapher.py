@@ -354,6 +354,8 @@ GROUP BY s.contract_name,
 
   all_stakes = []
   for stake in db.engine.execute(query):
+    if stake[1] == '0x45f783cce6b7ff23b2ab2d70e416cdb7d6055f51':
+      continue
     all_stakes.append({
       'contract_name': stake[0],
       'address': stake[1],
