@@ -1,4 +1,5 @@
 let nxmPrice = undefined
+let nxmDailyVolume = undefined
 let nxmMarketCap = undefined
 
 const renderNXMPrice = (currency) => {
@@ -28,6 +29,31 @@ $('#nxm-price-usd').click(() => {
 $('#nxm-price-eth').click(() => {
   renderNXMPrice('ETH')
   toggleCurrency('#nxm-price', 'eth', 'usd')
+})
+
+const renderNXMDailyVolume = (currency) => {
+  if (nxmDailyVolume !== undefined) {
+    Plotly.newPlot('nxmDailyVolume', [{
+      x: Object.keys(nxmDailyVolume[currency]),
+      y: Object.values(nxmDailyVolume[currency]),
+      type: 'bar'
+    }])
+  }
+}
+
+$.get('nxm_daily_volume', (response) => {
+  nxmDailyVolume = response
+  $('#nxm-daily-volume-usd').click()
+})
+
+$('#nxm-daily-volume-usd').click(() => {
+  renderNXMDailyVolume('USD')
+  toggleCurrency('#nxm-daily-volume', 'usd', 'nxm')
+})
+
+$('#nxm-daily-volume-nxm').click(() => {
+  renderNXMDailyVolume('NXM')
+  toggleCurrency('#nxm-daily-volume', 'nxm', 'usd')
 })
 
 $.get('nxm_return_vs_eth', (response) => {

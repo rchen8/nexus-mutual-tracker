@@ -367,6 +367,32 @@ GROUP BY s.contract_name,
     })
   return all_stakes
 
+def get_nxm_daily_volume(cache=False):
+  if cache:
+    return json.loads(r.get('nxm_daily_volume'))
+
+  bonding_curve_address = '0x0000000000000000000000000000000000000000'
+  queue_staking_address = '0x5407381b6c251cfd498ccd4a1d877739cb7960b8'
+  pooled_staking_address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
+
+  nxm_price = get_nxm_price(cache=True)
+  nxm_times = sorted(nxm_price['USD'].keys())
+  daily_volume = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
+  for txn in query_table(NXMTransaction):
+    if txn['from_address'] != bonding_curve_address and txn['to_address'] != bonding_curve_address:
+      continue
+    if txn['timestamp'].strftime('%Y-%m-%d') == '2019-05-23':
+      continue
+    if txn['from_address'] == queue_staking_address or txn['to_address'] == pooled_staking_address:
+      continue
+
+    timestamp = nxm_times[bisect.bisect(nxm_times,
+        txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')) - 1]
+    daily_volume['USD'][txn['timestamp'].strftime('%Y-%m-%d')] += \
+        txn['amount'] * nxm_price['USD'][timestamp]
+    daily_volume['NXM'][txn['timestamp'].strftime('%Y-%m-%d')] += txn['amount']
+  return dict(daily_volume)
+
 def get_nxm_return_vs_eth(cache=False):
   if cache:
     return json.loads(r.get('nxm_return_vs_eth'))
@@ -469,6 +495,7 @@ def cache_graph_data():
   r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
   r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
   r.set('stakes', json.dumps(get_all_stakes(cache=False)))
+  r.set('nxm_daily_volume', json.dumps(get_nxm_daily_volume(cache=False)))
   r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))

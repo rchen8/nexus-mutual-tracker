@@ -81,6 +81,10 @@ def all_stakes():
 def nxm_price():
   return jsonify(grapher.get_nxm_price(cache=True))
 
+@app.route('/nxm_daily_volume', methods=['GET'])
+def nxm_daily_volume():
+  return jsonify(grapher.get_nxm_daily_volume(cache=True))
+
 @app.route('/nxm_return_vs_eth', methods=['GET'])
 def nxm_return_vs_eth():
   return jsonify(grapher.get_nxm_return_vs_eth(cache=True))
