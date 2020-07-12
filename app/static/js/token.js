@@ -56,15 +56,6 @@ $('#nxm-daily-volume-nxm').click(() => {
   toggleCurrency('#nxm-daily-volume', 'nxm', 'usd')
 })
 
-$.get('nxm_return_vs_eth', (response) => {
-  Plotly.newPlot('nxmReturnVsEth', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
-    fill: 'tozeroy',
-    type: 'scatter'
-  }])
-})
-
 $.get('nxm_supply', (response) => {
   Plotly.newPlot('nxmSupply', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),

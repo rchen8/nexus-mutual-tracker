@@ -393,19 +393,6 @@ def get_nxm_daily_volume(cache=False):
     daily_volume['NXM'][txn['timestamp'].strftime('%Y-%m-%d')] += txn['amount']
   return dict(daily_volume)
 
-def get_nxm_return_vs_eth(cache=False):
-  if cache:
-    return json.loads(r.get('nxm_return_vs_eth'))
-
-  start_price = 0.01028
-  nxm_price = get_nxm_price(cache=True)['ETH']
-  nxm_return_vs_eth = {}
-  for time in nxm_price:
-    nxm_return_vs_eth[time] = (nxm_price[time] / start_price - 1) * 100
-    if abs(nxm_return_vs_eth[time]) < 0.01:
-      nxm_return_vs_eth[time] = 0
-  return nxm_return_vs_eth
-
 def get_nxm_supply(cache=False):
   if cache:
     return json.loads(r.get('nxm_supply'))
@@ -496,7 +483,6 @@ def cache_graph_data():
   r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
   r.set('stakes', json.dumps(get_all_stakes(cache=False)))
   r.set('nxm_daily_volume', json.dumps(get_nxm_daily_volume(cache=False)))
-  r.set('nxm_return_vs_eth', json.dumps(get_nxm_return_vs_eth(cache=False)))
   r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
   r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
   r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))
