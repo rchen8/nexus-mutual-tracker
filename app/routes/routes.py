@@ -51,7 +51,7 @@ def minimum_capital_requirement():
 
 @app.route('/mcr_percentage', methods=['GET'])
 def mcr_percentage():
-  return jsonify(grapher.get_mcr_percentage(over_100=True, cache=True))
+  return jsonify(grapher.get_mcr_percentage(cache=True))
 
 @app.route('/total_amount_staked', methods=['GET'])
 def total_amount_staked():

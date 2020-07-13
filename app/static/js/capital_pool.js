@@ -47,6 +47,12 @@ $.get('minimum_capital_requirement', (response) => {
 })
 
 $.get('mcr_percentage', (response) => {
+  for (let key in response) {
+    if (response[key] < 100) {
+      delete response[key]
+    }
+  }
+
   Plotly.newPlot('mcrPercentage', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),

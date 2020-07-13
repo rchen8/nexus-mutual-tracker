@@ -195,16 +195,14 @@ def get_minimum_capital_requirement(cache=False):
     minimum_capital_requirement[txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = txn['mcr']
   return minimum_capital_requirement
 
-def get_mcr_percentage(over_100, cache=False):
-  if over_100 and cache:
+def get_mcr_percentage(cache=False):
+  if cache:
     return json.loads(r.get('mcr_percentage'))
 
-  capital_pool_size = get_capital_pool_size()
+  capital_pool_size = get_capital_pool_size(cache=True)
   mcrs = query_table(MinimumCapitalRequirement, order=MinimumCapitalRequirement.timestamp)
   mcr_percentage = {}
   for time in capital_pool_size['ETH']:
-    if over_100 and capital_pool_size['ETH'][time] < timestamp_to_mcr(mcrs, time):
-      continue
     mcr_percentage[time] = capital_pool_size['ETH'][time] / timestamp_to_mcr(mcrs, time) * 100
   return mcr_percentage
 
@@ -215,7 +213,7 @@ def get_nxm_price(cache=False):
   A = 1028 / 10**5
   C = 5800000
   mcrs = query_table(MinimumCapitalRequirement, order=MinimumCapitalRequirement.timestamp)
-  mcr_percentage = get_mcr_percentage(over_100=False)
+  mcr_percentage = get_mcr_percentage(cache=True)
   nxm_price = {'USD': {}, 'ETH': {}}
   for time in mcr_percentage:
     eth_price = get_historical_crypto_price('ETH', datetime.strptime(time, '%Y-%m-%d %H:%M:%S'))
@@ -473,7 +471,7 @@ def cache_graph_data():
   r.set('cover_amount_to_capital_pool_ratio',
       json.dumps(get_cover_amount_to_capital_pool_ratio(cache=False)))
   r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))
-  r.set('mcr_percentage', json.dumps(get_mcr_percentage(over_100=True, cache=False)))
+  r.set('mcr_percentage', json.dumps(get_mcr_percentage(cache=False)))
   r.set('nxm_price', json.dumps(get_nxm_price(cache=False)))
   r.set('votes', json.dumps(get_all_votes(cache=False)))
   r.set('amount_staked', json.dumps(get_total_amount_staked(cache=False)))
