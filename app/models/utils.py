@@ -130,8 +130,6 @@ def address_to_contract_name(address):
     '2a0c0dbecc7e4d658f48e01e3fa353f44050c208': 'IDEX',
     '10ec0d497824e342bcb0edce00959142aaa766dd': 'Idle',
     '78751b12da02728f467a44eac40f5cbc16bd7934': 'Idle',
-    '9d25057e62939d3408406975ad75ffe834da4cdd': 'iearn',
-    '16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'iearn',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
     '3a306a399085f3460bbcb5b77015ab33806a10d5': 'InstaDApp',
     '3361aa92e426e052141daf9e41a09d36e994ba23': 'Kickback',
@@ -193,6 +191,8 @@ def address_to_contract_name(address):
     'f173214c720f58e03e194085b1db28b50acdeead': 'Uniswap',
     '2157a7894439191e520825fe9399ab8655e0f708': 'Uniswap',
     '5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f': 'Uniswap',
-    'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'Wrapped ETH'
+    'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'Wrapped ETH',
+    '9d25057e62939d3408406975ad75ffe834da4cdd': 'yearn.finance',
+    '16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'yearn.finance'
   }
   return names[address.lower()] if address.lower() in names else 'Other'
