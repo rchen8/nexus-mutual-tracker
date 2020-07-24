@@ -178,6 +178,7 @@ def address_to_contract_name(address):
     '5b67871c3a857de81a1ca0f9f7945e5670d986dc': 'Set Protocol',
     'f55186cc537e7067ea616f2aae007b4427a120c8': 'Set Protocol',
     '882d80d3a191859d64477eb78cca46599307ec1c': 'Set Protocol',
+    '7ee7ca6e75de79e618e88bdf80d0b1db136b22d0': 'Switcheo',
     'c011a72400e58ecd99ee497cf89e3775d4bd732f': 'Synthetix',
     'ffc91f7088bf40f0419b451fb9d85718d8903628': 'Synthetix',
     'c011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f': 'Synthetix',
