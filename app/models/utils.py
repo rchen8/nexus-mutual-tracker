@@ -96,6 +96,7 @@ def address_to_contract_name(address):
     '9424b1412450d0f8fc2255faf6046b98213b76bd': 'Balancer',
     'b1cd6e4153b2a390cf00a6556b0fc1458c4a5533': 'Bancor',
     '2f9ec37d6ccfff1cab21733bdadede11c823ccb0': 'Bancor',
+    '1f573d6fb3f13d689ff844b4ce37794d79a7ff1c': 'Bancor',
     'd5d2b9e9bcd172d5fc8521afd2c98dd239f5b607': 'Band Protocol',
     '8b3d70d628ebd30d4a2ea82db95ba2e906c71633': 'bZx',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
