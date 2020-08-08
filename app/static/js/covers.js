@@ -12,7 +12,7 @@ const renderActiveCoverAmount = (currency) => {
       y: Object.values(activeCoverAmount[currency]),
       fill: 'tozeroy',
       type: 'scatter'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -37,7 +37,7 @@ const renderActiveCoverAmountPerContract = (currency) => {
       x: Object.keys(activeCoverAmountPerContract[currency]),
       y: Object.values(activeCoverAmountPerContract[currency]),
       type: 'bar'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -63,7 +63,7 @@ const renderActiveCoverAmountByExpirationDate = (currency) => {
       y: Object.values(activeCoverAmountByExpirationDate[currency]),
       fill: 'tozeroy',
       type: 'scatter'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -89,7 +89,7 @@ const renderPremiumsPaid = (currency) => {
       y: Object.values(premiumsPaid[currency]),
       fill: 'tozeroy',
       type: 'scatter'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -114,7 +114,7 @@ const renderPremiumsPaidPerContract = (currency) => {
       x: Object.keys(premiumsPaidPerContract[currency]),
       y: Object.values(premiumsPaidPerContract[currency]),
       type: 'bar'
-    }])
+    }], {}, {responsive: true})
   }
 }
 

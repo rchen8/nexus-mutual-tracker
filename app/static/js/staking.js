@@ -12,7 +12,7 @@ const renderTotalAmountStaked = (currency) => {
       y: Object.values(totalAmountStaked[currency]),
       fill: 'tozeroy',
       type: 'scatter'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -37,7 +37,7 @@ const renderAmountStakedPerContract = (currency) => {
       x: Object.keys(amountStakedPerContract[currency]),
       y: Object.values(amountStakedPerContract[currency]),
       type: 'bar'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -63,7 +63,7 @@ const renderTopStakers = (currency) => {
       values: Object.values(topStakers[currency]),
       type: 'pie',
       textinfo: 'none'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -89,7 +89,7 @@ const renderTotalStakingReward = (currency) => {
       y: Object.values(totalStakingReward[currency]),
       fill: 'tozeroy',
       type: 'scatter'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -114,7 +114,7 @@ const renderStakingRewardPerContract = (currency) => {
       x: Object.keys(stakingRewardPerContract[currency]),
       y: Object.values(stakingRewardPerContract[currency]),
       type: 'bar'
-    }])
+    }], {}, {responsive: true})
   }
 }
 

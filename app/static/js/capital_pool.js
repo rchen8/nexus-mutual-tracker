@@ -7,7 +7,7 @@ const renderCapitalPoolSize = (currency) => {
       y: Object.values(capitalPoolSize[currency]),
       fill: 'tozeroy',
       type: 'scatter'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -32,7 +32,7 @@ $.get('cover_amount_to_capital_pool_ratio', (response) => {
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
-  }])
+  }], {}, {responsive: true})
 })
 
 $.get('minimum_capital_requirement', (response) => {
@@ -43,7 +43,7 @@ $.get('minimum_capital_requirement', (response) => {
     type: 'scatter'
   }], {
     yaxis: {range: [7000, Math.max(...Object.values(response))]}
-  })
+  }, {responsive: true})
 })
 
 $.get('mcr_percentage', (response) => {
@@ -60,5 +60,5 @@ $.get('mcr_percentage', (response) => {
     type: 'scatter'
   }], {
     yaxis: {range: [100, Math.max(...Object.values(response))]}
-  })
+  }, {responsive: true})
 })

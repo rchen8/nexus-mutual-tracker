@@ -12,7 +12,7 @@ const renderNXMPrice = (currency) => {
     }], {
       yaxis: {range: [Math.min(...Object.values(nxmPrice[currency])),
           Math.max(...Object.values(nxmPrice[currency]))]}
-    })
+    }, {responsive: true})
   }
 }
 
@@ -37,7 +37,7 @@ const renderNXMDailyVolume = (currency) => {
       x: Object.keys(nxmDailyVolume[currency]),
       y: Object.values(nxmDailyVolume[currency]),
       type: 'bar'
-    }])
+    }], {}, {responsive: true})
   }
 }
 
@@ -64,7 +64,7 @@ $.get('nxm_supply', (response) => {
     type: 'scatter'
   }], {
     yaxis: {range: [Math.min(...Object.values(response)), Math.max(...Object.values(response))]}
-  })
+  }, {responsive: true})
 })
 
 const renderNXMMarketCap = (currency) => {
@@ -77,7 +77,7 @@ const renderNXMMarketCap = (currency) => {
     }], {
       yaxis: {range: [Math.min(...Object.values(nxmMarketCap[currency])),
           Math.max(...Object.values(nxmMarketCap[currency]))]}
-    })
+    }, {responsive: true})
   }
 }
 
@@ -102,7 +102,7 @@ $.get('nxm_distribution', (response) => {
     values: Object.values(response),
     type: 'pie',
     textinfo: 'none'
-  }])
+  }], {}, {responsive: true})
 })
 
 $.get('unique_addresses', (response) => {
@@ -111,5 +111,5 @@ $.get('unique_addresses', (response) => {
     y: Object.values(response),
     fill: 'tozeroy',
     type: 'scatter'
-  }])
+  }], {}, {responsive: true})
 })
