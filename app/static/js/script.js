@@ -19,6 +19,8 @@
   })
 })(jQuery)
 
+const getData = url => new Promise(response => $.get(url, response))
+
 const getCurrentValue = (object, currencies, price) => {
   if (currencies === null) {
     return object[Object.keys(object)[Object.keys(object).length - 1]]

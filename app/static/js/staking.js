@@ -5,22 +5,49 @@ let totalStakingReward = undefined
 let stakingRewardPerContract = undefined
 let allStakes = undefined
 
-const renderTotalAmountStaked = (currency) => {
-  if (totalAmountStaked !== undefined) {
-    Plotly.newPlot('totalAmountStaked', [{
-      x: getDateTimesInLocalTimezone(Object.keys(totalAmountStaked[currency])),
-      y: Object.values(totalAmountStaked[currency]),
-      fill: 'tozeroy',
-      type: 'scatter'
-    }], {}, {responsive: true})
-  }
+const endpoints = [
+  'total_amount_staked',
+  'amount_staked_per_contract',
+  'top_stakers',
+  'total_staking_reward',
+  'staking_reward_per_contract',
+  'all_stakes'
+]
+
+Promise.all(endpoints.map(getData)).then(data => {
+  totalAmountStaked = data[0]
+  amountStakedPerContract = data[1]
+  topStakers = data[2]
+  totalStakingReward = data[3]
+  stakingRewardPerContract = data[4]
+  allStakes = data[5]
+
+  renderStats()
+  setTimeout(() => {renderGraphs()}, 0)
+})
+
+const renderStats = () => {
+  $('#currentTotalAmountStaked').text(getCurrentValue(totalAmountStaked, ['USD', 'NXM']))
+  $('#currentTotalStakingReward').text(getCurrentValue(totalStakingReward, ['USD', 'NXM']))
 }
 
-$.get('total_amount_staked', (response) => {
-  totalAmountStaked = response
-  $('#currentTotalAmountStaked').text(getCurrentValue(totalAmountStaked, ['USD', 'NXM']))
+const renderGraphs = () => {
   $('#total-amount-staked-usd').click()
-})
+  $('#amount-staked-per-contract-usd').click()
+  $('#top-stakers-usd').click()
+  $('#total-staking-reward-usd').click()
+  $('#staking-reward-per-contract-usd').click()
+  $('#all-stakes-usd').click()
+}
+
+const renderTotalAmountStaked = (currency) => {
+  Plotly.newPlot('totalAmountStaked', [{
+    x: getDateTimesInLocalTimezone(Object.keys(totalAmountStaked[currency])),
+    y: Object.values(totalAmountStaked[currency]),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {}, {responsive: true})
+}
 
 $('#total-amount-staked-usd').click(() => {
   renderTotalAmountStaked('USD')
@@ -33,19 +60,12 @@ $('#total-amount-staked-nxm').click(() => {
 })
 
 const renderAmountStakedPerContract = (currency) => {
-  if (amountStakedPerContract !== undefined) {
-    Plotly.newPlot('amountStakedPerContract', [{
-      x: Object.keys(amountStakedPerContract[currency]),
-      y: Object.values(amountStakedPerContract[currency]),
-      type: 'bar'
-    }], {}, {responsive: true})
-  }
+  Plotly.newPlot('amountStakedPerContract', [{
+    x: Object.keys(amountStakedPerContract[currency]),
+    y: Object.values(amountStakedPerContract[currency]),
+    type: 'bar'
+  }], {}, {responsive: true})
 }
-
-$.get('amount_staked_per_contract', (response) => {
-  amountStakedPerContract = response
-  $('#amount-staked-per-contract-usd').click()
-})
 
 $('#amount-staked-per-contract-usd').click(() => {
   renderAmountStakedPerContract('USD')
@@ -58,20 +78,13 @@ $('#amount-staked-per-contract-nxm').click(() => {
 })
 
 const renderTopStakers = (currency) => {
-  if (topStakers !== undefined) {
-    Plotly.newPlot('topStakers', [{
-      labels: Object.keys(topStakers[currency]),
-      values: Object.values(topStakers[currency]),
-      type: 'pie',
-      textinfo: 'none'
-    }], {}, {responsive: true})
-  }
+  Plotly.newPlot('topStakers', [{
+    labels: Object.keys(topStakers[currency]),
+    values: Object.values(topStakers[currency]),
+    type: 'pie',
+    textinfo: 'none'
+  }], {}, {responsive: true})
 }
-
-$.get('top_stakers', (response) => {
-  topStakers = response
-  $('#top-stakers-usd').click()
-})
 
 $('#top-stakers-usd').click(() => {
   renderTopStakers('USD')
@@ -84,21 +97,13 @@ $('#top-stakers-nxm').click(() => {
 })
 
 const renderTotalStakingReward = (currency) => {
-  if (totalStakingReward !== undefined) {
-    Plotly.newPlot('totalStakingReward', [{
-      x: getDateTimesInLocalTimezone(Object.keys(totalStakingReward[currency])),
-      y: Object.values(totalStakingReward[currency]),
-      fill: 'tozeroy',
-      type: 'scatter'
-    }], {}, {responsive: true})
-  }
+  Plotly.newPlot('totalStakingReward', [{
+    x: getDateTimesInLocalTimezone(Object.keys(totalStakingReward[currency])),
+    y: Object.values(totalStakingReward[currency]),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {}, {responsive: true})
 }
-
-$.get('total_staking_reward', (response) => {
-  totalStakingReward = response
-  $('#currentTotalStakingReward').text(getCurrentValue(totalStakingReward, ['USD', 'NXM']))
-  $('#total-staking-reward-usd').click()
-})
 
 $('#total-staking-reward-usd').click(() => {
   renderTotalStakingReward('USD')
@@ -111,19 +116,12 @@ $('#total-staking-reward-nxm').click(() => {
 })
 
 const renderStakingRewardPerContract = (currency) => {
-  if (stakingRewardPerContract !== undefined) {
-    Plotly.newPlot('stakingRewardPerContract', [{
-      x: Object.keys(stakingRewardPerContract[currency]),
-      y: Object.values(stakingRewardPerContract[currency]),
-      type: 'bar'
-    }], {}, {responsive: true})
-  }
+  Plotly.newPlot('stakingRewardPerContract', [{
+    x: Object.keys(stakingRewardPerContract[currency]),
+    y: Object.values(stakingRewardPerContract[currency]),
+    type: 'bar'
+  }], {}, {responsive: true})
 }
-
-$.get('staking_reward_per_contract', (response) => {
-  stakingRewardPerContract = response
-  $('#staking-reward-per-contract-usd').click()
-})
 
 $('#staking-reward-per-contract-usd').click(() => {
   renderStakingRewardPerContract('USD')
@@ -136,36 +134,29 @@ $('#staking-reward-per-contract-nxm').click(() => {
 })
 
 const renderAllStakes = (currency) => {
-  if (allStakes !== undefined) {
-    const table = $('#stakeDataTable').DataTable()
-    table.clear()
-    for (let stake of allStakes) {
-      let totalReward = 0
-      let totalStaked = 0
-      if (currency === 'USD') {
-        totalReward = '$' + stake['total_reward_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        totalStaked = '$' + stake['total_staked_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      } else {
-        totalReward = stake['total_reward'].toLocaleString() + ' NXM'
-        totalStaked = stake['total_staked'].toLocaleString() + ' NXM'
-      }
-
-      table.row.add([
-        stake['contract_name'],
-        stake['address'],
-        totalReward,
-        totalStaked,
-        stake['estimated_yield'].toFixed(2) + '%'
-      ])
+  const table = $('#stakeDataTable').DataTable()
+  table.clear()
+  for (let stake of allStakes) {
+    let totalReward = 0
+    let totalStaked = 0
+    if (currency === 'USD') {
+      totalReward = '$' + stake['total_reward_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      totalStaked = '$' + stake['total_staked_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    } else {
+      totalReward = stake['total_reward'].toLocaleString() + ' NXM'
+      totalStaked = stake['total_staked'].toLocaleString() + ' NXM'
     }
-    table.draw()
-  }
-}
 
-$.get('all_stakes', (response) => {
-  allStakes = response
-  $('#all-stakes-usd').click()
-})
+    table.row.add([
+      stake['contract_name'],
+      stake['address'],
+      totalReward,
+      totalStaked,
+      stake['estimated_yield'].toFixed(2) + '%'
+    ])
+  }
+  table.draw()
+}
 
 $('#all-stakes-usd').click(() => {
   renderAllStakes('USD')

@@ -1,26 +1,61 @@
 let nxmPrice = undefined
 let nxmDailyVolume = undefined
+let nxmSupply = undefined
 let nxmMarketCap = undefined
+let nxmDistribution = undefined
+let uniqueAddresses = undefined
 
-const renderNXMPrice = (currency) => {
-  if (nxmPrice !== undefined) {
-    Plotly.newPlot('nxmPrice', [{
-      x: getDateTimesInLocalTimezone(Object.keys(nxmPrice[currency])),
-      y: Object.values(nxmPrice[currency]),
-      fill: 'tozeroy',
-      type: 'scatter'
-    }], {
-      yaxis: {range: [Math.min(...Object.values(nxmPrice[currency])),
-          Math.max(...Object.values(nxmPrice[currency]))]}
-    }, {responsive: true})
-  }
+const endpoints = [
+  'nxm_price',
+  'nxm_daily_volume',
+  'nxm_supply',
+  'nxm_market_cap',
+  'nxm_distribution',
+  'unique_addresses'
+]
+
+Promise.all(endpoints.map(getData)).then(data => {
+  nxmPrice = data[0]
+  nxmDailyVolume = data[1]
+  nxmSupply = data[2]
+  nxmMarketCap = data[3]
+  nxmDistribution = data[4]
+  uniqueAddresses = data[5]
+
+  renderStats()
+  setTimeout(() => {renderGraphs()}, 0)
+})
+
+const renderStats = () => {
+  $('#currentNxmPrice').text(getCurrentValue(nxmPrice, ['USD', 'ETH'], true))
+  $('#currentNxmVolume').text(getCurrentValue(nxmDailyVolume, ['USD', 'NXM']))
+  $('#currentNxmSupply').text(Math.round(getCurrentValue(nxmSupply, null)).toLocaleString() + ' NXM')
+  $('#currentNxmMarketCap').text(getCurrentValue(nxmMarketCap, ['USD', 'ETH']))
+  $('#currentUniqueAddresses').text(getCurrentValue(uniqueAddresses, null).toLocaleString())
 }
 
-$.get('nxm_price', (response) => {
-  nxmPrice = response
-  $('#currentNxmPrice').text(getCurrentValue(nxmPrice, ['USD', 'ETH'], true))
+const renderGraphs = () => {
   $('#nxm-price-usd').click()
-})
+  $('#nxm-daily-volume-usd').click()
+  renderNXMSupply()
+  $('#nxm-market-cap-usd').click()
+  renderNXMDistribution()
+  renderUniqueAddresses()
+}
+
+const renderNXMPrice = (currency) => {
+  Plotly.newPlot('nxmPrice', [{
+    x: getDateTimesInLocalTimezone(Object.keys(nxmPrice[currency])),
+    y: Object.values(nxmPrice[currency]),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {
+    yaxis: {range: [
+      Math.min(...Object.values(nxmPrice[currency])),
+      Math.max(...Object.values(nxmPrice[currency]))
+    ]}
+  }, {responsive: true})
+}
 
 $('#nxm-price-usd').click(() => {
   renderNXMPrice('USD')
@@ -33,20 +68,12 @@ $('#nxm-price-eth').click(() => {
 })
 
 const renderNXMDailyVolume = (currency) => {
-  if (nxmDailyVolume !== undefined) {
-    Plotly.newPlot('nxmDailyVolume', [{
-      x: Object.keys(nxmDailyVolume[currency]),
-      y: Object.values(nxmDailyVolume[currency]),
-      type: 'bar'
-    }], {}, {responsive: true})
-  }
+  Plotly.newPlot('nxmDailyVolume', [{
+    x: Object.keys(nxmDailyVolume[currency]),
+    y: Object.values(nxmDailyVolume[currency]),
+    type: 'bar'
+  }], {}, {responsive: true})
 }
-
-$.get('nxm_daily_volume', (response) => {
-  nxmDailyVolume = response
-  $('#currentNxmVolume').text(getCurrentValue(nxmDailyVolume, ['USD', 'NXM']))
-  $('#nxm-daily-volume-usd').click()
-})
 
 $('#nxm-daily-volume-usd').click(() => {
   renderNXMDailyVolume('USD')
@@ -58,37 +85,33 @@ $('#nxm-daily-volume-nxm').click(() => {
   toggleCurrency('#nxm-daily-volume', 'nxm', 'usd')
 })
 
-$.get('nxm_supply', (response) => {
-  $('#currentNxmSupply').text(Math.round(getCurrentValue(response, null)).toLocaleString() + ' NXM')
+const renderNXMSupply = () => {
   Plotly.newPlot('nxmSupply', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
+    x: getDateTimesInLocalTimezone(Object.keys(nxmSupply)),
+    y: Object.values(nxmSupply),
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [Math.min(...Object.values(response)), Math.max(...Object.values(response))]}
+    yaxis: {range: [
+      Math.min(...Object.values(nxmSupply)),
+      Math.max(...Object.values(nxmSupply))
+    ]}
   }, {responsive: true})
-})
-
-const renderNXMMarketCap = (currency) => {
-  if (nxmMarketCap !== undefined) {
-    Plotly.newPlot('nxmMarketCap', [{
-      x: getDateTimesInLocalTimezone(Object.keys(nxmMarketCap[currency])),
-      y: Object.values(nxmMarketCap[currency]),
-      fill: 'tozeroy',
-      type: 'scatter'
-    }], {
-      yaxis: {range: [Math.min(...Object.values(nxmMarketCap[currency])),
-          Math.max(...Object.values(nxmMarketCap[currency]))]}
-    }, {responsive: true})
-  }
 }
 
-$.get('nxm_market_cap', (response) => {
-  nxmMarketCap = response
-  $('#currentNxmMarketCap').text(getCurrentValue(nxmMarketCap, ['USD', 'ETH']))
-  $('#nxm-market-cap-usd').click()
-})
+const renderNXMMarketCap = (currency) => {
+  Plotly.newPlot('nxmMarketCap', [{
+    x: getDateTimesInLocalTimezone(Object.keys(nxmMarketCap[currency])),
+    y: Object.values(nxmMarketCap[currency]),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {
+    yaxis: {range: [
+      Math.min(...Object.values(nxmMarketCap[currency])),
+      Math.max(...Object.values(nxmMarketCap[currency]))
+    ]}
+  }, {responsive: true})
+}
 
 $('#nxm-market-cap-usd').click(() => {
   renderNXMMarketCap('USD')
@@ -100,21 +123,20 @@ $('#nxm-market-cap-eth').click(() => {
   toggleCurrency('#nxm-market-cap', 'eth', 'usd')
 })
 
-$.get('nxm_distribution', (response) => {
+const renderNXMDistribution = () => {
   Plotly.newPlot('nxmDistribution', [{
-    labels: Object.keys(response),
-    values: Object.values(response),
+    labels: Object.keys(nxmDistribution),
+    values: Object.values(nxmDistribution),
     type: 'pie',
     textinfo: 'none'
   }], {}, {responsive: true})
-})
+}
 
-$.get('unique_addresses', (response) => {
-  $('#currentUniqueAddresses').text(getCurrentValue(response, null).toLocaleString())
+const renderUniqueAddresses = () => {
   Plotly.newPlot('uniqueAddresses', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
+    x: getDateTimesInLocalTimezone(Object.keys(uniqueAddresses)),
+    y: Object.values(uniqueAddresses),
     fill: 'tozeroy',
     type: 'scatter'
   }], {}, {responsive: true})
-})
+}

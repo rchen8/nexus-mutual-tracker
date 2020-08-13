@@ -1,21 +1,49 @@
-capitalPoolSize = undefined
+let capitalPoolSize = undefined
+let coverAmountToCapitalPoolRatio = undefined
+let minimumCapitalRequirement = undefined
+let mcrPercentage = undefined
 
-const renderCapitalPoolSize = (currency) => {
-  if (capitalPoolSize !== undefined) {
-    Plotly.newPlot('capitalPoolSize', [{
-      x: getDateTimesInLocalTimezone(Object.keys(capitalPoolSize[currency])),
-      y: Object.values(capitalPoolSize[currency]),
-      fill: 'tozeroy',
-      type: 'scatter'
-    }], {}, {responsive: true})
-  }
+const endpoints = [
+  'capital_pool_size',
+  'cover_amount_to_capital_pool_ratio',
+  'minimum_capital_requirement',
+  'mcr_percentage'
+]
+
+Promise.all(endpoints.map(getData)).then(data => {
+  capitalPoolSize = data[0]
+  coverAmountToCapitalPoolRatio = data[1]
+  minimumCapitalRequirement = data[2]
+  mcrPercentage = data[3]
+
+  renderStats()
+  setTimeout(() => {renderGraphs()}, 0)
+})
+
+const renderStats = () => {
+  $('#currentCapitalPoolSize').text(getCurrentValue(capitalPoolSize, ['USD', 'ETH']))
+  $('#currentActiveCoverAmountToCapitalPoolSizeRatio')
+    .text(getCurrentValue(coverAmountToCapitalPoolRatio, null).toFixed(2) + '%')
+  $('#currentMinimumCapitalRequirement')
+    .text(Math.round(getCurrentValue(minimumCapitalRequirement, null)).toLocaleString() + ' ETH')
+  $('#currentMcrPercentage').text(getCurrentValue(mcrPercentage, null).toFixed(2) + '%')
 }
 
-$.get('capital_pool_size', (response) => {
-  capitalPoolSize = response
-  $('#currentCapitalPoolSize').text(getCurrentValue(capitalPoolSize, ['USD', 'ETH']))
+const renderGraphs = () => {
   $('#capital-pool-size-usd').click()
-})
+  renderCoverAmountToCapitalPoolRatio()
+  renderMinimumCapitalRequirement()
+  renderMcrPercentage()
+}
+
+const renderCapitalPoolSize = (currency) => {
+  Plotly.newPlot('capitalPoolSize', [{
+    x: getDateTimesInLocalTimezone(Object.keys(capitalPoolSize[currency])),
+    y: Object.values(capitalPoolSize[currency]),
+    fill: 'tozeroy',
+    type: 'scatter'
+  }], {}, {responsive: true})
+}
 
 $('#capital-pool-size-usd').click(() => {
   renderCapitalPoolSize('USD')
@@ -27,44 +55,45 @@ $('#capital-pool-size-eth').click(() => {
   toggleCurrency('#capital-pool-size', 'eth', 'usd')
 })
 
-$.get('cover_amount_to_capital_pool_ratio', (response) => {
-  $('#currentActiveCoverAmountToCapitalPoolSizeRatio').text(
-      getCurrentValue(response, null).toFixed(2) + '%')
+const renderCoverAmountToCapitalPoolRatio = () => {
   Plotly.newPlot('activeCoverAmountToCapitalPoolSizeRatio', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
+    x: getDateTimesInLocalTimezone(Object.keys(coverAmountToCapitalPoolRatio)),
+    y: Object.values(coverAmountToCapitalPoolRatio),
     fill: 'tozeroy',
     type: 'scatter'
   }], {}, {responsive: true})
-})
+}
 
-$.get('minimum_capital_requirement', (response) => {
-  $('#currentMinimumCapitalRequirement').text(
-      Math.round(getCurrentValue(response, null)).toLocaleString() + ' ETH')
+const renderMinimumCapitalRequirement = () => {
   Plotly.newPlot('minimumCapitalRequirement', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
+    x: getDateTimesInLocalTimezone(Object.keys(minimumCapitalRequirement)),
+    y: Object.values(minimumCapitalRequirement),
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [7000, Math.max(...Object.values(response))]}
+    yaxis: {range: [
+      7000,
+      Math.max(...Object.values(minimumCapitalRequirement))
+    ]}
   }, {responsive: true})
-})
+}
 
-$.get('mcr_percentage', (response) => {
-  for (let key in response) {
-    if (response[key] < 100) {
-      delete response[key]
+const renderMcrPercentage = () => {
+  for (let key in mcrPercentage) {
+    if (mcrPercentage[key] < 100) {
+      delete mcrPercentage[key]
     }
   }
 
-  $('#currentMcrPercentage').text(getCurrentValue(response, null).toFixed(2) + '%')
   Plotly.newPlot('mcrPercentage', [{
-    x: getDateTimesInLocalTimezone(Object.keys(response)),
-    y: Object.values(response),
+    x: getDateTimesInLocalTimezone(Object.keys(mcrPercentage)),
+    y: Object.values(mcrPercentage),
     fill: 'tozeroy',
     type: 'scatter'
   }], {
-    yaxis: {range: [100, Math.max(...Object.values(response))]}
+    yaxis: {range: [
+      100,
+      Math.max(...Object.values(mcrPercentage))
+    ]}
   }, {responsive: true})
-})
+}
