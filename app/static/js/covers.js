@@ -18,6 +18,7 @@ const renderActiveCoverAmount = (currency) => {
 
 $.get('active_cover_amount', (response) => {
   activeCoverAmount = response
+  $('#currentActiveCoverAmount').text(getCurrentValue(activeCoverAmount, ['USD', 'ETH']))
   $('#active-cover-amount-usd').click()
 })
 
@@ -95,6 +96,7 @@ const renderPremiumsPaid = (currency) => {
 
 $.get('premiums_paid', (response) => {
   premiumsPaid = response
+  $('#currentPremiumsPaid').text(getCurrentValue(premiumsPaid, ['USD', 'ETH']))
   $('#premiums-paid-usd').click()
 })
 

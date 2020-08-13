@@ -13,6 +13,7 @@ const renderCapitalPoolSize = (currency) => {
 
 $.get('capital_pool_size', (response) => {
   capitalPoolSize = response
+  $('#currentCapitalPoolSize').text(getCurrentValue(capitalPoolSize, ['USD', 'ETH']))
   $('#capital-pool-size-usd').click()
 })
 
@@ -27,6 +28,8 @@ $('#capital-pool-size-eth').click(() => {
 })
 
 $.get('cover_amount_to_capital_pool_ratio', (response) => {
+  $('#currentActiveCoverAmountToCapitalPoolSizeRatio').text(
+      getCurrentValue(response, null).toFixed(2) + '%')
   Plotly.newPlot('activeCoverAmountToCapitalPoolSizeRatio', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
@@ -36,6 +39,8 @@ $.get('cover_amount_to_capital_pool_ratio', (response) => {
 })
 
 $.get('minimum_capital_requirement', (response) => {
+  $('#currentMinimumCapitalRequirement').text(
+      Math.round(getCurrentValue(response, null)).toLocaleString() + ' ETH')
   Plotly.newPlot('minimumCapitalRequirement', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),
@@ -53,6 +58,7 @@ $.get('mcr_percentage', (response) => {
     }
   }
 
+  $('#currentMcrPercentage').text(getCurrentValue(response, null).toFixed(2) + '%')
   Plotly.newPlot('mcrPercentage', [{
     x: getDateTimesInLocalTimezone(Object.keys(response)),
     y: Object.values(response),

@@ -18,6 +18,7 @@ const renderTotalAmountStaked = (currency) => {
 
 $.get('total_amount_staked', (response) => {
   totalAmountStaked = response
+  $('#currentTotalAmountStaked').text(getCurrentValue(totalAmountStaked, ['USD', 'NXM']))
   $('#total-amount-staked-usd').click()
 })
 
@@ -95,6 +96,7 @@ const renderTotalStakingReward = (currency) => {
 
 $.get('total_staking_reward', (response) => {
   totalStakingReward = response
+  $('#currentTotalStakingReward').text(getCurrentValue(totalStakingReward, ['USD', 'NXM']))
   $('#total-staking-reward-usd').click()
 })
 

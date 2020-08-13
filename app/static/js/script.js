@@ -19,13 +19,36 @@
   })
 })(jQuery)
 
+const getCurrentValue = (object, currencies, price) => {
+  if (currencies === null) {
+    return object[Object.keys(object)[Object.keys(object).length - 1]]
+  } else {
+    text = ''
+    for (currency of currencies) {
+      value = object[currency]
+          [Object.keys(object[currency])[Object.keys(object[currency]).length - 1]]
+      if (text !== '') {
+        text += ' / '
+      }
+      if (currency === 'USD') {
+        text += price ? '$' + value.toFixed(2) : '$' + Math.round(value).toLocaleString()
+      } else if (currency === 'ETH') {
+        text += price ? value.toFixed(4) + ' ETH' : Math.round(value).toLocaleString() + ' ETH'
+      } else if (currency === 'NXM') {
+        text += Math.round(value).toLocaleString() + ' NXM'
+      }
+    }
+    return text
+  }
+}
+
 const toggleCurrency = (query_selector, activeCurrency, inactiveCurrency) => {
   $(query_selector + '-' + activeCurrency).attr('disabled', 'disabled')
   $(query_selector + '-' + activeCurrency).css({'color': 'black', 'background-color': 'white'})
   $(query_selector + '-' + inactiveCurrency).removeAttr('disabled')
   $(query_selector + '-' + inactiveCurrency).css('background-color', 'grey')
 }
- 
+
 const toLocalTimezone = (date) => {
   date = new Date(Date.parse(date))
   date.setMinutes(date.getMinutes() - new Date().getTimezoneOffset())
