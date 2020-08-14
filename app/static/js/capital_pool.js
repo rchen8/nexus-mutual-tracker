@@ -38,10 +38,10 @@ const renderGraphs = () => {
 
 const renderCapitalPoolSize = (currency) => {
   Plotly.newPlot('capitalPoolSize', [{
-    x: getDateTimesInLocalTimezone(Object.keys(capitalPoolSize[currency])),
+    x: Object.keys(capitalPoolSize[currency]),
     y: Object.values(capitalPoolSize[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 
@@ -57,19 +57,19 @@ $('#capital-pool-size-eth').click(() => {
 
 const renderCoverAmountToCapitalPoolRatio = () => {
   Plotly.newPlot('activeCoverAmountToCapitalPoolSizeRatio', [{
-    x: getDateTimesInLocalTimezone(Object.keys(coverAmountToCapitalPoolRatio)),
+    x: Object.keys(coverAmountToCapitalPoolRatio),
     y: Object.values(coverAmountToCapitalPoolRatio),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 
 const renderMinimumCapitalRequirement = () => {
   Plotly.newPlot('minimumCapitalRequirement', [{
-    x: getDateTimesInLocalTimezone(Object.keys(minimumCapitalRequirement)),
+    x: Object.keys(minimumCapitalRequirement),
     y: Object.values(minimumCapitalRequirement),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {
     yaxis: {range: [
       7000,
@@ -86,10 +86,10 @@ const renderMcrPercentage = () => {
   }
 
   Plotly.newPlot('mcrPercentage', [{
-    x: getDateTimesInLocalTimezone(Object.keys(mcrPercentage)),
+    x: Object.keys(mcrPercentage),
     y: Object.values(mcrPercentage),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {
     yaxis: {range: [
       100,

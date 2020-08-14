@@ -42,10 +42,10 @@ const renderGraphs = () => {
 
 const renderTotalAmountStaked = (currency) => {
   Plotly.newPlot('totalAmountStaked', [{
-    x: getDateTimesInLocalTimezone(Object.keys(totalAmountStaked[currency])),
+    x: Object.keys(totalAmountStaked[currency]),
     y: Object.values(totalAmountStaked[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 
@@ -98,10 +98,10 @@ $('#top-stakers-nxm').click(() => {
 
 const renderTotalStakingReward = (currency) => {
   Plotly.newPlot('totalStakingReward', [{
-    x: getDateTimesInLocalTimezone(Object.keys(totalStakingReward[currency])),
+    x: Object.keys(totalStakingReward[currency]),
     y: Object.values(totalStakingReward[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 

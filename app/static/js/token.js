@@ -28,7 +28,6 @@ Promise.all(endpoints.map(getData)).then(data => {
 
 const renderStats = () => {
   $('#currentNxmPrice').text(getCurrentValue(nxmPrice, ['USD', 'ETH'], true))
-  $('#currentNxmVolume').text(getCurrentValue(nxmDailyVolume, ['USD', 'NXM']))
   $('#currentNxmSupply').text(Math.round(getCurrentValue(nxmSupply, null)).toLocaleString() + ' NXM')
   $('#currentNxmMarketCap').text(getCurrentValue(nxmMarketCap, ['USD', 'ETH']))
   $('#currentUniqueAddresses').text(getCurrentValue(uniqueAddresses, null).toLocaleString())
@@ -45,10 +44,10 @@ const renderGraphs = () => {
 
 const renderNXMPrice = (currency) => {
   Plotly.newPlot('nxmPrice', [{
-    x: getDateTimesInLocalTimezone(Object.keys(nxmPrice[currency])),
+    x: Object.keys(nxmPrice[currency]),
     y: Object.values(nxmPrice[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {
     yaxis: {range: [
       Math.min(...Object.values(nxmPrice[currency])),
@@ -87,10 +86,10 @@ $('#nxm-daily-volume-nxm').click(() => {
 
 const renderNXMSupply = () => {
   Plotly.newPlot('nxmSupply', [{
-    x: getDateTimesInLocalTimezone(Object.keys(nxmSupply)),
+    x: Object.keys(nxmSupply),
     y: Object.values(nxmSupply),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {
     yaxis: {range: [
       Math.min(...Object.values(nxmSupply)),
@@ -101,10 +100,10 @@ const renderNXMSupply = () => {
 
 const renderNXMMarketCap = (currency) => {
   Plotly.newPlot('nxmMarketCap', [{
-    x: getDateTimesInLocalTimezone(Object.keys(nxmMarketCap[currency])),
+    x: Object.keys(nxmMarketCap[currency]),
     y: Object.values(nxmMarketCap[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {
     yaxis: {range: [
       Math.min(...Object.values(nxmMarketCap[currency])),
@@ -134,9 +133,9 @@ const renderNXMDistribution = () => {
 
 const renderUniqueAddresses = () => {
   Plotly.newPlot('uniqueAddresses', [{
-    x: getDateTimesInLocalTimezone(Object.keys(uniqueAddresses)),
+    x: Object.keys(uniqueAddresses),
     y: Object.values(uniqueAddresses),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }

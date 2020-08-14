@@ -50,22 +50,3 @@ const toggleCurrency = (query_selector, activeCurrency, inactiveCurrency) => {
   $(query_selector + '-' + inactiveCurrency).removeAttr('disabled')
   $(query_selector + '-' + inactiveCurrency).css('background-color', 'grey')
 }
-
-const toLocalTimezone = (date) => {
-  date = new Date(Date.parse(date))
-  date.setMinutes(date.getMinutes() - new Date().getTimezoneOffset())
-  let date_string = date.getFullYear() + '-'
-  date_string += (date.getMonth() + 1) <= 9 ? '0' + (date.getMonth() + 1) + '-' :
-      (date.getMonth() + 1) + '-'
-  date_string += date.getDate() <= 9 ? '0' + date.getDate() + ' ' : date.getDate() + ' '
-  date_string += date.toLocaleTimeString('en-US', {'hour12' : false})
-  date_string = date_string.replace(' 24:', ' 00:')
-  return date_string
-}
-
-const getDateTimesInLocalTimezone = (dates) => {
-  for (let i = 0; i < dates.length; i++) {
-    dates[i] = toLocalTimezone(dates[i])
-  }
-  return dates
-}

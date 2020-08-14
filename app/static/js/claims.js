@@ -18,8 +18,8 @@ const renderAllClaims = (currency) => {
         claim['cover_id'],
         claim['contract_name'],
         claimAmount,
-        toLocalTimezone(claim['start_time']),
-        toLocalTimezone(claim['timestamp']),
+        claim['start_time'],
+        claim['timestamp'],
         claim['verdict']
       ])
     }

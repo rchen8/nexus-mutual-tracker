@@ -42,10 +42,10 @@ const renderGraphs = () => {
 
 const renderActiveCoverAmount = (currency) => {
   Plotly.newPlot('activeCoverAmount', [{
-    x: getDateTimesInLocalTimezone(Object.keys(activeCoverAmount[currency])),
+    x: Object.keys(activeCoverAmount[currency]),
     y: Object.values(activeCoverAmount[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 
@@ -82,7 +82,7 @@ const renderActiveCoverAmountByExpirationDate = (currency) => {
     x: Object.keys(activeCoverAmountByExpirationDate[currency]),
     y: Object.values(activeCoverAmountByExpirationDate[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 
@@ -101,7 +101,7 @@ const renderPremiumsPaid = (currency) => {
     x: Object.keys(premiumsPaid[currency]),
     y: Object.values(premiumsPaid[currency]),
     fill: 'tozeroy',
-    type: 'scatter'
+    type: 'scattergl'
   }], {}, {responsive: true})
 }
 
@@ -152,8 +152,8 @@ const renderAllCovers = (currency) => {
       cover['contract_name'],
       coverAmount,
       premium,
-      toLocalTimezone(cover['start_time']),
-      toLocalTimezone(cover['end_time'])
+      cover['start_time'],
+      cover['end_time']
     ])
   }
   table.draw()
