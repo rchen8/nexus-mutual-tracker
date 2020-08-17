@@ -134,6 +134,7 @@ def address_to_contract_name(address):
     '2a0c0dbecc7e4d658f48e01e3fa353f44050c208': 'IDEX',
     '10ec0d497824e342bcb0edce00959142aaa766dd': 'Idle',
     '78751b12da02728f467a44eac40f5cbc16bd7934': 'Idle',
+    '3fe7940616e5bc47b0775a0dccf6237893353bb4': 'Idle',
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
     '3a306a399085f3460bbcb5b77015ab33806a10d5': 'InstaDApp',
     '3361aa92e426e052141daf9e41a09d36e994ba23': 'Kickback',
