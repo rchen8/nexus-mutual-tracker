@@ -439,8 +439,10 @@ def get_nxm_distribution(cache=False):
   for address in list(nxm_distribution):
     if nxm_distribution[address] < 10**-8:
       del nxm_distribution[address]
-  nxm_distribution['Staking Contract'] = \
+  nxm_distribution['Pooled Staking Contract'] = \
       nxm_distribution.pop('0x84edffa16bb0b9ab1163abb0a13ff0744c11272f')
+  nxm_distribution['Wrapped NXM Contract'] = \
+      nxm_distribution.pop('0x0d438f3b5175bebc262bf23753c1e53d03432bde')
   return nxm_distribution
 
 def get_unique_addresses(cache=False):
