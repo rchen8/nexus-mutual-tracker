@@ -2,6 +2,7 @@ from .. import db, r
 from .models import HistoricalPrice
 from datetime import datetime
 import json
+import os
 import requests
 
 def query_table(table, order=None):
@@ -22,6 +23,15 @@ def get_latest_block_number(table):
     return 0
   block_number = db.session.query(db.func.max(table.block_number)).scalar()
   return 0 if not block_number else block_number
+
+def set_defi_tvl():
+  url = 'https://data-api.defipulse.com/api/v1/defipulse/api/GetHistory?api-key=%s' % \
+      os.environ['DEFIPULSE_API_KEY']
+  tvl = requests.get(url).json()
+  tvl_defi = {}
+  for date in tvl:
+    tvl_defi[str(datetime.fromtimestamp(int(date['timestamp'])).date())] = date['tvlUSD']
+  r.set('defi_tvl', json.dumps(tvl_defi))
 
 def get_historical_crypto_price(symbol, timestamp):
   crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
