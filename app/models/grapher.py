@@ -77,17 +77,17 @@ def get_active_cover_amount_by_expiration_date(cache=False):
       cover_amount_by_expiration_date['ETH'][end_time] = last_cover_amount_eth
   return dict(cover_amount_by_expiration_date)
 
-def get_defi_tvl_insured(cache=False):
+def get_defi_tvl_covered(cache=False):
   if cache:
-    return json.loads(r.get('defi_tvl_insured'))
+    return json.loads(r.get('defi_tvl_covered'))
 
-  defi_tvl = json.loads(r.get('defi_tvl'))
   cover_amount = get_active_cover_amount(cache=True)
-  defi_tvl_insured = {}
+  defi_tvl = json.loads(r.get('defi_tvl'))
+  defi_tvl_covered = {}
   for time in cover_amount['USD']:
     date = time[:time.index(' ')] if time[:time.index(' ')] in defi_tvl else max(defi_tvl)
-    defi_tvl_insured[time] = cover_amount['USD'][time] / defi_tvl[date] * 100
-  return defi_tvl_insured
+    defi_tvl_covered[time] = cover_amount['USD'][time] / defi_tvl[date] * 100
+  return defi_tvl_covered
 
 def get_premiums_paid(cache=False):
   if cache:
@@ -477,7 +477,7 @@ def cache_graph_data():
   r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
   r.set('cover_amount_by_expiration_date',
       json.dumps(get_active_cover_amount_by_expiration_date(cache=False)))
-  r.set('defi_tvl_insured', json.dumps(get_defi_tvl_insured(cache=False)))
+  r.set('defi_tvl_covered', json.dumps(get_defi_tvl_covered(cache=False)))
   r.set('premiums_paid', json.dumps(get_premiums_paid(cache=False)))
   r.set('premiums_paid_per_contract', json.dumps(get_premiums_paid_per_contract(cache=False)))
   r.set('covers', json.dumps(get_all_covers(cache=False)))

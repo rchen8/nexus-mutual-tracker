@@ -17,9 +17,9 @@ def active_cover_amount_per_contract():
 def active_cover_amount_by_expiration_date():
   return jsonify(grapher.get_active_cover_amount_by_expiration_date(cache=True))
 
-@app.route('/defi_tvl_insured', methods=['GET'])
-def defi_tvl_insured():
-  return jsonify(grapher.get_defi_tvl_insured(cache=True))
+@app.route('/defi_tvl_covered', methods=['GET'])
+def defi_tvl_covered():
+  return jsonify(grapher.get_defi_tvl_covered(cache=True))
 
 @app.route('/premiums_paid', methods=['GET'])
 def premiums_paid():

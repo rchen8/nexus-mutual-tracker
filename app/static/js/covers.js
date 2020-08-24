@@ -1,7 +1,7 @@
 let activeCoverAmount = undefined
 let activeCoverAmountPerContract = undefined
 let activeCoverAmountByExpirationDate = undefined
-let defiTvlInsured = undefined
+let defiTvlCovered = undefined
 let premiumsPaid = undefined
 let premiumsPaidPerContract = undefined
 let allCovers = undefined
@@ -10,7 +10,7 @@ const endpoints = [
   'active_cover_amount',
   'active_cover_amount_per_contract',
   'active_cover_amount_by_expiration_date',
-  'defi_tvl_insured',
+  'defi_tvl_covered',
   'premiums_paid',
   'premiums_paid_per_contract',
   'all_covers'
@@ -20,7 +20,7 @@ Promise.all(endpoints.map(getData)).then(data => {
   activeCoverAmount = data[0]
   activeCoverAmountPerContract = data[1]
   activeCoverAmountByExpirationDate = data[2]
-  defiTvlInsured = data[3]
+  defiTvlCovered = data[3]
   premiumsPaid = data[4]
   premiumsPaidPerContract = data[5]
   allCovers = data[6]
@@ -38,7 +38,7 @@ const renderGraphs = () => {
   $('#active-cover-amount-usd').click()
   $('#active-cover-amount-per-contract-usd').click()
   $('#active-cover-amount-by-expiration-date-usd').click()
-  renderDefiTvlInsured()
+  renderDefiTvlCovered()
   $('#premiums-paid-usd').click()
   $('#premiums-paid-per-contract-usd').click()
   $('#all-covers-usd').click()
@@ -100,10 +100,10 @@ $('#active-cover-amount-by-expiration-date-eth').click(() => {
   toggleCurrency('#active-cover-amount-by-expiration-date', 'eth', 'usd')
 })
 
-const renderDefiTvlInsured = () => {
-  Plotly.newPlot('defiTvlInsured', [{
-    x: Object.keys(defiTvlInsured),
-    y: Object.values(defiTvlInsured),
+const renderDefiTvlCovered = () => {
+  Plotly.newPlot('defiTvlCovered', [{
+    x: Object.keys(defiTvlCovered),
+    y: Object.values(defiTvlCovered),
     fill: 'tozeroy',
     type: 'scattergl'
   }], {}, {responsive: true})
