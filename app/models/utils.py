@@ -169,6 +169,7 @@ def address_to_contract_name(address):
     '58c5ad890fd9b25145f05f5afee11cb5b8f616de': 'MetaMoneyMarket',
     '1fd169a4f5c59acf79d0fd5d91d1201ef1bce9f1': 'MolochDAO',
     '85bb8a852c29d8f100cb97ecdf4589086d1be2dd': 'Monolith',
+    '71cd6666064c3a1354a3b4dca5fa1e2d3ee7d303': 'Mooniswap',
     'afce80b19a8ce13dec0739a1aab7a028d6845eb3': 'mStable',
     '08c3a887865684f30351a0ba6d683aa9b539829a': 'Nexus Mutual',
     '802275979b020f0ec871c5ec1db6e412b72ff20b': 'Nuo Network',
