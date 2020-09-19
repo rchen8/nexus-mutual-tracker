@@ -39,11 +39,11 @@ def get_historical_crypto_price(symbol, timestamp):
     return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
 
   api = 'histominute' if (datetime.now() - timestamp).days < 7 else 'histohour'
-  url = 'https://min-api.cryptocompare.com/data/%s?fsym=ETH&tsym=USD&limit=1&toTs=%s' % \
-      (api, timestamp.timestamp())
+  url = 'https://min-api.cryptocompare.com/data/%s?fsym=ETH&tsym=USD&limit=1&toTs=%s&api_key=%s' % \
+      (api, timestamp.timestamp(), os.environ['CRYPTOCOMPARE_API_KEY'])
   eth_price = requests.get(url).json()['Data'][-1]['close']
-  url = 'https://min-api.cryptocompare.com/data/%s?fsym=DAI&tsym=USDT&limit=1&toTs=%s' % \
-      (api, timestamp.timestamp())
+  url = 'https://min-api.cryptocompare.com/data/%s?fsym=DAI&tsym=USDT&limit=1&toTs=%s&api_key=%s' % \
+      (api, timestamp.timestamp(), os.environ['CRYPTOCOMPARE_API_KEY'])
   dai_price = requests.get(url).json()['Data'][-1]['close']
 
   try:
@@ -60,7 +60,8 @@ def get_historical_crypto_price(symbol, timestamp):
   return eth_price if symbol == 'ETH' else dai_price
 
 def set_current_crypto_prices():
-  url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DAI&tsyms=USD'
+  url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DAI&tsyms=USD&api_key=%s' % \
+      os.environ['CRYPTOCOMPARE_API_KEY']
   result = requests.get(url).json()
   r.set('ETH', result['ETH']['USD'])
   r.set('DAI', result['DAI']['USD'])

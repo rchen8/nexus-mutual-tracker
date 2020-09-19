@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import requests
 import textwrap
+import time
 
 def get_event_logs(table, address, topic0, fromblock=None):
   if fromblock is None:
@@ -235,14 +236,17 @@ def parse_etherscan_data():
   parse_mcr_event_logs()
   parse_staking_reward_event_logs()
   parse_nxm_event_logs()
+  time.sleep(1)
 
   parse_staking_transactions()
   fromblock = get_latest_block_number(Stake) + 1
   parse_stake_event_logs(fromblock)
   parse_unstake_event_logs(fromblock)
+  time.sleep(1)
 
   startblock = get_latest_block_number(Transaction) + 1
   parse_eth_transactions(startblock)
+  time.sleep(1)
   parse_dai_transactions(startblock)
 
   db.session.commit()

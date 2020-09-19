@@ -2,7 +2,7 @@ let activeCoverAmount = undefined
 let activeCoverAmountPerContract = undefined
 let activeCoverAmountByExpirationDate = undefined
 let defiTvlCovered = undefined
-let premiumsPaid = undefined
+let totalPremiumsPaid = undefined
 let premiumsPaidPerContract = undefined
 let allCovers = undefined
 
@@ -11,7 +11,7 @@ const endpoints = [
   'active_cover_amount_per_contract',
   'active_cover_amount_by_expiration_date',
   'defi_tvl_covered',
-  'premiums_paid',
+  'total_premiums_paid',
   'premiums_paid_per_contract',
   'all_covers'
 ]
@@ -21,7 +21,7 @@ Promise.all(endpoints.map(getData)).then(data => {
   activeCoverAmountPerContract = data[1]
   activeCoverAmountByExpirationDate = data[2]
   defiTvlCovered = data[3]
-  premiumsPaid = data[4]
+  totalPremiumsPaid = data[4]
   premiumsPaidPerContract = data[5]
   allCovers = data[6]
 
@@ -31,7 +31,7 @@ Promise.all(endpoints.map(getData)).then(data => {
 
 const renderStats = () => {
   $('#currentActiveCoverAmount').text(getCurrentValue(activeCoverAmount, ['USD', 'ETH']))
-  $('#currentPremiumsPaid').text(getCurrentValue(premiumsPaid, ['USD', 'ETH']))
+  $('#currentPremiumsPaid').text(getCurrentValue(totalPremiumsPaid, ['USD', 'ETH']))
 }
 
 const renderGraphs = () => {
@@ -39,7 +39,7 @@ const renderGraphs = () => {
   $('#active-cover-amount-per-contract-usd').click()
   $('#active-cover-amount-by-expiration-date-usd').click()
   renderDefiTvlCovered()
-  $('#premiums-paid-usd').click()
+  $('#total-premiums-paid-usd').click()
   $('#premiums-paid-per-contract-usd').click()
   $('#all-covers-usd').click()
 }
@@ -109,23 +109,23 @@ const renderDefiTvlCovered = () => {
   }], {}, {responsive: true})
 }
 
-const renderPremiumsPaid = (currency) => {
-  Plotly.newPlot('premiumsPaid', [{
-    x: Object.keys(premiumsPaid[currency]),
-    y: Object.values(premiumsPaid[currency]),
+const renderTotalPremiumsPaid = (currency) => {
+  Plotly.newPlot('totalPremiumsPaid', [{
+    x: Object.keys(totalPremiumsPaid[currency]),
+    y: Object.values(totalPremiumsPaid[currency]),
     fill: 'tozeroy',
     type: 'scattergl'
   }], {}, {responsive: true})
 }
 
-$('#premiums-paid-usd').click(() => {
-  renderPremiumsPaid('USD')
-  toggleCurrency('#premiums-paid', 'usd', 'eth')
+$('#total-premiums-paid-usd').click(() => {
+  renderTotalPremiumsPaid('USD')
+  toggleCurrency('#total-premiums-paid', 'usd', 'eth')
 })
 
-$('#premiums-paid-eth').click(() => {
-  renderPremiumsPaid('ETH')
-  toggleCurrency('#premiums-paid', 'eth', 'usd')
+$('#total-premiums-paid-eth').click(() => {
+  renderTotalPremiumsPaid('ETH')
+  toggleCurrency('#total-premiums-paid', 'eth', 'usd')
 })
 
 const renderPremiumsPaidPerContract = (currency) => {

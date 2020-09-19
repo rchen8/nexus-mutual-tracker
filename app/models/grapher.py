@@ -6,10 +6,11 @@ from datetime import datetime, timedelta
 from intervaltree import IntervalTree
 import bisect
 import json
+import time
 
 def get_active_cover_amount(cache=False):
   if cache:
-    return json.loads(r.get('cover_amount'))
+    return json.loads(r.get('active_cover_amount'))
 
   times = []
   tree = IntervalTree()
@@ -35,7 +36,7 @@ def get_active_cover_amount(cache=False):
 
 def get_active_cover_amount_per_contract(cache=False):
   if cache:
-    return json.loads(r.get('cover_amount_per_contract'))
+    return json.loads(r.get('active_cover_amount_per_contract'))
 
   cover_amount_per_contract = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   for cover in query_table(Cover):
@@ -48,7 +49,7 @@ def get_active_cover_amount_per_contract(cache=False):
 
 def get_active_cover_amount_by_expiration_date(cache=False):
   if cache:
-    return json.loads(r.get('cover_amount_by_expiration_date'))
+    return json.loads(r.get('active_cover_amount_by_expiration_date'))
 
   cover_amount_by_expiration_date = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   covers = query_table(Cover)
@@ -89,9 +90,9 @@ def get_defi_tvl_covered(cache=False):
     defi_tvl_covered[time] = cover_amount['USD'][time] / defi_tvl[date] * 100
   return defi_tvl_covered
 
-def get_premiums_paid(cache=False):
+def get_total_premiums_paid(cache=False):
   if cache:
-    return json.loads(r.get('premiums_paid'))
+    return json.loads(r.get('total_premiums_paid'))
 
   total_eth = 0
   total_dai = 0
@@ -124,7 +125,7 @@ def get_premiums_paid_per_contract(cache=False):
 
 def get_all_covers(cache=False):
   if cache:
-    return json.loads(r.get('covers'))
+    return json.loads(r.get('all_covers'))
 
   covers = query_table(Cover)
   for cover in covers:
@@ -136,7 +137,7 @@ def get_all_covers(cache=False):
 
 def get_all_claims(cache=False):
   if cache:
-    return json.loads(r.get('claims'))
+    return json.loads(r.get('all_claims'))
 
   covers = sorted(get_all_covers(cache=True), key=lambda x: x['cover_id'])
   claims = query_table(Claim)
@@ -151,7 +152,7 @@ def get_all_claims(cache=False):
 
 def get_all_votes(cache=False):
   if cache:
-    return json.loads(r.get('votes'))
+    return json.loads(r.get('all_votes'))
 
   votes = {'USD': {}, 'NXM': {}}
   for vote in query_table(Vote):
@@ -238,7 +239,7 @@ def get_nxm_price(cache=False):
 
 def get_total_amount_staked(cache=False):
   if cache:
-    return json.loads(r.get('amount_staked'))
+    return json.loads(r.get('total_amount_staked'))
 
   # Queue staking
   nxm_price = get_nxm_price(cache=True)
@@ -305,7 +306,7 @@ def get_top_stakers(cache=False):
 
 def get_total_staking_reward(cache=False):
   if cache:
-    return json.loads(r.get('staking_reward'))
+    return json.loads(r.get('total_staking_reward'))
 
   nxm_price = get_nxm_price(cache=True)
   nxm_times = sorted(nxm_price['USD'].keys())
@@ -334,7 +335,7 @@ def get_staking_reward_per_contract(cache=False):
 
 def get_all_stakes(cache=False):
   if cache:
-    return json.loads(r.get('stakes'))
+    return json.loads(r.get('all_stakes'))
 
   query = """
 SELECT s.contract_name,
@@ -473,30 +474,35 @@ def get_unique_addresses(cache=False):
   return unique_addresses
 
 def cache_graph_data():
-  r.set('cover_amount', json.dumps(get_active_cover_amount(cache=False)))
-  r.set('cover_amount_per_contract', json.dumps(get_active_cover_amount_per_contract(cache=False)))
-  r.set('cover_amount_by_expiration_date',
-      json.dumps(get_active_cover_amount_by_expiration_date(cache=False)))
-  r.set('defi_tvl_covered', json.dumps(get_defi_tvl_covered(cache=False)))
-  r.set('premiums_paid', json.dumps(get_premiums_paid(cache=False)))
-  r.set('premiums_paid_per_contract', json.dumps(get_premiums_paid_per_contract(cache=False)))
-  r.set('covers', json.dumps(get_all_covers(cache=False)))
-  r.set('claims', json.dumps(get_all_claims(cache=False)))
-  r.set('capital_pool_size', json.dumps(get_capital_pool_size(cache=False)))
-  r.set('cover_amount_to_capital_pool_ratio',
-      json.dumps(get_cover_amount_to_capital_pool_ratio(cache=False)))
-  r.set('minimum_capital_requirement', json.dumps(get_minimum_capital_requirement(cache=False)))
-  r.set('mcr_percentage', json.dumps(get_mcr_percentage(cache=False)))
-  r.set('nxm_price', json.dumps(get_nxm_price(cache=False)))
-  r.set('votes', json.dumps(get_all_votes(cache=False)))
-  r.set('amount_staked', json.dumps(get_total_amount_staked(cache=False)))
-  r.set('amount_staked_per_contract', json.dumps(get_amount_staked_per_contract(cache=False)))
-  r.set('top_stakers', json.dumps(get_top_stakers(cache=False)))
-  r.set('staking_reward', json.dumps(get_total_staking_reward(cache=False)))
-  r.set('staking_reward_per_contract', json.dumps(get_staking_reward_per_contract(cache=False)))
-  r.set('stakes', json.dumps(get_all_stakes(cache=False)))
-  r.set('nxm_daily_volume', json.dumps(get_nxm_daily_volume(cache=False)))
-  r.set('nxm_supply', json.dumps(get_nxm_supply(cache=False)))
-  r.set('nxm_market_cap', json.dumps(get_nxm_market_cap(cache=False)))
-  r.set('nxm_distribution', json.dumps(get_nxm_distribution(cache=False)))
-  r.set('unique_addresses', json.dumps(get_unique_addresses(cache=False)))
+  graphs = [
+    'active_cover_amount',
+    'active_cover_amount_per_contract',
+    'active_cover_amount_by_expiration_date',
+    'defi_tvl_covered',
+    'total_premiums_paid',
+    'premiums_paid_per_contract',
+    'all_covers',
+    'all_claims',
+    'capital_pool_size',
+    'cover_amount_to_capital_pool_ratio',
+    'minimum_capital_requirement',
+    'mcr_percentage',
+    'nxm_price',
+    'all_votes',
+    'total_amount_staked',
+    'amount_staked_per_contract',
+    'top_stakers',
+    'total_staking_reward',
+    'staking_reward_per_contract',
+    'all_stakes',
+    'nxm_daily_volume',
+    'nxm_supply',
+    'nxm_market_cap',
+    'nxm_distribution',
+    'unique_addresses'
+  ]
+
+  for graph in graphs:
+    start = time.time()
+    r.set(graph, json.dumps(globals()['get_' + graph](cache=False)))
+    print(graph, time.time() - start)
