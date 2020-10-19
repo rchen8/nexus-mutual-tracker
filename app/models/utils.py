@@ -130,6 +130,7 @@ def address_to_contract_name(address):
     '8ef1351941d0cd8da09d5a4c74f2d64503031a18': 'Dharma',
     '4e0f2b97307ad60b741f993c052733acc1ea5811': 'Dharma',
     'f7b3fc555c458c46d288ffd049ddbfb09f706df7': 'Dharma',
+    '3a97247df274a17c59a3bd12735ea3fcdfb49950': 'DODO',
     '519b70055af55a007110b4ff99b0ea33071c720a': 'DXdao',
     '1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e': 'dYdX',
     '364508a5ca0538d8119d3bf40a284635686c98c4': 'dYdX Perpetual',
