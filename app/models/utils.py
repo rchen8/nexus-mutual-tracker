@@ -112,6 +112,7 @@ def address_to_contract_name(address):
     'd5d2b9e9bcd172d5fc8521afd2c98dd239f5b607': 'Band Protocol',
     '8b3d70d628ebd30d4a2ea82db95ba2e906c71633': 'bZx',
     '514910771af9ca656af840dff83e8264ecf986ca': 'ChainLink',
+    '26aad4d82f6c9fa6e34d8c1067429c986a055872': 'CoFiX',
     '3d9819210a31b4961b30ef54be2aed79b9c9cd3b': 'Compound',
     '4ddc2d193948926d02f9b1fe9e1daa0718270ed5': 'Compound',
     '3fda67f7583380e67ef93072294a7fac882fd7e7': 'Compound',
