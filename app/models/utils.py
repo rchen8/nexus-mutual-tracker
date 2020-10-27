@@ -30,7 +30,7 @@ def set_defi_tvl():
   tvl = requests.get(url).json()
   tvl_defi = {}
   for date in tvl:
-    tvl_defi[str(datetime.fromtimestamp(int(date['timestamp'])).date())] = date['tvlUSD']
+    tvl_defi[str(datetime.utcfromtimestamp(int(date['timestamp'])).date())] = date['tvlUSD']
   r.set('defi_tvl', json.dumps(tvl_defi))
 
 def get_historical_crypto_price(symbol, timestamp):

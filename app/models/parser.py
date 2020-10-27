@@ -32,8 +32,8 @@ def parse_cover_event_logs():
       amount=float(int(data[1], 16)),
       premium=float(int(data[3], 16)) / 10**18,
       currency='ETH' if data[-1].startswith('455448') else 'DAI',
-      start_time=datetime.fromtimestamp(int(event['timeStamp'], 16)),
-      end_time=datetime.fromtimestamp(int(data[2], 16))
+      start_time=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
+      end_time=datetime.utcfromtimestamp(int(data[2], 16))
     ))
 
 def parse_claim_event_logs():
@@ -45,7 +45,7 @@ def parse_claim_event_logs():
       block_number=int(event['blockNumber'], 16),
       claim_id=int(data[0], 16),
       cover_id=int(event['topics'][1], 16),
-      timestamp=datetime.fromtimestamp(int(data[1], 16))
+      timestamp=datetime.utcfromtimestamp(int(data[1], 16))
     ))
 
 def parse_verdict_event_logs():
@@ -71,7 +71,7 @@ def parse_vote_event_logs():
       block_number=int(event['blockNumber'], 16),
       claim_id=int(event['topics'][2], 16),
       amount=int(data[0], 16) / 10**18,
-      timestamp=datetime.fromtimestamp(int(data[1], 16)),
+      timestamp=datetime.utcfromtimestamp(int(data[1], 16)),
       verdict='Yes' if int(data[2], 16) == 1 else 'No'
     ))
 
@@ -80,7 +80,7 @@ def parse_mcr_event_logs():
   topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
   for event in get_event_logs(MinimumCapitalRequirement, address, topic0):
     db.session.add(MinimumCapitalRequirement(
-      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
       block_number=int(event['blockNumber'], 16),
       mcr=int(textwrap.wrap(event['data'][2:], 64)[3], 16) / 10**18
     ))
@@ -92,7 +92,7 @@ def parse_stake_event_logs(fromblock):
     db.session.add(Stake(
       id=get_last_id(Stake) + 1,
       block_number=int(event['blockNumber'], 16),
-      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
       staker='0x' + event['topics'][2][-40:],
       contract_name=address_to_contract_name(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
@@ -107,7 +107,7 @@ def parse_unstake_event_logs(fromblock):
     db.session.add(Stake(
       id=get_last_id(Stake) + 1,
       block_number=int(event['blockNumber'], 16),
-      timestamp=datetime.fromtimestamp(int(data[1], 16)),
+      timestamp=datetime.utcfromtimestamp(int(data[1], 16)),
       staker='0x' + event['topics'][2][-40:],
       contract_name=address_to_contract_name(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
@@ -121,7 +121,7 @@ def parse_staking_reward_event_logs():
     db.session.add(StakingReward(
       id=get_last_id(StakingReward) + 1,
       block_number=int(event['blockNumber'], 16),
-      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
       contract_name=address_to_contract_name(event['topics'][2][-40:]),
       address='0x' + event['topics'][2][-40:],
       amount=int(event['data'], 16) / 10**18
@@ -133,7 +133,7 @@ def parse_staking_reward_event_logs():
     db.session.add(StakingReward(
       id=get_last_id(StakingReward) + 1,
       block_number=int(event['blockNumber'], 16),
-      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
       contract_name=address_to_contract_name(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
@@ -146,7 +146,7 @@ def parse_nxm_event_logs():
     db.session.add(NXMTransaction(
       id=get_last_id(NXMTransaction) + 1,
       block_number=int(event['blockNumber'], 16),
-      timestamp=datetime.fromtimestamp(int(event['timeStamp'], 16)),
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
       from_address='0x' + event['topics'][1][-40:],
       to_address='0x' + event['topics'][2][-40:],
       amount=int(event['data'], 16) / 10**18
@@ -160,7 +160,7 @@ def parse_transactions(txns, address, symbol):
         amount = -amount
 
       if amount != 0:
-        timestamp = datetime.fromtimestamp(int(txn['timeStamp']))
+        timestamp = datetime.utcfromtimestamp(int(txn['timeStamp']))
         db.session.add(Transaction(
           id=get_last_id(Transaction) + 1,
           block_number=txn['blockNumber'],
@@ -221,7 +221,7 @@ def parse_staking_transactions():
             db.session.add(Stake(
               id=get_last_id(Stake) + 1,
               block_number=txn['blockNumber'],
-              timestamp=datetime.fromtimestamp(int(txn['timeStamp'])),
+              timestamp=datetime.utcfromtimestamp(int(txn['timeStamp'])),
               staker=txn['from'],
               contract_name=address_to_contract_name(data[0][-40:]),
               address='0x' + data[0][-40:],
