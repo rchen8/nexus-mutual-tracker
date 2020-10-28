@@ -30,7 +30,7 @@ const getCurrentValue = (object, currencies, price) => {
       value = object[currency]
           [Object.keys(object[currency])[Object.keys(object[currency]).length - 1]]
       if (text !== '') {
-        text += ' / '
+        text += ' | '
       }
       if (currency === 'USD') {
         text += price ? '$' + value.toFixed(2) : '$' + Math.round(value).toLocaleString()

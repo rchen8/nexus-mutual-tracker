@@ -193,12 +193,14 @@ def address_to_contract_name(address):
     'b7896fce748396ecfc240f5a0d3cc92ca42d7d84': 'PoolTogether',
     '29fe7d60ddf151e5b52e5fab4f1325da6b2bd958': 'PoolTogether',
     '932773ae4b661029704e731722cf8129e1b32494': 'PoolTogether',
+    'cb876f60399897db24058b2d58d0b9f713175eef': 'PoolTogether',
     'e80d347df1209a76dd9d2319d62912ba98c54ddd': 'Ren',
     '408e41876cccdc0f92210600ef50372656052a38': 'Ren',
     'af350211414c5dc176421ea05423f0cc494261fb': 'Saturn Network',
     '5b67871c3a857de81a1ca0f9f7945e5670d986dc': 'Set Protocol',
     'f55186cc537e7067ea616f2aae007b4427a120c8': 'Set Protocol',
     '882d80d3a191859d64477eb78cca46599307ec1c': 'Set Protocol',
+    'a4c8d221d8bb851f83aadd0223a8900a6921a349': 'Set Protocol',
     '7ee7ca6e75de79e618e88bdf80d0b1db136b22d0': 'Switcheo',
     'c011a72400e58ecd99ee497cf89e3775d4bd732f': 'Synthetix',
     'ffc91f7088bf40f0419b451fb9d85718d8903628': 'Synthetix',
@@ -218,6 +220,7 @@ def address_to_contract_name(address):
     'c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'Wrapped ETH',
     '0e2298e3b3390e3b945a5456fbf59ecc3f55da16': 'Yam Finance',
     '9d25057e62939d3408406975ad75ffe834da4cdd': 'yearn.finance',
-    '16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'yearn.finance'
+    '16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'yearn.finance',
+    'b94199866fe06b535d019c11247d3f921460b91a': 'Yield Protocol'
   }
   return names[address.lower()] if address.lower() in names else 'Other'
