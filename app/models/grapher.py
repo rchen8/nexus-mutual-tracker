@@ -290,6 +290,9 @@ def get_amount_staked_per_contract(cache=False):
       amount_staked_per_contract['USD'][stake['contract_name']] += \
           stake['amount'] * float(r.get('NXM'))
       amount_staked_per_contract['NXM'][stake['contract_name']] += stake['amount']
+      if amount_staked_per_contract['USD'][stake['contract_name']] < 1:
+        del amount_staked_per_contract['USD'][stake['contract_name']]
+        del amount_staked_per_contract['NXM'][stake['contract_name']]
   return dict(amount_staked_per_contract)
 
 def get_top_stakers(cache=False):
