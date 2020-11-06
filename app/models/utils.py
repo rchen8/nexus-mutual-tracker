@@ -137,6 +137,7 @@ def address_to_contract_name(address):
     '364508a5ca0538d8119d3bf40a284635686c98c4': 'dYdX Perpetual',
     'fec6f679e32d45e22736ad09dfdf6e3368704e31': 'Edgeware',
     '1b75b90e60070d37cfa9d87affd124bb345bf70a': 'Edgeware',
+    '00000000219ab540356cbb839cbe05303d7705fa': 'Eth2',
     '3f8a2f7bcd70e7f7bdd3fbb079c11d073588dea2': 'Fireball',
     '12f208476f64de6e6f933e55069ba9596d818e08': 'Flexa',
     '4a57e687b9126435a9b19e4a802113e266adebde': 'Flexa',
