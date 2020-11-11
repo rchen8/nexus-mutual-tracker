@@ -51,15 +51,15 @@ def parse_claim_event_logs():
 def parse_verdict_event_logs():
   address = '0x1776651f58a17a50098d31ba3c3cd259c1903f7a'
   topic0 = '0x7f1cec39abbda212a819b9165ccfc4064f73eb454b052a312807b2270067a53d'
-  for event in get_event_logs(None, address, topic0):
-    claim = Claim.query.filter_by(cover_id=int(event['topics'][1], 16)).\
-        filter(Claim.block_number < int(event['blockNumber'], 16)).\
-        order_by(Claim.block_number.desc()).first()
-
-    if int(event['data'], 16) == 1:
-      claim.verdict = 'Accepted'
-    elif int(event['data'], 16) == 2:
-      claim.verdict = 'Denied'
+  fromblock = Claim.query.filter_by(verdict='Pending').\
+      order_by(Claim.block_number).first().block_number
+  for event in get_event_logs(Claim, address, topic0, fromblock):
+    verdict = int(event['data'], 16)
+    if verdict in [1, 2]:
+      claim = Claim.query.filter_by(cover_id=int(event['topics'][1], 16)).\
+          filter(Claim.block_number < int(event['blockNumber'], 16)).\
+          order_by(Claim.block_number.desc()).first()
+      claim.verdict = 'Accepted' if verdict == 1 else 'Denied'
 
 def parse_vote_event_logs():
   address = '0xdc2d359f59f6a26162972c3bd0cfbfd8c9ef43af'
