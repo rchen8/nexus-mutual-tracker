@@ -52,8 +52,11 @@ def parse_verdict_event_logs():
   address = '0x1776651f58a17a50098d31ba3c3cd259c1903f7a'
   topic0 = '0x7f1cec39abbda212a819b9165ccfc4064f73eb454b052a312807b2270067a53d'
   fromblock = Claim.query.filter_by(verdict='Pending').\
-      order_by(Claim.block_number).first().block_number
-  for event in get_event_logs(Claim, address, topic0, fromblock):
+      order_by(Claim.block_number).first()
+  if fromblock is None:
+    return
+
+  for event in get_event_logs(Claim, address, topic0, fromblock.block_number):
     verdict = int(event['data'], 16)
     if verdict in [1, 2]:
       claim = Claim.query.filter_by(cover_id=int(event['topics'][1], 16)).\
