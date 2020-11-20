@@ -154,6 +154,7 @@ def address_to_contract_name(address):
     '498b3bfabe9f73db90d252bcd4fa9548cd0fd981': 'InstaDApp',
     '3a306a399085f3460bbcb5b77015ab33806a10d5': 'InstaDApp',
     'e20a5c79b39bc8c363f0f49adcfa82c2a01ab64a': 'Keep Network',
+    'fa5047c9c78b8877af97bdcb85db743fd7313d4a': 'KeeperDAO',
     '3361aa92e426e052141daf9e41a09d36e994ba23': 'Kickback',
     '63825c174ab367968ec60f061753d3bbd36a0d8f': 'Kyber Network',
     '9aab3f75489902f3a48495025729a0af77d4b11e': 'Kyber Network',
