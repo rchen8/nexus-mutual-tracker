@@ -119,6 +119,7 @@ def address_to_contract_name(address):
     'f5dce57282a584d2746faf1593d3121fcac444dc': 'Compound',
     '5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'Compound',
     '6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e': 'Compound',
+    '3d5bc3c8d13dcb8bf317092d84783c2697ae9258': 'Cream Finance',
     '7fc77b5c7614e1533320ea6ddc2eb61fa00a9714': 'Curve BTC Pools',
     '45f783cce6b7ff23b2ab2d70e416cdb7d6055f51': 'Curve Stablecoin Pools',
     '79a8c46dea5ada233abaffd40f3a0a2b1e5a4f27': 'Curve Stablecoin Pools',
