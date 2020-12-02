@@ -368,8 +368,7 @@ GROUP BY s.contract_name,
 
   all_stakes = []
   for stake in db.engine.execute(query):
-    if stake[1] in ['0x45f783cce6b7ff23b2ab2d70e416cdb7d6055f51',
-        '0x7fc77b5c7614e1533320ea6ddc2eb61fa00a9714'] or stake[3] == 0:
+    if stake[3] < 0.01:
       continue
     all_stakes.append({
       'contract_name': stake[0],
