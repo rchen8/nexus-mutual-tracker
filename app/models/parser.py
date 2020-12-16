@@ -118,7 +118,7 @@ def parse_unstake_event_logs(fromblock):
     ))
 
 def parse_staking_reward_event_logs():
-  address='0xe20b3ae826cdb43676e418f7c3b84b75b5697a40'
+  address = '0xe20b3ae826cdb43676e418f7c3b84b75b5697a40'
   topic0 = '0x05456de91d83e21ad7c41a09ae7cb41836049c49e6ddaf07bdfc40c2231885d2'
   for event in get_event_logs(StakingReward, address, topic0):
     db.session.add(StakingReward(
@@ -130,7 +130,7 @@ def parse_staking_reward_event_logs():
       amount=int(event['data'], 16) / 10**18
     ))
 
-  address='0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
+  address = '0x84edffa16bb0b9ab1163abb0a13ff0744c11272f'
   topic0 = '0x5f5b850fcbd0c09e2b8624b44902a5be89312011ae945e14bc73514fb719891e'
   for event in get_event_logs(StakingReward, address, topic0):
     db.session.add(StakingReward(

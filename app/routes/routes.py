@@ -53,6 +53,10 @@ def cover_amount_to_capital_pool_ratio():
 def minimum_capital_requirement():
   return jsonify(grapher.get_minimum_capital_requirement(cache=True))
 
+@app.route('/current_mcr_percentage', methods=['GET'])
+def current_mcr_percentage():
+  return jsonify(utils.get_current_mcr_percentage())
+
 @app.route('/mcr_percentage', methods=['GET'])
 def mcr_percentage():
   return jsonify(grapher.get_mcr_percentage(cache=True))

@@ -1,10 +1,10 @@
 # Nexus Mutual Tracker
 
 ## Installation
-Get an [Etherscan](https://etherscan.io/apis) and [DeFi Pulse](https://docs.defipulse.com/) API key. Then run:
 ```
 export ETHERSCAN_API_KEY=<your-etherscan-api-key>
 export DEFIPULSE_API_KEY=<your-defipulse-api-key>
+export INFURA_PROJECT_ID=<your-infura-project-id>
 brew install redis
 pip install -r requirements.txt
 ```

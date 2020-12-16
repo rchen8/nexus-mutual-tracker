@@ -7,7 +7,8 @@ const endpoints = [
   'capital_pool_size',
   'cover_amount_to_capital_pool_ratio',
   'minimum_capital_requirement',
-  'mcr_percentage'
+  'mcr_percentage',
+  'current_mcr_percentage'
 ]
 
 Promise.all(endpoints.map(getData)).then(data => {
@@ -16,17 +17,17 @@ Promise.all(endpoints.map(getData)).then(data => {
   minimumCapitalRequirement = data[2]
   mcrPercentage = data[3]
 
-  renderStats()
+  renderStats(data[4])
   setTimeout(() => {renderGraphs()}, 0)
 })
 
-const renderStats = () => {
+const renderStats = (currentMcrPercentage) => {
   $('#currentCapitalPoolSize').text(getCurrentValue(capitalPoolSize, ['USD', 'ETH']))
   $('#currentActiveCoverAmountToCapitalPoolSizeRatio')
     .text(getCurrentValue(coverAmountToCapitalPoolRatio, null).toFixed(2) + '%')
   $('#currentMinimumCapitalRequirement')
     .text(Math.round(getCurrentValue(minimumCapitalRequirement, null)).toLocaleString() + ' ETH')
-  $('#currentMcrPercentage').text(getCurrentValue(mcrPercentage, null).toFixed(2) + '%')
+  $('#currentMcrPercentage').text(currentMcrPercentage.toFixed(2) + '%')
 }
 
 const renderGraphs = () => {
