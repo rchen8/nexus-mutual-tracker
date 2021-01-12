@@ -1,28 +1,28 @@
 let activeCoverAmount = undefined
-let activeCoverAmountPerContract = undefined
+let activeCoverAmountPerProject = undefined
 let activeCoverAmountByExpirationDate = undefined
 let defiTvlCovered = undefined
 let totalPremiumsPaid = undefined
-let premiumsPaidPerContract = undefined
+let premiumsPaidPerProject = undefined
 let allCovers = undefined
 
 const endpoints = [
   'active_cover_amount',
-  'active_cover_amount_per_contract',
+  'active_cover_amount_per_project',
   'active_cover_amount_by_expiration_date',
   'defi_tvl_covered',
   'total_premiums_paid',
-  'premiums_paid_per_contract',
+  'premiums_paid_per_project',
   'all_covers'
 ]
 
 Promise.all(endpoints.map(getData)).then(data => {
   activeCoverAmount = data[0]
-  activeCoverAmountPerContract = data[1]
+  activeCoverAmountPerProject = data[1]
   activeCoverAmountByExpirationDate = data[2]
   defiTvlCovered = data[3]
   totalPremiumsPaid = data[4]
-  premiumsPaidPerContract = data[5]
+  premiumsPaidPerProject = data[5]
   allCovers = data[6]
 
   renderStats()
@@ -36,11 +36,11 @@ const renderStats = () => {
 
 const renderGraphs = () => {
   $('#active-cover-amount-usd').click()
-  $('#active-cover-amount-per-contract-usd').click()
+  $('#active-cover-amount-per-project-usd').click()
   $('#active-cover-amount-by-expiration-date-usd').click()
   renderDefiTvlCovered()
   $('#total-premiums-paid-usd').click()
-  $('#premiums-paid-per-contract-usd').click()
+  $('#premiums-paid-per-project-usd').click()
   $('#all-covers-usd').click()
 }
 
@@ -63,22 +63,22 @@ $('#active-cover-amount-eth').click(() => {
   toggleCurrency('#active-cover-amount', 'eth', 'usd')
 })
 
-const renderActiveCoverAmountPerContract = (currency) => {
-  Plotly.newPlot('activeCoverAmountPerContract', [{
-    x: Object.keys(activeCoverAmountPerContract[currency]),
-    y: Object.values(activeCoverAmountPerContract[currency]),
+const renderActiveCoverAmountPerProject = (currency) => {
+  Plotly.newPlot('activeCoverAmountPerProject', [{
+    x: Object.keys(activeCoverAmountPerProject[currency]),
+    y: Object.values(activeCoverAmountPerProject[currency]),
     type: 'bar'
   }], {}, {responsive: true})
 }
 
-$('#active-cover-amount-per-contract-usd').click(() => {
-  renderActiveCoverAmountPerContract('USD')
-  toggleCurrency('#active-cover-amount-per-contract', 'usd', 'eth')
+$('#active-cover-amount-per-project-usd').click(() => {
+  renderActiveCoverAmountPerProject('USD')
+  toggleCurrency('#active-cover-amount-per-project', 'usd', 'eth')
 })
 
-$('#active-cover-amount-per-contract-eth').click(() => {
-  renderActiveCoverAmountPerContract('ETH')
-  toggleCurrency('#active-cover-amount-per-contract', 'eth', 'usd')
+$('#active-cover-amount-per-project-eth').click(() => {
+  renderActiveCoverAmountPerProject('ETH')
+  toggleCurrency('#active-cover-amount-per-project', 'eth', 'usd')
 })
 
 const renderActiveCoverAmountByExpirationDate = (currency) => {
@@ -128,22 +128,22 @@ $('#total-premiums-paid-eth').click(() => {
   toggleCurrency('#total-premiums-paid', 'eth', 'usd')
 })
 
-const renderPremiumsPaidPerContract = (currency) => {
-  Plotly.newPlot('premiumsPaidPerContract', [{
-    x: Object.keys(premiumsPaidPerContract[currency]),
-    y: Object.values(premiumsPaidPerContract[currency]),
+const renderPremiumsPaidPerProject = (currency) => {
+  Plotly.newPlot('premiumsPaidPerProject', [{
+    x: Object.keys(premiumsPaidPerProject[currency]),
+    y: Object.values(premiumsPaidPerProject[currency]),
     type: 'bar'
   }], {}, {responsive: true})
 }
 
-$('#premiums-paid-per-contract-usd').click(() => {
-  renderPremiumsPaidPerContract('USD')
-  toggleCurrency('#premiums-paid-per-contract', 'usd', 'eth')
+$('#premiums-paid-per-project-usd').click(() => {
+  renderPremiumsPaidPerProject('USD')
+  toggleCurrency('#premiums-paid-per-project', 'usd', 'eth')
 })
 
-$('#premiums-paid-per-contract-eth').click(() => {
-  renderPremiumsPaidPerContract('ETH')
-  toggleCurrency('#premiums-paid-per-contract', 'eth', 'usd')
+$('#premiums-paid-per-project-eth').click(() => {
+  renderPremiumsPaidPerProject('ETH')
+  toggleCurrency('#premiums-paid-per-project', 'eth', 'usd')
 })
 
 const renderAllCovers = (currency) => {
@@ -162,7 +162,7 @@ const renderAllCovers = (currency) => {
 
     table.row.add([
       cover['cover_id'],
-      cover['contract_name'],
+      cover['project'],
       coverAmount,
       premium,
       cover['start_time'],

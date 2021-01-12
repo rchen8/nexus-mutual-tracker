@@ -102,11 +102,11 @@ def timestamp_to_mcr(mcrs, timestamp):
       return mcrs[i - 1]['mcr']
   return mcrs[-1]['mcr']
 
-def address_to_contract_name(address):
+def address_to_project(address):
   if not address.startswith('0x'):
     address = '0x' + address
-  contract_names = requests.get('https://api.nexusmutual.io/coverables/contracts.json').json()
-  contract_names = dict((k.lower(), v) for k, v in contract_names.items())
-  if address.lower() in contract_names:
-    return contract_names[address.lower()]['name']
-  return 'Unknown'    
+  projects = requests.get('https://api.nexusmutual.io/coverables/contracts.json').json()
+  projects = dict((k.lower(), v) for k, v in projects.items())
+  if address.lower() in projects:
+    return projects[address.lower()]['name']
+  return 'Unknown'

@@ -9,9 +9,9 @@ import os
 def active_cover_amount():
   return jsonify(grapher.get_active_cover_amount(cache=True))
 
-@app.route('/active_cover_amount_per_contract', methods=['GET'])
-def active_cover_amount_per_contract():
-  return jsonify(grapher.get_active_cover_amount_per_contract(cache=True))
+@app.route('/active_cover_amount_per_project', methods=['GET'])
+def active_cover_amount_per_project():
+  return jsonify(grapher.get_active_cover_amount_per_project(cache=True))
 
 @app.route('/active_cover_amount_by_expiration_date', methods=['GET'])
 def active_cover_amount_by_expiration_date():
@@ -25,9 +25,9 @@ def defi_tvl_covered():
 def total_premiums_paid():
   return jsonify(grapher.get_total_premiums_paid(cache=True))
 
-@app.route('/premiums_paid_per_contract', methods=['GET'])
-def premiums_paid_per_contract():
-  return jsonify(grapher.get_premiums_paid_per_contract(cache=True))
+@app.route('/premiums_paid_per_project', methods=['GET'])
+def premiums_paid_per_project():
+  return jsonify(grapher.get_premiums_paid_per_project(cache=True))
 
 @app.route('/all_covers', methods=['GET'])
 def all_covers():
@@ -65,9 +65,9 @@ def mcr_percentage():
 def total_amount_staked():
   return jsonify(grapher.get_total_amount_staked(cache=True))
 
-@app.route('/amount_staked_per_contract', methods=['GET'])
-def amount_staked_per_contract():
-  return jsonify(grapher.get_amount_staked_per_contract(cache=True))
+@app.route('/amount_staked_per_project', methods=['GET'])
+def amount_staked_per_project():
+  return jsonify(grapher.get_amount_staked_per_project(cache=True))
 
 @app.route('/top_stakers', methods=['GET'])
 def top_stakers():
@@ -77,9 +77,9 @@ def top_stakers():
 def total_staking_reward():
   return jsonify(grapher.get_total_staking_reward(cache=True))
 
-@app.route('/staking_reward_per_contract', methods=['GET'])
-def staking_reward_per_contract():
-  return jsonify(grapher.get_staking_reward_per_contract(cache=True))
+@app.route('/staking_reward_per_project', methods=['GET'])
+def staking_reward_per_project():
+  return jsonify(grapher.get_staking_reward_per_project(cache=True))
 
 @app.route('/all_stakes', methods=['GET'])
 def all_stakes():

@@ -1,25 +1,25 @@
 let totalAmountStaked = undefined
-let amountStakedPerContract = undefined
+let amountStakedPerProject = undefined
 let topStakers = undefined
 let totalStakingReward = undefined
-let stakingRewardPerContract = undefined
+let stakingRewardPerProject = undefined
 let allStakes = undefined
 
 const endpoints = [
   'total_amount_staked',
-  'amount_staked_per_contract',
+  'amount_staked_per_project',
   'top_stakers',
   'total_staking_reward',
-  'staking_reward_per_contract',
+  'staking_reward_per_project',
   'all_stakes'
 ]
 
 Promise.all(endpoints.map(getData)).then(data => {
   totalAmountStaked = data[0]
-  amountStakedPerContract = data[1]
+  amountStakedPerProject = data[1]
   topStakers = data[2]
   totalStakingReward = data[3]
-  stakingRewardPerContract = data[4]
+  stakingRewardPerProject = data[4]
   allStakes = data[5]
 
   renderStats()
@@ -33,10 +33,10 @@ const renderStats = () => {
 
 const renderGraphs = () => {
   $('#total-amount-staked-usd').click()
-  $('#amount-staked-per-contract-usd').click()
+  $('#amount-staked-per-project-usd').click()
   $('#top-stakers-usd').click()
   $('#total-staking-reward-usd').click()
-  $('#staking-reward-per-contract-usd').click()
+  $('#staking-reward-per-project-usd').click()
   $('#all-stakes-usd').click()
 }
 
@@ -59,22 +59,22 @@ $('#total-amount-staked-nxm').click(() => {
   toggleCurrency('#total-amount-staked', 'nxm', 'usd')
 })
 
-const renderAmountStakedPerContract = (currency) => {
-  Plotly.newPlot('amountStakedPerContract', [{
-    x: Object.keys(amountStakedPerContract[currency]),
-    y: Object.values(amountStakedPerContract[currency]),
+const renderAmountStakedPerProject = (currency) => {
+  Plotly.newPlot('amountStakedPerProject', [{
+    x: Object.keys(amountStakedPerProject[currency]),
+    y: Object.values(amountStakedPerProject[currency]),
     type: 'bar'
   }], {}, {responsive: true})
 }
 
-$('#amount-staked-per-contract-usd').click(() => {
-  renderAmountStakedPerContract('USD')
-  toggleCurrency('#amount-staked-per-contract', 'usd', 'nxm')
+$('#amount-staked-per-project-usd').click(() => {
+  renderAmountStakedPerProject('USD')
+  toggleCurrency('#amount-staked-per-project', 'usd', 'nxm')
 })
 
-$('#amount-staked-per-contract-nxm').click(() => {
-  renderAmountStakedPerContract('NXM')
-  toggleCurrency('#amount-staked-per-contract', 'nxm', 'usd')
+$('#amount-staked-per-project-nxm').click(() => {
+  renderAmountStakedPerProject('NXM')
+  toggleCurrency('#amount-staked-per-project', 'nxm', 'usd')
 })
 
 const renderTopStakers = (currency) => {
@@ -115,22 +115,22 @@ $('#total-staking-reward-nxm').click(() => {
   toggleCurrency('#total-staking-reward', 'nxm', 'usd')
 })
 
-const renderStakingRewardPerContract = (currency) => {
-  Plotly.newPlot('stakingRewardPerContract', [{
-    x: Object.keys(stakingRewardPerContract[currency]),
-    y: Object.values(stakingRewardPerContract[currency]),
+const renderStakingRewardPerProject = (currency) => {
+  Plotly.newPlot('stakingRewardPerProject', [{
+    x: Object.keys(stakingRewardPerProject[currency]),
+    y: Object.values(stakingRewardPerProject[currency]),
     type: 'bar'
   }], {}, {responsive: true})
 }
 
-$('#staking-reward-per-contract-usd').click(() => {
-  renderStakingRewardPerContract('USD')
-  toggleCurrency('#staking-reward-per-contract', 'usd', 'nxm')
+$('#staking-reward-per-project-usd').click(() => {
+  renderStakingRewardPerProject('USD')
+  toggleCurrency('#staking-reward-per-project', 'usd', 'nxm')
 })
 
-$('#staking-reward-per-contract-nxm').click(() => {
-  renderStakingRewardPerContract('NXM')
-  toggleCurrency('#staking-reward-per-contract', 'nxm', 'usd')
+$('#staking-reward-per-project-nxm').click(() => {
+  renderStakingRewardPerProject('NXM')
+  toggleCurrency('#staking-reward-per-project', 'nxm', 'usd')
 })
 
 const renderAllStakes = (currency) => {
@@ -148,7 +148,7 @@ const renderAllStakes = (currency) => {
     }
 
     table.row.add([
-      stake['contract_name'],
+      stake['project'],
       stake['address'],
       totalReward,
       totalStaked,

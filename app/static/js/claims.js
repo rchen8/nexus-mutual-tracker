@@ -16,7 +16,7 @@ const renderAllClaims = (currency) => {
       table.row.add([
         claim['claim_id'],
         claim['cover_id'],
-        claim['contract_name'],
+        claim['project'],
         claimAmount,
         claim['start_time'],
         claim['timestamp'],

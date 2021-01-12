@@ -27,7 +27,7 @@ def parse_cover_event_logs():
     db.session.add(Cover(
       block_number=int(event['blockNumber'], 16),
       cover_id=int(event['topics'][1], 16),
-      contract_name=address_to_contract_name(data[0][-40:]),
+      project=address_to_project(data[0][-40:]),
       address='0x' + data[0][-40:],
       amount=float(int(data[1], 16)),
       premium=float(int(data[3], 16)) / 10**18,
@@ -97,7 +97,7 @@ def parse_stake_event_logs(fromblock):
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
       staker='0x' + event['topics'][2][-40:],
-      contract_name=address_to_contract_name(event['topics'][1][-40:]),
+      project=address_to_project(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
@@ -112,7 +112,7 @@ def parse_unstake_event_logs(fromblock):
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.utcfromtimestamp(int(data[1], 16)),
       staker='0x' + event['topics'][2][-40:],
-      contract_name=address_to_contract_name(event['topics'][1][-40:]),
+      project=address_to_project(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
       amount=-int(data[0], 16) / 10**18
     ))
@@ -125,7 +125,7 @@ def parse_staking_reward_event_logs():
       id=get_last_id(StakingReward) + 1,
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
-      contract_name=address_to_contract_name(event['topics'][2][-40:]),
+      project=address_to_project(event['topics'][2][-40:]),
       address='0x' + event['topics'][2][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
@@ -137,7 +137,7 @@ def parse_staking_reward_event_logs():
       id=get_last_id(StakingReward) + 1,
       block_number=int(event['blockNumber'], 16),
       timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
-      contract_name=address_to_contract_name(event['topics'][1][-40:]),
+      project=address_to_project(event['topics'][1][-40:]),
       address='0x' + event['topics'][1][-40:],
       amount=int(event['data'], 16) / 10**18
     ))
@@ -195,17 +195,17 @@ def parse_eth_transactions(startblock):
 def parse_dai_transactions(startblock):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
                '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
-  contractaddresses = ['0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
+  contract_addresses = ['0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
                        '0x6b175474e89094c44da98b954eedeac495271d0f']
   for address in addresses:
-    for contractaddress in contractaddresses:
+    for contract_address in contract_addresses:
       module = 'account'
       action = 'tokentx'
       endblock = 'latest'
       sort = 'asc'
       url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
             'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
-            % (module, action, contractaddress, address,
+            % (module, action, contract_address, address,
             startblock, endblock, sort, os.environ['ETHERSCAN_API_KEY'])
       parse_transactions(requests.get(url).json()['result'], address, 'DAI')
 
@@ -226,7 +226,7 @@ def parse_staking_transactions():
               block_number=txn['blockNumber'],
               timestamp=datetime.utcfromtimestamp(int(txn['timeStamp'])),
               staker=txn['from'],
-              contract_name=address_to_contract_name(data[0][-40:]),
+              project=address_to_project(data[0][-40:]),
               address='0x' + data[0][-40:],
               amount=amount
             ))

@@ -19,39 +19,39 @@ def get_active_cover_amount(cache=False):
     times.append(cover['end_time'])
     tree[cover['start_time']:cover['end_time']] = (cover['amount'], cover['currency'])
 
-  cover_amount = {'USD': {}, 'ETH': {}}
+  active_cover_amount = {'USD': {}, 'ETH': {}}
   for time in times:
     if time < datetime.now():
       intervals = tree[time]
       eth_price = get_historical_crypto_price('ETH', time)
       dai_price = get_historical_crypto_price('DAI', time)
 
-      cover_amount['USD'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
+      active_cover_amount['USD'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
           sum([interval.data[0] * (eth_price if interval.data[1] == 'ETH' else dai_price) \
               for interval in intervals])
-      cover_amount['ETH'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
+      active_cover_amount['ETH'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
           sum([interval.data[0] / (1 if interval.data[1] == 'ETH' else eth_price / dai_price) \
               for interval in intervals])
-  return cover_amount
+  return active_cover_amount
 
-def get_active_cover_amount_per_contract(cache=False):
+def get_active_cover_amount_per_project(cache=False):
   if cache:
-    return json.loads(r.get('active_cover_amount_per_contract'))
+    return json.loads(r.get('active_cover_amount_per_project'))
 
-  cover_amount_per_contract = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+  active_cover_amount_per_project = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   for cover in query_table(Cover):
     if datetime.now() < cover['end_time']:
-      cover_amount_per_contract['USD'][cover['contract_name']] += \
+      active_cover_amount_per_project['USD'][cover['project']] += \
           cover['amount'] * float(r.get(cover['currency']))
-      cover_amount_per_contract['ETH'][cover['contract_name']] += cover['amount'] / \
+      active_cover_amount_per_project['ETH'][cover['project']] += cover['amount'] / \
           (1 if cover['currency'] == 'ETH' else float(r.get('ETH')) / float(r.get('DAI')))
-  return dict(cover_amount_per_contract)
+  return dict(active_cover_amount_per_project)
 
 def get_active_cover_amount_by_expiration_date(cache=False):
   if cache:
     return json.loads(r.get('active_cover_amount_by_expiration_date'))
 
-  cover_amount_by_expiration_date = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+  active_cover_amount_by_expiration_date = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   covers = query_table(Cover)
 
   last_cover_amount_usd = 0
@@ -74,9 +74,9 @@ def get_active_cover_amount_by_expiration_date(cache=False):
         last_cover_amount_eth = 0
 
       end_time = cover['end_time'].strftime('%Y-%m-%d %H:%M:%S')
-      cover_amount_by_expiration_date['USD'][end_time] = last_cover_amount_usd
-      cover_amount_by_expiration_date['ETH'][end_time] = last_cover_amount_eth
-  return dict(cover_amount_by_expiration_date)
+      active_cover_amount_by_expiration_date['USD'][end_time] = last_cover_amount_usd
+      active_cover_amount_by_expiration_date['ETH'][end_time] = last_cover_amount_eth
+  return dict(active_cover_amount_by_expiration_date)
 
 def get_defi_tvl_covered(cache=False):
   if cache:
@@ -111,17 +111,17 @@ def get_total_premiums_paid(cache=False):
         total_eth + total_dai / (eth_price / dai_price)
   return premiums_paid
 
-def get_premiums_paid_per_contract(cache=False):
+def get_premiums_paid_per_project(cache=False):
   if cache:
-    return json.loads(r.get('premiums_paid_per_contract'))
+    return json.loads(r.get('premiums_paid_per_project'))
 
-  premiums_paid_per_contract = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+  premiums_paid_per_project = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
   for cover in query_table(Cover):
-    premiums_paid_per_contract['USD'][cover['contract_name']] += \
+    premiums_paid_per_project['USD'][cover['project']] += \
         cover['premium'] * float(r.get(cover['currency']))
-    premiums_paid_per_contract['ETH'][cover['contract_name']] += cover['premium'] / \
+    premiums_paid_per_project['ETH'][cover['project']] += cover['premium'] / \
         (1 if cover['currency'] == 'ETH' else float(r.get('ETH')) / float(r.get('DAI')))
-  return dict(premiums_paid_per_contract)  
+  return dict(premiums_paid_per_project)  
 
 def get_all_covers(cache=False):
   if cache:
@@ -142,7 +142,7 @@ def get_all_claims(cache=False):
   covers = sorted(get_all_covers(cache=True), key=lambda x: x['cover_id'])
   claims = query_table(Claim)
   for claim in claims:
-    claim['contract_name'] = covers[claim['cover_id'] - 1]['contract_name']
+    claim['project'] = covers[claim['cover_id'] - 1]['project']
     claim['amount_usd'] = covers[claim['cover_id'] - 1]['amount_usd']
     claim['amount'] = covers[claim['cover_id'] - 1]['amount']
     claim['currency'] = covers[claim['cover_id'] - 1]['currency']
@@ -279,21 +279,21 @@ def get_total_amount_staked(cache=False):
 
   return amount_staked
 
-def get_amount_staked_per_contract(cache=False):
+def get_amount_staked_per_project(cache=False):
   if cache:
-    return json.loads(r.get('amount_staked_per_contract'))
+    return json.loads(r.get('amount_staked_per_project'))
 
-  amount_staked_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
+  amount_staked_per_project = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for stake in query_table(Stake):
     if stake['timestamp'] > datetime.strptime('2020-06-30 11:31:12', '%Y-%m-%d %H:%M:%S') and \
         stake['timestamp'] < datetime.now():
-      amount_staked_per_contract['USD'][stake['contract_name']] += \
+      amount_staked_per_project['USD'][stake['project']] += \
           stake['amount'] * float(r.get('NXM'))
-      amount_staked_per_contract['NXM'][stake['contract_name']] += stake['amount']
-      if amount_staked_per_contract['USD'][stake['contract_name']] < 1:
-        del amount_staked_per_contract['USD'][stake['contract_name']]
-        del amount_staked_per_contract['NXM'][stake['contract_name']]
-  return dict(amount_staked_per_contract)
+      amount_staked_per_project['NXM'][stake['project']] += stake['amount']
+      if amount_staked_per_project['USD'][stake['project']] < 1:
+        del amount_staked_per_project['USD'][stake['project']]
+        del amount_staked_per_project['NXM'][stake['project']]
+  return dict(amount_staked_per_project)
 
 def get_top_stakers(cache=False):
   if cache:
@@ -325,30 +325,30 @@ def get_total_staking_reward(cache=False):
     staking_reward['NXM'][reward['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = total
   return staking_reward
 
-def get_staking_reward_per_contract(cache=False):
+def get_staking_reward_per_project(cache=False):
   if cache:
-    return json.loads(r.get('staking_reward_per_contract'))
+    return json.loads(r.get('staking_reward_per_project'))
 
-  staking_reward_per_contract = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
+  staking_reward_per_project = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for reward in query_table(StakingReward):
-    staking_reward_per_contract['USD'][reward['contract_name']] += \
+    staking_reward_per_project['USD'][reward['project']] += \
         reward['amount'] * float(r.get('NXM'))
-    staking_reward_per_contract['NXM'][reward['contract_name']] += reward['amount']
-  return dict(staking_reward_per_contract)
+    staking_reward_per_project['NXM'][reward['project']] += reward['amount']
+  return dict(staking_reward_per_project)
 
 def get_all_stakes(cache=False):
   if cache:
     return json.loads(r.get('all_stakes'))
 
   query = """
-SELECT s.contract_name,
+SELECT s.project,
        s.address,
        sr.amount AS total_reward,
        sum(s.amount) AS total_staked,
        sr.annualized_amount
 FROM stake s
 INNER JOIN
-  (SELECT sr.contract_name,
+  (SELECT sr.project,
           sr.address,
           sum(sr.amount) AS amount,
           sum(365 * 86400 / extract(epoch
@@ -356,11 +356,11 @@ INNER JOIN
    FROM staking_reward sr
    INNER JOIN cover c ON sr.timestamp = c.start_time
    WHERE TIMESTAMP >= '2020-06-30 11:31:12'
-   GROUP BY sr.contract_name,
+   GROUP BY sr.project,
             sr.address) sr ON s.address = sr.address
 WHERE s.timestamp >= '2020-06-30 11:31:12'
   AND s.timestamp <= \'%s\'
-GROUP BY s.contract_name,
+GROUP BY s.project,
          s.address,
          sr.amount,
          sr.annualized_amount
@@ -371,7 +371,7 @@ GROUP BY s.contract_name,
     if stake[3] < 0.01:
       continue
     all_stakes.append({
-      'contract_name': stake[0],
+      'project': stake[0],
       'address': stake[1],
       'total_reward': stake[2],
       'total_reward_usd': stake[2] * float(r.get('NXM')),
@@ -479,11 +479,11 @@ def get_unique_addresses(cache=False):
 def cache_graph_data():
   graphs = [
     'active_cover_amount',
-    'active_cover_amount_per_contract',
+    'active_cover_amount_per_project',
     'active_cover_amount_by_expiration_date',
     'defi_tvl_covered',
     'total_premiums_paid',
-    'premiums_paid_per_contract',
+    'premiums_paid_per_project',
     'all_covers',
     'all_claims',
     'capital_pool_size',
@@ -493,10 +493,10 @@ def cache_graph_data():
     'nxm_price',
     'all_votes',
     'total_amount_staked',
-    'amount_staked_per_contract',
+    'amount_staked_per_project',
     'top_stakers',
     'total_staking_reward',
-    'staking_reward_per_contract',
+    'staking_reward_per_project',
     'all_stakes',
     'nxm_daily_volume',
     'nxm_supply',
