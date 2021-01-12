@@ -1,7 +1,7 @@
 # Nexus Mutual Tracker
 
 ## Installation
-Get a CryptoCompare, DeFi Pulse, Etherscan, and Infura API key.
+Get a CryptoCompare, DeFi Pulse, Etherscan, Infura, and Twitter API key.
 ```
 brew install redis
 pip install -r requirements.txt
