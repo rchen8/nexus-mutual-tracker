@@ -81,10 +81,6 @@ def total_staking_reward():
 def staking_reward_per_project():
   return jsonify(grapher.get_staking_reward_per_project(cache=True))
 
-@app.route('/all_stakes', methods=['GET'])
-def all_stakes():
-  return jsonify(grapher.get_all_stakes(cache=True))
-
 @app.route('/nxm_price', methods=['GET'])
 def nxm_price():
   return jsonify(grapher.get_nxm_price(cache=True))

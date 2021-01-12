@@ -336,51 +336,6 @@ def get_staking_reward_per_project(cache=False):
     staking_reward_per_project['NXM'][reward['project']] += reward['amount']
   return dict(staking_reward_per_project)
 
-def get_all_stakes(cache=False):
-  if cache:
-    return json.loads(r.get('all_stakes'))
-
-  query = """
-SELECT s.project,
-       s.address,
-       sr.amount AS total_reward,
-       sum(s.amount) AS total_staked,
-       sr.annualized_amount
-FROM stake s
-INNER JOIN
-  (SELECT sr.project,
-          sr.address,
-          sum(sr.amount) AS amount,
-          sum(365 * 86400 / extract(epoch
-                                    FROM (end_time - start_time)) * sr.amount) AS annualized_amount
-   FROM staking_reward sr
-   INNER JOIN cover c ON sr.timestamp = c.start_time
-   WHERE TIMESTAMP >= '2020-06-30 11:31:12'
-   GROUP BY sr.project,
-            sr.address) sr ON s.address = sr.address
-WHERE s.timestamp >= '2020-06-30 11:31:12'
-  AND s.timestamp <= \'%s\'
-GROUP BY s.project,
-         s.address,
-         sr.amount,
-         sr.annualized_amount
-""" % datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-  all_stakes = []
-  for stake in db.engine.execute(query):
-    if stake[3] < 0.01:
-      continue
-    all_stakes.append({
-      'project': stake[0],
-      'address': stake[1],
-      'total_reward': stake[2],
-      'total_reward_usd': stake[2] * float(r.get('NXM')),
-      'total_staked': stake[3],
-      'total_staked_usd': stake[3] * float(r.get('NXM')),
-      'estimated_yield': stake[4] / stake[3] * 100
-    })
-  return all_stakes
-
 def get_nxm_daily_volume(cache=False):
   if cache:
     return json.loads(r.get('nxm_daily_volume'))
@@ -497,7 +452,6 @@ def cache_graph_data():
     'top_stakers',
     'total_staking_reward',
     'staking_reward_per_project',
-    'all_stakes',
     'nxm_daily_volume',
     'nxm_supply',
     'nxm_market_cap',

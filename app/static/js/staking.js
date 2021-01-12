@@ -3,15 +3,13 @@ let amountStakedPerProject = undefined
 let topStakers = undefined
 let totalStakingReward = undefined
 let stakingRewardPerProject = undefined
-let allStakes = undefined
 
 const endpoints = [
   'total_amount_staked',
   'amount_staked_per_project',
   'top_stakers',
   'total_staking_reward',
-  'staking_reward_per_project',
-  'all_stakes'
+  'staking_reward_per_project'
 ]
 
 Promise.all(endpoints.map(getData)).then(data => {
@@ -20,7 +18,6 @@ Promise.all(endpoints.map(getData)).then(data => {
   topStakers = data[2]
   totalStakingReward = data[3]
   stakingRewardPerProject = data[4]
-  allStakes = data[5]
 
   renderStats()
   setTimeout(() => {renderGraphs()}, 0)
@@ -37,7 +34,6 @@ const renderGraphs = () => {
   $('#top-stakers-usd').click()
   $('#total-staking-reward-usd').click()
   $('#staking-reward-per-project-usd').click()
-  $('#all-stakes-usd').click()
 }
 
 const renderTotalAmountStaked = (currency) => {
@@ -131,39 +127,4 @@ $('#staking-reward-per-project-usd').click(() => {
 $('#staking-reward-per-project-nxm').click(() => {
   renderStakingRewardPerProject('NXM')
   toggleCurrency('#staking-reward-per-project', 'nxm', 'usd')
-})
-
-const renderAllStakes = (currency) => {
-  const table = $('#stakeDataTable').DataTable()
-  table.clear()
-  for (let stake of allStakes) {
-    let totalReward = 0
-    let totalStaked = 0
-    if (currency === 'USD') {
-      totalReward = '$' + stake['total_reward_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      totalStaked = '$' + stake['total_staked_usd'].toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    } else {
-      totalReward = stake['total_reward'].toLocaleString() + ' NXM'
-      totalStaked = stake['total_staked'].toLocaleString() + ' NXM'
-    }
-
-    table.row.add([
-      stake['project'],
-      stake['address'],
-      totalReward,
-      totalStaked,
-      stake['estimated_yield'].toFixed(2) + '%'
-    ])
-  }
-  table.draw()
-}
-
-$('#all-stakes-usd').click(() => {
-  renderAllStakes('USD')
-  toggleCurrency('#all-stakes', 'usd', 'nxm')
-})
-
-$('#all-stakes-nxm').click(() => {
-  renderAllStakes('NXM')
-  toggleCurrency('#all-stakes', 'nxm', 'usd')
 })

@@ -115,34 +115,6 @@
         <div id="stakingRewardPerProject"></div>
       </div>
     </div>
-
-    <div class="card mb-3">
-      <div class="card-header">
-        All Stakes
-        <span style="float:right;">
-          <button id="all-stakes-usd">USD</button><button id="all-stakes-nxm">NXM</button>
-          <a href="download/all_stakes"><button><i class="fas fa-file-csv"></i></button></a>
-        </span>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-bordered" id="stakeDataTable" width="100%" cellspacing="0">
-            <thead>
-              <tr>
-                <th>Project</th>
-                <th>Address</th>
-                <th>Total Reward *</th>
-                <th>Total Staked *</th>
-                <th>Estimated Yield (APY) **</th>
-              </tr>
-            </thead>
-          </table>
-        </div>
-        <br>* Total Reward and Total Staked are calculated since pooled staking launched.
-        <br>** Estimated Yield normalizes historical staking rewards by cover durations. The normalized rewards are annualized and divided by the current total staked.
-        <br>*** To calculate your leverage add up the estimated yields for the projects you stake on.
-      </div>
-    </div>
   </div>
 
   {% include '_footer.html' %}
