@@ -42,10 +42,21 @@ def get_current_mcr_percentage():
   mcr = contract.functions.calVtpAndMCRtp().call()[1] / 100
   return mcr
 
-def get_historical_crypto_price(symbol, timestamp):
+def get_historical_crypto_prices():
+  historical_crypto_prices = {}
+  for crypto_price in db.session.query(HistoricalPrice):
+    historical_crypto_prices[crypto_price.timestamp] = {
+      'ETH': crypto_price.eth_price,
+      'DAI': crypto_price.dai_price
+    }
+  return historical_crypto_prices
+
+def add_historical_crypto_price(timestamp):
+  if type(timestamp) is str:
+    timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
   crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
   if crypto_price is not None:
-    return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
+    return (crypto_price.eth_price, crypto_price.dai_price)
 
   api = 'histominute' if (datetime.now() - timestamp).days < 7 else 'histohour'
   url = 'https://min-api.cryptocompare.com/data/%s?fsym=ETH&tsym=USD&limit=1&toTs=%s&api_key=%s' % \
@@ -55,18 +66,13 @@ def get_historical_crypto_price(symbol, timestamp):
       (api, timestamp.timestamp(), os.environ['CRYPTOCOMPARE_API_KEY'])
   dai_price = requests.get(url).json()['Data'][-1]['close']
 
-  try:
-    db.session.add(HistoricalPrice(
-      timestamp=timestamp,
-      eth_price=eth_price,
-      dai_price=dai_price
-    ))
-    db.session.commit()
-  except:
-    db.session.rollback()
-    crypto_price = db.session.query(HistoricalPrice).filter_by(timestamp=timestamp).first()
-    return crypto_price.eth_price if symbol == 'ETH' else crypto_price.dai_price
-  return eth_price if symbol == 'ETH' else dai_price
+  db.session.add(HistoricalPrice(
+    timestamp=timestamp,
+    eth_price=eth_price,
+    dai_price=dai_price
+  ))
+  db.session.commit()
+  return (eth_price, dai_price)
 
 def set_current_crypto_prices():
   url = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=ETH,DAI&tsyms=USD&api_key=%s' % \
@@ -94,7 +100,8 @@ def json_to_csv(graph):
     return csv
 
 def timestamp_to_mcr(mcrs, timestamp):
-  timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+  if type(timestamp) is str:
+    timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
 
   low = 0
   high = len(mcrs) - 1

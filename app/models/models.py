@@ -9,7 +9,7 @@ class Cover(db.Model):
   premium = db.Column(db.Float, nullable=False)
   currency = db.Column(db.String, nullable=False)
   start_time = db.Column(db.DateTime, nullable=False)
-  end_time = db.Column(db.DateTime, nullable=False)
+  end_time = db.Column(db.DateTime, nullable=False, index=True)
 
 class Claim(db.Model):
   block_number = db.Column(db.Integer, nullable=False, index=True)
@@ -37,8 +37,8 @@ class Stake(db.Model):
 
 class StakingReward(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  block_number = db.Column(db.Integer, nullable=False)
-  timestamp = db.Column(db.DateTime, nullable=False, index=True)
+  block_number = db.Column(db.Integer, nullable=False, index=True)
+  timestamp = db.Column(db.DateTime, nullable=False)
   project = db.Column(db.String, nullable=False)
   address = db.Column(db.String, nullable=False)
   amount = db.Column(db.Float, nullable=False)

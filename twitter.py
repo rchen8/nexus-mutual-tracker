@@ -34,7 +34,7 @@ def get_new_covers(latest_block_number):
   for cover in json.loads(requests.get('https://nexustracker.io/all_covers').text):
     if cover['block_number'] > int(r.get('last_cover_block_number')):
       status = \
-"""New Cover Purchased!
+"""🐢 New Cover Purchased! 🐢
 
 💳 Cover ID: %s
 💼 Project: %s
