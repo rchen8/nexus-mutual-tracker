@@ -35,6 +35,7 @@ def get_new_covers(latest_block_number):
     if cover['block_number'] > int(r.get('last_cover_block_number')):
       status = \
 """New Cover Purchased!
+
 💳 Cover ID: %s
 💼 Project: %s
 💲 Cover Amount (USD): $%s
@@ -68,7 +69,8 @@ def get_new_claims(latest_block_number):
   for claim in json.loads(requests.get('https://nexustracker.io/all_claims').text):
     if claim['block_number'] > int(r.get('last_claim_block_number')):
       status = \
-"""🚨🚨🚨 New Claim Submitted! 🚨🚨🚨
+"""🚨 New Claim Submitted! 🚨
+
 🎫 Claim ID: %s
 💳 Cover ID: %s
 💼 Project: %s

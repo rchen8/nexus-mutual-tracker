@@ -94,13 +94,21 @@ def json_to_csv(graph):
     return csv
 
 def timestamp_to_mcr(mcrs, timestamp):
-  for i in range(len(mcrs)):
-    mcr = mcrs[i]
-    if mcr['timestamp'] > datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S'):
-      if i == 0:
-        return 7000
-      return mcrs[i - 1]['mcr']
-  return mcrs[-1]['mcr']
+  timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+
+  low = 0
+  high = len(mcrs) - 1
+  while low <= high:
+    mid = (low + high) // 2
+    if mcrs[mid]['timestamp'] < timestamp:
+      low = mid + 1
+    elif mcrs[mid]['timestamp'] > timestamp:
+      high = mid - 1
+    else:
+      return mcrs[mid]['mcr']
+
+  index = abs(-(low + 1)) - 2
+  return 7000 if index < 0 else mcrs[index]['mcr']
 
 def address_to_project(address):
   if not address.startswith('0x'):
