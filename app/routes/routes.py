@@ -117,9 +117,25 @@ def download(graph):
   output.headers['Content-type'] = 'text/csv'
   return output
 
-@app.route('/<template>', methods=['GET'])
-def render(template):
-  return render_template(template + '.html')
+@app.route('/token', methods=['GET'])
+def token():
+  return render_template('token.html')
+
+@app.route('/staking', methods=['GET'])
+def staking():
+  return render_template('staking.html')
+
+@app.route('/capital_pool', methods=['GET'])
+def capital_pool():
+  return render_template('capital_pool.html')
+
+@app.route('/claims', methods=['GET'])
+def claims():
+  return render_template('claims.html')
+
+@app.route('/covers', methods=['GET'])
+def covers():
+  return render_template('covers.html')
 
 @app.route('/', methods=['GET'])
 def index():

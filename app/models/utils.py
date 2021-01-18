@@ -25,6 +25,11 @@ def get_latest_block_number(table):
   block_number = db.session.query(db.func.max(table.block_number)).scalar()
   return 0 if not block_number else block_number
 
+def get_to_block():
+  url = 'https://api.etherscan.io/api?module=proxy&action=eth_blockNumber&apikey=%s' % \
+      os.environ['ETHERSCAN_API_KEY']
+  return int(requests.get(url).json()['result'], 16)
+
 def set_defi_tvl():
   url = 'https://data-api.defipulse.com/api/v1/defipulse/api/GetHistory?api-key=%s' % \
       os.environ['DEFIPULSE_API_KEY']

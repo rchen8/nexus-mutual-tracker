@@ -46,6 +46,6 @@ SQLAlchemy==1.3.22
 toolz==0.11.1
 urllib3==1.26.2
 varint==1.0.2
-web3==5.14.0
+web3==5.15.0
 websockets==8.1
 Werkzeug==1.0.1
