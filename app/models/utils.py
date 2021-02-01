@@ -43,9 +43,8 @@ def get_current_mcr_percentage():
   w3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/%s' % os.environ['INFURA_PROJECT_ID']))
   with open('abi/mcr.json') as file:
     abi = json.load(file)
-  contract = w3.eth.contract(address='0x2EC5d566bd104e01790B13DE33fD51876d57C495', abi=abi)
-  mcr = contract.functions.calVtpAndMCRtp().call()[1] / 100
-  return mcr
+  contract = w3.eth.contract(address='0xcafea7934490EF8B9d2572EaeFeb9d48162ea5D8', abi=abi)
+  return contract.functions.getMCRRatio().call() / 100
 
 def get_historical_crypto_prices():
   historical_crypto_prices = {}

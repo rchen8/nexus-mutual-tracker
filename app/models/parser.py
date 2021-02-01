@@ -186,7 +186,8 @@ def build_transaction_url(address, start_block, end_block='latest'):
 
 def parse_eth_transactions(start_block, end_block):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
-               '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
+               '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6',
+               '0xcafea7934490ef8b9d2572eaefeb9d48162ea5d8']
   for address in addresses:
     url = build_transaction_url(address, start_block, end_block)
     time.sleep(0.2)
@@ -197,7 +198,8 @@ def parse_eth_transactions(start_block, end_block):
 
 def parse_dai_transactions(start_block, end_block):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
-               '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6']
+               '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6',
+               '0xcafea7934490ef8b9d2572eaefeb9d48162ea5d8']
   for address in addresses:
     time.sleep(0.2)
     module = 'account'
