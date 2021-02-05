@@ -66,6 +66,7 @@ def get_new_claims(latest_block_number):
     r.set('last_claim_block_number', latest_block_number)
 
   last_claim_block_number = int(r.get('last_claim_block_number'))
+  accepted_claims = json.loads(r.get('accepted_claims'))
   for claim in json.loads(requests.get('https://nexustracker.io/all_claims').text):
     if claim['block_number'] > int(r.get('last_claim_block_number')):
       status = \
@@ -94,6 +95,30 @@ More info: nexustracker.io/claims""" % \
       print(status)
       tweet(status)
       last_claim_block_number = max(last_claim_block_number, claim['block_number'])
+    if claim['claim_id'] not in accepted_claims and claim['verdict'] == 'Accepted':
+      status = \
+"""💸 New Claim Accepted! 💸
+
+🎫 Claim ID: %s
+💳 Cover ID: %s
+💼 Project: %s
+💲 Claim Amount (USD): $%s
+💰 Claim Amount (ETH/DAI): %s %s
+
+More info: nexustracker.io/claims""" % \
+      (
+        claim['claim_id'],
+        claim['cover_id'],
+        claim['project'],
+        str.format('{0:,.2f}', claim['amount_usd']),
+        str.format('{:,}', claim['amount']),
+        claim['currency']
+      )
+
+      print(status)
+      tweet(status)
+      accepted_claims.append(claim['claim_id'])
+      r.set('accepted_claims', json.dumps(accepted_claims))
 
   r.set('last_claim_block_number', last_claim_block_number)
 
