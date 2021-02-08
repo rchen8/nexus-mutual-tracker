@@ -117,6 +117,18 @@ def parse_unstake_event_logs(from_block, to_block):
       amount=-int(data[0], 16) / 10**18
     ))
 
+  topic0 = '0x5d06931c8dc69a16ea07030839ba70d3794cbda4dc0e16718165f9054db87a5a'
+  for event in get_event_logs(Stake, address, topic0, from_block, to_block):
+    db.session.add(Stake(
+      id=get_last_id(Stake) + 1,
+      block_number=int(event['blockNumber'], 16),
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
+      staker='0x0000000000000000000000000000000000000000',
+      project=address_to_project(event['topics'][1][-40:]),
+      address='0x' + event['topics'][1][-40:],
+      amount=-int(event['data'], 16) / 10**18
+    ))
+
 def parse_staking_reward_event_logs(to_block):
   address = '0xe20b3ae826cdb43676e418f7c3b84b75b5697a40'
   topic0 = '0x05456de91d83e21ad7c41a09ae7cb41836049c49e6ddaf07bdfc40c2231885d2'

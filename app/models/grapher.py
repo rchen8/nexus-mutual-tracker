@@ -331,6 +331,8 @@ def get_top_stakers(cache=False):
   nxm_price = float(r.get('NXM'))
   top_stakers = {'USD': defaultdict(int), 'NXM': defaultdict(int)}
   for stake in query_table(Stake):
+    if stake['staker'] == '0x0000000000000000000000000000000000000000':
+      continue
     if stake['timestamp'] > datetime(2020, 6, 30, 11, 31, 12) and \
         stake['timestamp'] < datetime.now():
       top_stakers['USD'][stake['staker']] += stake['amount'] * nxm_price
