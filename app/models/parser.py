@@ -63,6 +63,9 @@ def parse_verdict_event_logs(to_block):
           filter(Claim.block_number < int(event['blockNumber'], 16)).\
           order_by(Claim.block_number.desc()).first()
       claim.verdict = 'Accepted' if verdict == 1 else 'Denied'
+      if claim.verdict == 'Accepted':
+        Cover.query.filter_by(cover_id=claim.cover_id).first().end_time = \
+            datetime.utcfromtimestamp(int(event['timeStamp'], 16))
 
 def parse_vote_event_logs(to_block):
   address = '0xdc2d359f59f6a26162972c3bd0cfbfd8c9ef43af'
@@ -232,20 +235,22 @@ def parse_staking_transactions(end_block):
     url = build_transaction_url(address, start_block, end_block)
     time.sleep(0.2)
     for txn in requests.get(url).json()['result']:
-      if txn['isError'] == '0':
-        data = textwrap.wrap(txn['input'][10:], 64)
-        if len(data) == 2:
-          amount = float(int(data[1], 16)) / 10**18
-          if amount >= 10**-8:
-            db.session.add(Stake(
-              id=get_last_id(Stake) + 1,
-              block_number=txn['blockNumber'],
-              timestamp=datetime.utcfromtimestamp(int(txn['timeStamp'])),
-              staker=txn['from'],
-              project=address_to_project(data[0][-40:]),
-              address='0x' + data[0][-40:],
-              amount=amount
-            ))
+      if txn['isError'] == '1':
+        continue
+
+      data = textwrap.wrap(txn['input'][10:], 64)
+      if len(data) == 2:
+        amount = float(int(data[1], 16)) / 10**18
+        if amount >= 10**-8:
+          db.session.add(Stake(
+            id=get_last_id(Stake) + 1,
+            block_number=txn['blockNumber'],
+            timestamp=datetime.utcfromtimestamp(int(txn['timeStamp'])),
+            staker=txn['from'],
+            project=address_to_project(data[0][-40:]),
+            address='0x' + data[0][-40:],
+            amount=amount
+          ))
 
 def parse_etherscan_data():
   to_block = get_to_block()

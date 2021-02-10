@@ -34,7 +34,7 @@ parsimonious==0.8.1
 protobuf==3.14.0
 psycopg2==2.8.6
 psycopg2-binary==2.8.6
-pycryptodome==3.9.9
+pycryptodome==3.10.1
 pyparsing==2.4.7
 pyrsistent==0.17.3
 python-dotenv==0.15.0
