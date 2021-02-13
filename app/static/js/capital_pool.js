@@ -83,6 +83,8 @@ const renderMcrPercentage = () => {
   for (let key in mcrPercentage) {
     if (mcrPercentage[key] < 100) {
       delete mcrPercentage[key]
+    } else {
+      break
     }
   }
 
@@ -93,7 +95,7 @@ const renderMcrPercentage = () => {
     type: 'scattergl'
   }], {
     yaxis: {range: [
-      100,
+      Math.min(...Object.values(mcrPercentage)),
       Math.max(...Object.values(mcrPercentage))
     ]}
   }, {responsive: true})
