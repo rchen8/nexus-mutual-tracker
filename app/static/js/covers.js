@@ -2,8 +2,10 @@ let activeCoverAmount = undefined
 let activeCoverAmountPerProject = undefined
 let activeCoverAmountByExpirationDate = undefined
 let defiTvlCovered = undefined
+let annualizedPremiumsInForce = undefined
 let totalPremiumsPaid = undefined
 let premiumsPaidPerProject = undefined
+let monthlySurplus = undefined
 let allCovers = undefined
 
 const endpoints = [
@@ -11,8 +13,10 @@ const endpoints = [
   'active_cover_amount_per_project',
   'active_cover_amount_by_expiration_date',
   'defi_tvl_covered',
+  'annualized_premiums_in_force',
   'total_premiums_paid',
   'premiums_paid_per_project',
+  'monthly_surplus',
   'all_covers'
 ]
 
@@ -21,9 +25,11 @@ Promise.all(endpoints.map(getData)).then(data => {
   activeCoverAmountPerProject = data[1]
   activeCoverAmountByExpirationDate = data[2]
   defiTvlCovered = data[3]
-  totalPremiumsPaid = data[4]
-  premiumsPaidPerProject = data[5]
-  allCovers = data[6]
+  annualizedPremiumsInForce = data[4]
+  totalPremiumsPaid = data[5]
+  premiumsPaidPerProject = data[6]
+  monthlySurplus = data[7]
+  allCovers = data[8]
 
   renderStats()
   setTimeout(() => {renderGraphs()}, 0)
@@ -31,7 +37,8 @@ Promise.all(endpoints.map(getData)).then(data => {
 
 const renderStats = () => {
   $('#currentActiveCoverAmount').text(getCurrentValue(activeCoverAmount, ['USD', 'ETH']))
-  $('#currentPremiumsPaid').text(getCurrentValue(totalPremiumsPaid, ['USD', 'ETH']))
+  $('#currentAnnualizedPremiumsInForce').text(
+      getCurrentValue(annualizedPremiumsInForce, ['USD', 'ETH']))
 }
 
 const renderGraphs = () => {
@@ -39,8 +46,10 @@ const renderGraphs = () => {
   $('#active-cover-amount-per-project-usd').click()
   $('#active-cover-amount-by-expiration-date-usd').click()
   renderDefiTvlCovered()
+  $('#annualized-premiums-in-force-usd').click()
   $('#total-premiums-paid-usd').click()
   $('#premiums-paid-per-project-usd').click()
+  $('#monthly-surplus-usd').click()
   $('#all-covers-usd').click()
 }
 
@@ -109,6 +118,25 @@ const renderDefiTvlCovered = () => {
   }], {}, {responsive: true})
 }
 
+const renderAnnualizedPremiumsInForce = (currency) => {
+  Plotly.newPlot('annualizedPremiumsInForce', [{
+    x: Object.keys(annualizedPremiumsInForce[currency]),
+    y: Object.values(annualizedPremiumsInForce[currency]),
+    fill: 'tozeroy',
+    type: 'scattergl'
+  }], {}, {responsive: true})
+}
+
+$('#annualized-premiums-in-force-usd').click(() => {
+  renderAnnualizedPremiumsInForce('USD')
+  toggleCurrency('#annualized-premiums-in-force', 'usd', 'eth')
+})
+
+$('#annualized-premiums-in-force-eth').click(() => {
+  renderAnnualizedPremiumsInForce('ETH')
+  toggleCurrency('#annualized-premiums-in-force', 'eth', 'usd')
+})
+
 const renderTotalPremiumsPaid = (currency) => {
   Plotly.newPlot('totalPremiumsPaid', [{
     x: Object.keys(totalPremiumsPaid[currency]),
@@ -144,6 +172,24 @@ $('#premiums-paid-per-project-usd').click(() => {
 $('#premiums-paid-per-project-eth').click(() => {
   renderPremiumsPaidPerProject('ETH')
   toggleCurrency('#premiums-paid-per-project', 'eth', 'usd')
+})
+
+const renderMonthlySurplus = (currency) => {
+  Plotly.newPlot('monthlySurplus', [{
+    x: Object.keys(monthlySurplus[currency]),
+    y: Object.values(monthlySurplus[currency]),
+    type: 'bar'
+  }], {}, {responsive: true})
+}
+
+$('#monthly-surplus-usd').click(() => {
+  renderMonthlySurplus('USD')
+  toggleCurrency('#monthly-surplus', 'usd', 'eth')
+})
+
+$('#monthly-surplus-eth').click(() => {
+  renderMonthlySurplus('ETH')
+  toggleCurrency('#monthly-surplus', 'eth', 'usd')
 })
 
 const renderAllCovers = (currency) => {
