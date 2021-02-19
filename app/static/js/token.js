@@ -2,6 +2,8 @@ let nxmPrice = undefined
 let nxmDailyVolume = undefined
 let nxmSupply = undefined
 let nxmMarketCap = undefined
+let netMarketCap = undefined
+let bookValueRatio = undefined
 let nxmDistribution = undefined
 let uniqueAddresses = undefined
 
@@ -10,6 +12,8 @@ const endpoints = [
   'nxm_daily_volume',
   'nxm_supply',
   'nxm_market_cap',
+  'net_market_cap',
+  'book_value_ratio',
   'nxm_distribution',
   'unique_addresses'
 ]
@@ -19,8 +23,10 @@ Promise.all(endpoints.map(getData)).then(data => {
   nxmDailyVolume = data[1]
   nxmSupply = data[2]
   nxmMarketCap = data[3]
-  nxmDistribution = data[4]
-  uniqueAddresses = data[5]
+  netMarketCap = data[4]
+  bookValueRatio = data[5]
+  nxmDistribution = data[6]
+  uniqueAddresses = data[7]
 
   renderStats()
   setTimeout(() => {renderGraphs()}, 0)
@@ -38,6 +44,8 @@ const renderGraphs = () => {
   $('#nxm-daily-volume-usd').click()
   renderNXMSupply()
   $('#nxm-market-cap-usd').click()
+  $('#net-market-cap-usd').click()
+  renderBookValueRatio()
   renderNXMDistribution()
   renderUniqueAddresses()
 }
@@ -48,12 +56,7 @@ const renderNXMPrice = (currency) => {
     y: Object.values(nxmPrice[currency]),
     fill: 'tozeroy',
     type: 'scattergl'
-  }], {
-    yaxis: {range: [
-      Math.min(...Object.values(nxmPrice[currency])),
-      Math.max(...Object.values(nxmPrice[currency]))
-    ]}
-  }, {responsive: true})
+  }], {}, {responsive: true})
 }
 
 $('#nxm-price-usd').click(() => {
@@ -92,7 +95,7 @@ const renderNXMSupply = () => {
     type: 'scattergl'
   }], {
     yaxis: {range: [
-      Math.min(...Object.values(nxmSupply)),
+      3000000,
       Math.max(...Object.values(nxmSupply))
     ]}
   }, {responsive: true})
@@ -104,12 +107,7 @@ const renderNXMMarketCap = (currency) => {
     y: Object.values(nxmMarketCap[currency]),
     fill: 'tozeroy',
     type: 'scattergl'
-  }], {
-    yaxis: {range: [
-      Math.min(...Object.values(nxmMarketCap[currency])),
-      Math.max(...Object.values(nxmMarketCap[currency]))
-    ]}
-  }, {responsive: true})
+  }], {}, {responsive: true})
 }
 
 $('#nxm-market-cap-usd').click(() => {
@@ -121,6 +119,34 @@ $('#nxm-market-cap-eth').click(() => {
   renderNXMMarketCap('ETH')
   toggleCurrency('#nxm-market-cap', 'eth', 'usd')
 })
+
+const renderNetMarketCap = (currency) => {
+  Plotly.newPlot('netMarketCap', [{
+    x: Object.keys(netMarketCap[currency]),
+    y: Object.values(netMarketCap[currency]),
+    fill: 'tozeroy',
+    type: 'scattergl'
+  }], {}, {responsive: true})
+}
+
+$('#net-market-cap-usd').click(() => {
+  renderNetMarketCap('USD')
+  toggleCurrency('#net-market-cap', 'usd', 'eth')
+})
+
+$('#net-market-cap-eth').click(() => {
+  renderNetMarketCap('ETH')
+  toggleCurrency('#net-market-cap', 'eth', 'usd')
+})
+
+const renderBookValueRatio = () => {
+  Plotly.newPlot('bookValueRatio', [{
+    x: Object.keys(bookValueRatio),
+    y: Object.values(bookValueRatio),
+    fill: 'tozeroy',
+    type: 'scattergl'
+  }], {}, {responsive: true})
+}
 
 const renderNXMDistribution = () => {
   Plotly.newPlot('nxmDistribution', [{

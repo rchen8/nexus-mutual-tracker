@@ -1,11 +1,11 @@
 let capitalPoolSize = undefined
-let coverAmountToCapitalPoolRatio = undefined
+let capitalEfficiencyRatio = undefined
 let minimumCapitalRequirement = undefined
 let mcrPercentage = undefined
 
 const endpoints = [
   'capital_pool_size',
-  'cover_amount_to_capital_pool_ratio',
+  'capital_efficiency_ratio',
   'minimum_capital_requirement',
   'mcr_percentage',
   'current_mcr_percentage'
@@ -13,7 +13,7 @@ const endpoints = [
 
 Promise.all(endpoints.map(getData)).then(data => {
   capitalPoolSize = data[0]
-  coverAmountToCapitalPoolRatio = data[1]
+  capitalEfficiencyRatio = data[1]
   minimumCapitalRequirement = data[2]
   mcrPercentage = data[3]
 
@@ -23,8 +23,8 @@ Promise.all(endpoints.map(getData)).then(data => {
 
 const renderStats = (currentMcrPercentage) => {
   $('#currentCapitalPoolSize').text(getCurrentValue(capitalPoolSize, ['USD', 'ETH']))
-  $('#currentActiveCoverAmountToCapitalPoolSizeRatio')
-    .text(getCurrentValue(coverAmountToCapitalPoolRatio, null).toFixed(2) + '%')
+  $('#currentCapitalEfficiencyRatio')
+    .text(getCurrentValue(capitalEfficiencyRatio, null).toFixed(2) + '%')
   $('#currentMinimumCapitalRequirement')
     .text(Math.round(getCurrentValue(minimumCapitalRequirement, null)).toLocaleString() + ' ETH')
   $('#currentMcrPercentage').text(currentMcrPercentage.toFixed(2) + '%')
@@ -32,7 +32,7 @@ const renderStats = (currentMcrPercentage) => {
 
 const renderGraphs = () => {
   $('#capital-pool-size-usd').click()
-  renderCoverAmountToCapitalPoolRatio()
+  renderCapitalEfficiencyRatio()
   renderMinimumCapitalRequirement()
   renderMcrPercentage()
 }
@@ -56,10 +56,10 @@ $('#capital-pool-size-eth').click(() => {
   toggleCurrency('#capital-pool-size', 'eth', 'usd')
 })
 
-const renderCoverAmountToCapitalPoolRatio = () => {
-  Plotly.newPlot('activeCoverAmountToCapitalPoolSizeRatio', [{
-    x: Object.keys(coverAmountToCapitalPoolRatio),
-    y: Object.values(coverAmountToCapitalPoolRatio),
+const renderCapitalEfficiencyRatio = () => {
+  Plotly.newPlot('capitalEfficiencyRatio', [{
+    x: Object.keys(capitalEfficiencyRatio),
+    y: Object.values(capitalEfficiencyRatio),
     fill: 'tozeroy',
     type: 'scattergl'
   }], {}, {responsive: true})
@@ -74,7 +74,7 @@ const renderMinimumCapitalRequirement = () => {
   }], {
     yaxis: {range: [
       7000,
-      Math.max(...Object.values(minimumCapitalRequirement))
+      Math.max(...Object.values(minimumCapitalRequirement)) * 1.01
     ]}
   }, {responsive: true})
 }
@@ -95,8 +95,8 @@ const renderMcrPercentage = () => {
     type: 'scattergl'
   }], {
     yaxis: {range: [
-      Math.min(...Object.values(mcrPercentage)),
-      Math.max(...Object.values(mcrPercentage))
+      Math.min(...Object.values(mcrPercentage)) * 0.99,
+      Math.max(...Object.values(mcrPercentage)) * 1.01
     ]}
   }, {responsive: true})
 }

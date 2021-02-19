@@ -99,6 +99,38 @@ def get_defi_tvl_covered(cache=False):
     defi_tvl_covered[time] = cover_amount['USD'][time] / defi_tvl[date] * 100
   return defi_tvl_covered
 
+def get_annualized_premiums_in_force(cache=False):
+  if cache:
+    return json.loads(r.get('annualized_premiums_in_force'))
+
+  times = []
+  tree = IntervalTree()
+  for cover in query_table(Cover):
+    times.append(cover['start_time'])
+    times.append(cover['end_time'])
+    annualized_premium = cover['premium'] * timedelta(days=365).total_seconds() / \
+        (cover['end_time'] - cover['start_time']).total_seconds()
+    tree[cover['start_time']:cover['end_time']] = (annualized_premium, cover['currency'])
+
+  historical_crypto_prices = get_historical_crypto_prices()
+  annualized_premiums_in_force = {'USD': {}, 'ETH': {}}
+  for time in times:
+    if time < datetime.now():
+      intervals = tree[time]
+      if time not in historical_crypto_prices:
+        eth_price, dai_price = add_historical_crypto_price(time)
+      else:
+        eth_price = historical_crypto_prices[time]['ETH']
+        dai_price = historical_crypto_prices[time]['DAI']
+
+      annualized_premiums_in_force['USD'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
+          sum([interval.data[0] * (eth_price if interval.data[1] == 'ETH' else dai_price) \
+              for interval in intervals])
+      annualized_premiums_in_force['ETH'][time.strftime('%Y-%m-%d %H:%M:%S')] = \
+          sum([interval.data[0] / (1 if interval.data[1] == 'ETH' else eth_price / dai_price) \
+              for interval in intervals])
+  return annualized_premiums_in_force
+
 def get_total_premiums_paid(cache=False):
   if cache:
     return json.loads(r.get('total_premiums_paid'))
@@ -138,6 +170,45 @@ def get_premiums_paid_per_project(cache=False):
     premiums_paid_per_project['ETH'][cover['project']] += cover['premium'] / \
         (1 if cover['currency'] == 'ETH' else eth_price / dai_price)
   return dict(premiums_paid_per_project)  
+
+def get_monthly_surplus(cache=False):
+  if cache:
+    return json.loads(r.get('monthly_surplus'))
+
+  covers = query_table(Cover, order=Cover.cover_id)
+  historical_crypto_prices = get_historical_crypto_prices()
+  monthly_surplus = {'USD': defaultdict(int), 'ETH': defaultdict(int)}
+
+  for cover in covers:
+    if cover['start_time'] not in historical_crypto_prices:
+      eth_price, dai_price = add_historical_crypto_price(cover['start_time'])
+    else:
+      eth_price = historical_crypto_prices[cover['start_time']]['ETH']
+      dai_price = historical_crypto_prices[cover['start_time']]['DAI']
+
+    month = '%s-%s-01' % (cover['start_time'].year, cover['start_time'].month)
+    monthly_surplus['USD'][month] += \
+        cover['premium'] * (eth_price if cover['currency'] == 'ETH' else dai_price)
+    monthly_surplus['ETH'][month] += \
+        cover['premium'] / (1 if cover['currency'] == 'ETH' else eth_price / dai_price)
+
+  for claim in query_table(Claim):
+    if claim['verdict'] != 'Accepted':
+      continue
+
+    if claim['timestamp'] not in historical_crypto_prices:
+      eth_price, dai_price = add_historical_crypto_price(claim['timestamp'])
+    else:
+      eth_price = historical_crypto_prices[claim['timestamp']]['ETH']
+      dai_price = historical_crypto_prices[claim['timestamp']]['DAI']
+
+    month = '%s-%s-01' % (claim['timestamp'].year, claim['timestamp'].month)
+    amount = covers[claim['cover_id'] - 1]['amount']
+    currency = covers[claim['cover_id'] - 1]['currency']
+    monthly_surplus['USD'][month] -= amount * (eth_price if currency == 'ETH' else dai_price)
+    monthly_surplus['ETH'][month] -= amount / (1 if currency == 'ETH' else eth_price / dai_price)
+
+  return dict(monthly_surplus)
 
 def get_all_covers(cache=False):
   if cache:
@@ -207,18 +278,18 @@ def get_capital_pool_size(cache=False):
         total['ETH'] + total['DAI'] / (eth_price / dai_price)
   return capital_pool_size
 
-def get_cover_amount_to_capital_pool_ratio(cache=False):
+def get_capital_efficiency_ratio(cache=False):
   if cache:
-    return json.loads(r.get('cover_amount_to_capital_pool_ratio'))
+    return json.loads(r.get('capital_efficiency_ratio'))
 
   cover_amount = get_active_cover_amount(cache=True)['USD']
   capital_pool_size = get_capital_pool_size(cache=True)['USD']
   capital_pool_times = sorted(capital_pool_size.keys())
-  cover_amount_to_capital_pool_ratio = {}
+  capital_efficiency_ratio = {}
   for time in cover_amount:
-    cover_amount_to_capital_pool_ratio[time] = cover_amount[time] / \
+    capital_efficiency_ratio[time] = cover_amount[time] / \
         capital_pool_size[capital_pool_times[bisect.bisect(capital_pool_times, time) - 1]] * 100
-  return cover_amount_to_capital_pool_ratio
+  return capital_efficiency_ratio
 
 def get_minimum_capital_requirement(cache=False):
   if cache:
@@ -428,6 +499,39 @@ def get_nxm_market_cap(cache=False):
     nxm_market_cap['ETH'][time] = nxm_price_eth * nxm_supply[time]
   return nxm_market_cap
 
+def get_net_market_cap(cache=False):
+  if cache:
+    return json.loads(r.get('net_market_cap'))
+
+  nxm_market_cap = get_nxm_market_cap(cache=True)
+  nxm_market_cap_times = sorted(nxm_market_cap['USD'].keys())
+  capital_pool_size = get_capital_pool_size(cache=True)
+  net_market_cap = {'USD': {}, 'ETH': {}}
+  for time in capital_pool_size['USD']:
+    if datetime.strptime(time, '%Y-%m-%d %H:%M:%S') < datetime(2019, 7, 12, 8, 44, 52):
+      continue
+    bisect_time = nxm_market_cap_times[bisect.bisect(nxm_market_cap_times, time) - 1]
+    net_market_cap['USD'][time] = nxm_market_cap['USD'][bisect_time] - \
+        capital_pool_size['USD'][time]
+    net_market_cap['ETH'][time] = nxm_market_cap['ETH'][bisect_time] - \
+        capital_pool_size['ETH'][time]
+  return net_market_cap
+
+def get_book_value_ratio(cache=False):
+  if cache:
+    return json.loads(r.get('book_value_ratio'))
+
+  nxm_market_cap = get_nxm_market_cap(cache=True)['USD']
+  nxm_market_cap_times = sorted(nxm_market_cap.keys())
+  capital_pool_size = get_capital_pool_size(cache=True)['USD']
+  book_value_ratio = {}
+  for time in capital_pool_size:
+    if datetime.strptime(time, '%Y-%m-%d %H:%M:%S') < datetime(2019, 7, 12, 8, 44, 52):
+      continue
+    market_cap = nxm_market_cap[nxm_market_cap_times[bisect.bisect(nxm_market_cap_times, time) - 1]]
+    book_value_ratio[time] = market_cap / capital_pool_size[time]
+  return book_value_ratio
+
 def get_nxm_distribution(cache=False):
   if cache:
     return json.loads(r.get('nxm_distribution'))
@@ -469,12 +573,14 @@ def cache_graph_data():
     'active_cover_amount_per_project',
     'active_cover_amount_by_expiration_date',
     'defi_tvl_covered',
+    'annualized_premiums_in_force',
     'total_premiums_paid',
     'premiums_paid_per_project',
+    'monthly_surplus',
     'all_covers',
     'all_claims',
     'capital_pool_size',
-    'cover_amount_to_capital_pool_ratio',
+    'capital_efficiency_ratio',
     'minimum_capital_requirement',
     'mcr_percentage',
     'nxm_price',
@@ -487,6 +593,8 @@ def cache_graph_data():
     'nxm_daily_volume',
     'nxm_supply',
     'nxm_market_cap',
+    'net_market_cap',
+    'book_value_ratio',
     'nxm_distribution',
     'unique_addresses'
   ]

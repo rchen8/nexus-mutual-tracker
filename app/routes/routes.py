@@ -21,6 +21,10 @@ def active_cover_amount_by_expiration_date():
 def defi_tvl_covered():
   return jsonify(grapher.get_defi_tvl_covered(cache=True))
 
+@app.route('/annualized_premiums_in_force', methods=['GET'])
+def annualized_premiums_in_force():
+  return jsonify(grapher.get_annualized_premiums_in_force(cache=True))
+
 @app.route('/total_premiums_paid', methods=['GET'])
 def total_premiums_paid():
   return jsonify(grapher.get_total_premiums_paid(cache=True))
@@ -28,6 +32,10 @@ def total_premiums_paid():
 @app.route('/premiums_paid_per_project', methods=['GET'])
 def premiums_paid_per_project():
   return jsonify(grapher.get_premiums_paid_per_project(cache=True))
+
+@app.route('/monthly_surplus', methods=['GET'])
+def monthly_surplus():
+  return jsonify(grapher.get_monthly_surplus(cache=True))
 
 @app.route('/all_covers', methods=['GET'])
 def all_covers():
@@ -45,9 +53,9 @@ def all_votes():
 def capital_pool_size():
   return jsonify(grapher.get_capital_pool_size(cache=True))
 
-@app.route('/cover_amount_to_capital_pool_ratio', methods=['GET'])
-def cover_amount_to_capital_pool_ratio():
-  return jsonify(grapher.get_cover_amount_to_capital_pool_ratio(cache=True))
+@app.route('/capital_efficiency_ratio', methods=['GET'])
+def capital_efficiency_ratio():
+  return jsonify(grapher.get_capital_efficiency_ratio(cache=True))
 
 @app.route('/minimum_capital_requirement', methods=['GET'])
 def minimum_capital_requirement():
@@ -96,6 +104,14 @@ def nxm_supply():
 @app.route('/nxm_market_cap', methods=['GET'])
 def nxm_market_cap():
   return jsonify(grapher.get_nxm_market_cap(cache=True))
+
+@app.route('/net_market_cap', methods=['GET'])
+def net_market_cap():
+  return jsonify(grapher.get_net_market_cap(cache=True))
+
+@app.route('/book_value_ratio', methods=['GET'])
+def book_value_ratio():
+  return jsonify(grapher.get_book_value_ratio(cache=True))
 
 @app.route('/nxm_distribution', methods=['GET'])
 def nxm_distribution():
