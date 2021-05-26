@@ -43,7 +43,7 @@ def get_current_mcr_percentage():
   w3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/%s' % os.environ['INFURA_PROJECT_ID']))
   with open('abi/mcr.json') as file:
     abi = json.load(file)
-  contract = w3.eth.contract(address='0xcafea7934490EF8B9d2572EaeFeb9d48162ea5D8', abi=abi)
+  contract = w3.eth.contract(address='0xcafea35cE5a2fc4CED4464DA4349f81A122fd12b', abi=abi)
   return contract.functions.getMCRRatio().call() / 100
 
 def get_historical_crypto_prices():
@@ -102,6 +102,24 @@ def json_to_csv(graph):
     for key in sorted(data.keys()):
       csv.append([key, data[key]])
     return csv
+
+def timestamp_to_rebase(rebases, timestamp):
+  if type(timestamp) is str:
+    timestamp = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+
+  low = 0
+  high = len(rebases) - 1
+  while low <= high:
+    mid = (low + high) // 2
+    if rebases[mid]['timestamp'] < timestamp:
+      low = mid + 1
+    elif rebases[mid]['timestamp'] > timestamp:
+      high = mid - 1
+    else:
+      return rebases[mid]['rebase']
+
+  index = abs(-(low + 1)) - 2
+  return 0 if index < 0 else rebases[index]['rebase']
 
 def timestamp_to_mcr(mcrs, timestamp):
   if type(timestamp) is str:

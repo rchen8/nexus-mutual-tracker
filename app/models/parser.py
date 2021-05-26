@@ -81,6 +81,17 @@ def parse_vote_event_logs(to_block):
       verdict='Yes' if int(data[2], 16) == 1 else 'No'
     ))
 
+def parse_steth_event_logs(to_block):
+  address = '0x442af784a788a5bd6f42a01ebe9f287a871243fb'
+  topic0 = '0xdafd48d1eba2a416b2aca45e9ead3ad18b84e868fa6d2e1a3048bfd37ed10a32'
+  for event in get_event_logs(STETHRebase, address, topic0, to_block=to_block):
+    data = textwrap.wrap(event['data'][2:], 64)
+    db.session.add(STETHRebase(
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
+      block_number=int(event['blockNumber'], 16),
+      rebase=int(data[0], 16) / int(data[3], 16)
+    ))
+
 def parse_mcr_event_logs(to_block):
   address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
   topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
@@ -202,7 +213,8 @@ def build_transaction_url(address, start_block, end_block='latest'):
 def parse_eth_transactions(start_block, end_block):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
                '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6',
-               '0xcafea7934490ef8b9d2572eaefeb9d48162ea5d8']
+               '0xcafea7934490ef8b9d2572eaefeb9d48162ea5d8',
+               '0xcafea35ce5a2fc4ced4464da4349f81a122fd12b']
   for address in addresses:
     url = build_transaction_url(address, start_block, end_block)
     time.sleep(0.2)
@@ -214,7 +226,8 @@ def parse_eth_transactions(start_block, end_block):
 def parse_dai_transactions(start_block, end_block):
   addresses = ['0xfd61352232157815cf7b71045557192bf0ce1884',
                '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6',
-               '0xcafea7934490ef8b9d2572eaefeb9d48162ea5d8']
+               '0xcafea7934490ef8b9d2572eaefeb9d48162ea5d8',
+               '0xcafea35ce5a2fc4ced4464da4349f81a122fd12b']
   for address in addresses:
     time.sleep(0.2)
     module = 'account'
@@ -226,6 +239,18 @@ def parse_dai_transactions(start_block, end_block):
           % (module, action, contract_address, address,
           start_block, end_block, sort, os.environ['ETHERSCAN_API_KEY'])
     parse_transactions(requests.get(url).json()['result'], address, 'DAI')
+
+def parse_steth_transactions(start_block, end_block):
+  address = '0xcafea35ce5a2fc4ced4464da4349f81a122fd12b'
+  module = 'account'
+  action = 'tokentx'
+  contract_address = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84'
+  sort = 'asc'
+  url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
+        'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
+        % (module, action, contract_address, address,
+        start_block, end_block, sort, os.environ['ETHERSCAN_API_KEY'])
+  parse_transactions(requests.get(url).json()['result'], address, 'STETH')
 
 def parse_staking_transactions(end_block):
   start_block = get_latest_block_number(Stake) + 1
@@ -258,6 +283,7 @@ def parse_etherscan_data():
   parse_claim_event_logs(to_block)
   parse_verdict_event_logs(to_block)
   parse_vote_event_logs(to_block)
+  parse_steth_event_logs(to_block)
   parse_mcr_event_logs(to_block)
   parse_staking_reward_event_logs(to_block)
   parse_nxm_event_logs(to_block)
@@ -270,5 +296,6 @@ def parse_etherscan_data():
   start_block = get_latest_block_number(Transaction) + 1
   parse_eth_transactions(start_block, to_block)
   parse_dai_transactions(start_block, to_block)
+  parse_steth_transactions(start_block, to_block)
 
   db.session.commit()

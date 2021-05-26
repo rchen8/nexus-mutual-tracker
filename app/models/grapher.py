@@ -260,12 +260,21 @@ def get_capital_pool_size(cache=False):
   if cache:
     return json.loads(r.get('capital_pool_size'))
 
-  total = defaultdict(int)
+  steth = []
+  rebases = query_table(STETHRebase, order=STETHRebase.timestamp)
   historical_crypto_prices = get_historical_crypto_prices()
+
+  total = defaultdict(int)
   capital_pool_size = {'USD': {}, 'ETH': {}}
   for txn in query_table(Transaction, order=Transaction.block_number):
-    total[txn['currency']] += txn['amount']
-    
+    if txn['currency'] == 'STETH':
+      steth.append((txn['amount'], timestamp_to_rebase(rebases, txn['timestamp'])))
+    else:
+      total[txn['currency']] += txn['amount']
+
+    for rebase in steth:
+      total['ETH'] += rebase[0] * timestamp_to_rebase(rebases, txn['timestamp']) / rebase[1]
+
     if txn['timestamp'] not in historical_crypto_prices:
       eth_price, dai_price = add_historical_crypto_price(txn['timestamp'])
     else:
@@ -276,6 +285,9 @@ def get_capital_pool_size(cache=False):
         total['ETH'] * eth_price + total['DAI'] * dai_price
     capital_pool_size['ETH'][txn['timestamp'].strftime('%Y-%m-%d %H:%M:%S')] = \
         total['ETH'] + total['DAI'] / (eth_price / dai_price)
+
+    for rebase in steth:
+      total['ETH'] -= rebase[0] * timestamp_to_rebase(rebases, txn['timestamp']) / rebase[1]
   return capital_pool_size
 
 def get_capital_efficiency_ratio(cache=False):
