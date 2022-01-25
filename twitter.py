@@ -48,9 +48,10 @@ More info: nexustracker.io""" % \
       (
         cover['cover_id'],
         cover['project'],
-        str.format('{0:,.2f}', cover['amount_usd']),
-        str.format('{:,}', cover['amount']), cover['currency'],
-        str.format('{0:,.2f}', cover['premium_usd']),
+        str.format('{:,}', int(cover['amount_usd'])),
+        str.format('{:,}', int(cover['amount'])),
+        cover['currency'],
+        str.format('{:,}', int(cover['premium_usd'])),
         cover['start_time'][0:10],
         cover['end_time'][0:10]
       )
@@ -85,8 +86,8 @@ More info: nexustracker.io/claims""" % \
         claim['claim_id'],
         claim['cover_id'],
         claim['project'],
-        str.format('{0:,.2f}', claim['amount_usd']),
-        str.format('{:,}', claim['amount']),
+        str.format('{:,}', int(claim['amount_usd'])),
+        str.format('{:,}', int(claim['amount'])),
         claim['currency'],
         claim['start_time'][0:10],
         claim['timestamp'][0:10]
@@ -110,8 +111,8 @@ More info: nexustracker.io/claims""" % \
         claim['claim_id'],
         claim['cover_id'],
         claim['project'],
-        str.format('{0:,.2f}', claim['amount_usd']),
-        str.format('{:,}', claim['amount']),
+        str.format('{:,}', int(claim['amount_usd'])),
+        str.format('{:,}', int(claim['amount'])),
         claim['currency']
       )
 
