@@ -261,7 +261,9 @@ def get_capital_pool_size(cache=False):
     return json.loads(r.get('capital_pool_size'))
 
   steth = []
+  nxmty = []
   rebases = query_table(STETHRebase, order=STETHRebase.timestamp)
+  oracles = query_table(NXMTYOracle, order=NXMTYOracle.timestamp)
   historical_crypto_prices = get_historical_crypto_prices()
 
   total = defaultdict(int)
@@ -269,11 +271,15 @@ def get_capital_pool_size(cache=False):
   for txn in query_table(Transaction, order=Transaction.block_number):
     if txn['currency'] == 'STETH':
       steth.append((txn['amount'], timestamp_to_rebase(rebases, txn['timestamp'])))
+    elif txn['currency'] == 'NXMTY':
+      nxmty.append((txn['amount'], timestamp_to_rebase(oracles, txn['timestamp'])))
     else:
       total[txn['currency']] += txn['amount']
 
     for rebase in steth:
       total['ETH'] += rebase[0] * timestamp_to_rebase(rebases, txn['timestamp']) / rebase[1]
+    for oracle in nxmty:
+      total['ETH'] += oracle[0] / timestamp_to_rebase(oracles, txn['timestamp'])
 
     if txn['timestamp'] not in historical_crypto_prices:
       eth_price, dai_price = add_historical_crypto_price(txn['timestamp'])
@@ -288,6 +294,8 @@ def get_capital_pool_size(cache=False):
 
     for rebase in steth:
       total['ETH'] -= rebase[0] * timestamp_to_rebase(rebases, txn['timestamp']) / rebase[1]
+    for oracle in nxmty:
+      total['ETH'] -= oracle[0] / timestamp_to_rebase(oracles, txn['timestamp'])
   return capital_pool_size
 
 def get_capital_efficiency_ratio(cache=False):

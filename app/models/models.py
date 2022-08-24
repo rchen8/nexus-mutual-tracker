@@ -70,6 +70,11 @@ class STETHRebase(db.Model):
   block_number = db.Column(db.Integer, nullable=False)
   rebase = db.Column(db.Float, nullable=False)
 
+class NXMTYOracle(db.Model):
+  timestamp = db.Column(db.DateTime, primary_key=True)
+  block_number = db.Column(db.Integer, nullable=False)
+  rebase = db.Column(db.Float, nullable=False)
+
 class MinimumCapitalRequirement(db.Model):
   timestamp = db.Column(db.DateTime, primary_key=True)
   block_number = db.Column(db.Integer, nullable=False)

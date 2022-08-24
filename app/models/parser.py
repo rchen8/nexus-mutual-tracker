@@ -92,6 +92,17 @@ def parse_steth_event_logs(to_block):
       rebase=int(data[0], 16) / int(data[3], 16)
     ))
 
+def parse_nxmty_event_logs(to_block):
+  address = '0xca71bbe491079e138927f3f0ab448ae8782d1dca'
+  topic0 = '0xf6a97944f31ea060dfde0566e4167c1a1082551e64b60ecb14d599a9d023d451'
+  for event in get_event_logs(NXMTYOracle, address, topic0, to_block=to_block):
+    data = textwrap.wrap(event['data'][2:], 64)
+    db.session.add(NXMTYOracle(
+      timestamp=datetime.utcfromtimestamp(int(event['timeStamp'], 16)),
+      block_number=int(event['blockNumber'], 16),
+      rebase=sorted([int(x, 16) for x in data[6:22]])[8] / 10**18
+    ))
+
 def parse_mcr_event_logs(to_block):
   address = '0x2ec5d566bd104e01790b13de33fd51876d57c495'
   topic0 = '0xe4d7c0f9c1462bca57d9d1c2ec3a19d83c4781ceaf9a37a0f15dc55a6b43de4d'
@@ -240,17 +251,16 @@ def parse_dai_transactions(start_block, end_block):
           start_block, end_block, sort, os.environ['ETHERSCAN_API_KEY'])
     parse_transactions(requests.get(url).json()['result'], address, 'DAI')
 
-def parse_steth_transactions(start_block, end_block):
+def parse_erc20_transactions(start_block, end_block, contract_address, symbol):
   address = '0xcafea35ce5a2fc4ced4464da4349f81a122fd12b'
   module = 'account'
   action = 'tokentx'
-  contract_address = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84'
   sort = 'asc'
   url = ('https://api.etherscan.io/api?module=%s&action=%s&contractaddress=%s&address=%s&' + \
         'startblock=%s&endblock=%s&sort=%s&apikey=%s') \
         % (module, action, contract_address, address,
         start_block, end_block, sort, os.environ['ETHERSCAN_API_KEY'])
-  parse_transactions(requests.get(url).json()['result'], address, 'STETH')
+  parse_transactions(requests.get(url).json()['result'], address, symbol)
 
 def parse_staking_transactions(end_block):
   start_block = get_latest_block_number(Stake) + 1
@@ -284,6 +294,7 @@ def parse_etherscan_data():
   parse_verdict_event_logs(to_block)
   parse_vote_event_logs(to_block)
   parse_steth_event_logs(to_block)
+  parse_nxmty_event_logs(to_block)
   parse_mcr_event_logs(to_block)
   parse_staking_reward_event_logs(to_block)
   parse_nxm_event_logs(to_block)
@@ -296,6 +307,7 @@ def parse_etherscan_data():
   start_block = get_latest_block_number(Transaction) + 1
   parse_eth_transactions(start_block, to_block)
   parse_dai_transactions(start_block, to_block)
-  parse_steth_transactions(start_block, to_block)
+  parse_erc20_transactions(start_block, to_block, '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', 'STETH')
+  parse_erc20_transactions(start_block, to_block, '0x27f23c710dd3d878fe9393d93465fed1302f2ebd', 'NXMTY')
 
   db.session.commit()
