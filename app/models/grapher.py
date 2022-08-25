@@ -279,7 +279,7 @@ def get_capital_pool_size(cache=False):
     for rebase in steth:
       total['ETH'] += rebase[0] * timestamp_to_rebase(rebases, txn['timestamp']) / rebase[1]
     for oracle in nxmty:
-      total['ETH'] += oracle[0] / timestamp_to_rebase(oracles, txn['timestamp'])
+      total['ETH'] += oracle[0] * timestamp_to_rebase(oracles, txn['timestamp'])
 
     if txn['timestamp'] not in historical_crypto_prices:
       eth_price, dai_price = add_historical_crypto_price(txn['timestamp'])
@@ -295,7 +295,7 @@ def get_capital_pool_size(cache=False):
     for rebase in steth:
       total['ETH'] -= rebase[0] * timestamp_to_rebase(rebases, txn['timestamp']) / rebase[1]
     for oracle in nxmty:
-      total['ETH'] -= oracle[0] / timestamp_to_rebase(oracles, txn['timestamp'])
+      total['ETH'] -= oracle[0] * timestamp_to_rebase(oracles, txn['timestamp'])
   return capital_pool_size
 
 def get_capital_efficiency_ratio(cache=False):
