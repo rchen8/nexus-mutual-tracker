@@ -41,7 +41,7 @@ netaddr==0.8.0
 oauth2==1.9.0.post1
 packaging==21.3
 parsimonious==0.8.1
-protobuf==3.20.1
+protobuf==3.20.2
 psycopg2==2.9.3
 psycopg2-binary==2.9.3
 pycryptodome==3.15.0
