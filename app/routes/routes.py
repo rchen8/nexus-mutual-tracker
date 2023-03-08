@@ -135,27 +135,33 @@ def download(graph):
 
 @app.route('/token', methods=['GET'])
 def token():
-  return render_template('token.html')
+  return redirect('https://dune.com/rchen8/nexus-mutual', code=302)
+  # return render_template('token.html')
 
 @app.route('/staking', methods=['GET'])
 def staking():
-  return render_template('staking.html')
+  return redirect('https://dune.com/rchen8/nexus-mutual', code=302)
+  # return render_template('staking.html')
 
 @app.route('/capital_pool', methods=['GET'])
 def capital_pool():
-  return render_template('capital_pool.html')
+  return redirect('https://dune.com/rchen8/nexus-mutual', code=302)
+  # return render_template('capital_pool.html')
 
 @app.route('/claims', methods=['GET'])
 def claims():
-  return render_template('claims.html')
+  return redirect('https://dune.com/rchen8/nexus-mutual', code=302)
+  # return render_template('claims.html')
 
 @app.route('/covers', methods=['GET'])
 def covers():
-  return render_template('covers.html')
+  return redirect('https://dune.com/rchen8/nexus-mutual', code=302)
+  # return render_template('covers.html')
 
 @app.route('/', methods=['GET'])
 def index():
-  return render_template('covers.html')
+  return redirect('https://dune.com/rchen8/nexus-mutual', code=302)
+  # return render_template('covers.html')
 
 @app.route('/favicon.ico', methods=['GET'])
 def favicon():
